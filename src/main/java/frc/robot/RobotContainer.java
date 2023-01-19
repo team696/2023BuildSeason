@@ -35,12 +35,16 @@ public class RobotContainer {
   private final Trigger armPos1 = new JoystickButton(driver, 3);
   private final Trigger armPos2 = new JoystickButton(driver, 4);
   private final Trigger armPos3 = new JoystickButton(driver, 2);
+  private final Trigger gripperRev = new JoystickButton(driver, 5);
+  private final Trigger gripperFor = new JoystickButton(driver, 7);
+
 
 
 
   /* Subsystems */
   public final Swerve s_Swerve = new Swerve();
   public final ArmSub armSub = new ArmSub();
+  public final Gripper gripper = new Gripper();
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -65,6 +69,8 @@ public class RobotContainer {
     armPos1.whileTrue(new InstantCommand(() -> armSub.moveArmPosition(0)) );
     armPos2.whileTrue(new ArmPositionCommand(armSub, 1000));
     armPos3.whileTrue(new ArmPositionCommand(armSub, 2000));
+    gripperFor.whileTrue(new GripperCommand(gripper, 0.3));
+    gripperRev.whileTrue(new GripperCommand(gripper, -0.3));
 
   }
 

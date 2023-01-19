@@ -85,7 +85,7 @@ public final class Constants {
             public static final int driveMotorID = 2;
             public static final int angleMotorID = 1;
             public static final int canCoderID = 3;
-            public static final double angleOffset =  356   /* Math.toRadians(141.2) */  /* Math.toRadians(40) */;
+            public static final double angleOffset =  /* 356 */ 355  ;
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -95,7 +95,7 @@ public final class Constants {
             public static final int driveMotorID = 11;
             public static final int angleMotorID = 10;
             public static final int canCoderID = 12;
-            public static final double angleOffset =   232 /* Math.toRadians(81) */ /*  Math.toRadians(100) */;
+            public static final double angleOffset =  232 /* 232 */ ;
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -105,7 +105,7 @@ public final class Constants {
             public static final int driveMotorID = 5;
             public static final int angleMotorID = 4;
             public static final int canCoderID = 6;
-            public static final double angleOffset =  246.5   /* Math.toRadians(74.1) */  /* -Math.toRadians(254.5) */;
+            public static final double angleOffset = 243 /* 246.5  */ ;
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -115,7 +115,7 @@ public final class Constants {
             public static final int driveMotorID = 8;
             public static final int angleMotorID = 7;
             public static final int canCoderID = 9;
-            public static final double angleOffset =  346.9 /*   Math.toRadians(152.3); */ /* -Math.toRadians(333) */;
+            public static final double angleOffset = 346  /* 346.9 */ ;
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -139,14 +139,14 @@ public final class Constants {
       }
 
       static class FieldConstants {
-        static final double length = Units.feetToMeters(15);
-        static final double width = Units.feetToMeters(5.5);
+        static final double length = Units.feetToMeters(54 + 3.25/12);
+        static final double width = Units.feetToMeters(26 + 3.5/12);
     }
 
     static class VisionConstants {
         static final Transform3d robotToCam =
                 new Transform3d(
-                        new Translation3d(0.5, 0.0, 0.5),
+                        new Translation3d(0.0, 0.0, Units.feetToMeters(2 + (11/12))),
                         new Rotation3d(
                                 0, 0,
                                 0)); // Cam mounted facing forward, half a meter forward of center, half a meter up

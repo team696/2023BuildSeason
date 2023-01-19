@@ -18,10 +18,10 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.VisionConstants;
-
 /** Add your docs here. */
 public class PhotonCameraWrapper 
 {
@@ -33,7 +33,7 @@ public class PhotonCameraWrapper
                 new AprilTag(02, new Pose3d(
                                                 new Pose2d(
                                                     0,
-                                                    FieldConstants.width ,
+                                                    Units.feetToMeters(3 + 1.5/12) ,
                                                     Rotation2d.fromDegrees(0.0))));
 
         final AprilTag tag01 =
@@ -41,12 +41,20 @@ public class PhotonCameraWrapper
                                     new Pose3d(
                                                 new Pose2d(
                                                    0,
-                                                   0, 
+                                                   Units.feetToMeters(8 + 11/12), 
+                                                    Rotation2d.fromDegrees(0.0))));
+        final AprilTag tag03 =
+                new AprilTag(03,
+                                    new Pose3d(
+                                                new Pose2d(
+                                                   0,
+                                                   Units.feetToMeters(14 + 8.5/12), 
                                                     Rotation2d.fromDegrees(0.0))));
         ArrayList<AprilTag> atList = new ArrayList<AprilTag>();
         
         atList.add(tag02);
         atList.add(tag01);
+        atList.add(tag03);
         AprilTagFieldLayout atf1 = new AprilTagFieldLayout(atList, FieldConstants.length, FieldConstants.width);
         camera = new PhotonCamera(VisionConstants.cameraName);
 
