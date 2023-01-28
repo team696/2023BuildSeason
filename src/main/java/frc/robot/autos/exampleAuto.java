@@ -13,12 +13,14 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 
 public class exampleAuto extends SequentialCommandGroup {
     public exampleAuto(Swerve s_Swerve){
+        Pose2d pose = s_Swerve.getAprilTagEstPosition();
         TrajectoryConfig config =
             new TrajectoryConfig(
                     Constants.AutoConstants.kMaxSpeedMetersPerSecond,
@@ -28,17 +30,18 @@ public class exampleAuto extends SequentialCommandGroup {
         // An example trajectory to follow.  All units in meters.
         Trajectory exampleTrajectory =
             TrajectoryGenerator.generateTrajectory(
-                // Start at the origin facing the +X direction
-                new Pose2d(0, 0, new Rotation2d(0)),
-                // Pass through these two interior waypoints, making an 's' curve path
-                List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
-                // End 3 meters straight ahead of where we started, facing forward
-                new Pose2d(3, 0, new Rotation2d(0)),
+                pose,
+                List.of(new Translation2d(0.01, 0.1),
+                         new Translation2d(0.01, 0.11)),
+               new Pose2d(
+                                                   0,
+                                                   Units.feetToMeters(0), 
+                                                    Rotation2d.fromDegrees(0.0)),
                 config);
 
         var thetaController =
             new ProfiledPIDController(
-                Constants.AutoConstants.kPThetaController, 0, 0, Constants.AutoConstants.kThetaControllerConstraints);
+                /* Constants.AutoConstants.kPThetaController */ 0, 0, 0, Constants.AutoConstants.kThetaControllerConstraints);
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
         SwerveControllerCommand swerveControllerCommand =
@@ -54,7 +57,7 @@ public class exampleAuto extends SequentialCommandGroup {
 
 
         addCommands(
-            // new InstantCommand(() -> s_Swerve.resetOdometry(exampleTrajectory.getInitialPose())),
+            // new InstantCommand(() -> s_Swerve.normalizeOdometry()),
             swerveControllerCommand
         );
     }

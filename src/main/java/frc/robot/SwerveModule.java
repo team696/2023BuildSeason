@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 import frc.lib.math.Conversions;
@@ -40,6 +41,10 @@ public class SwerveModule {
         configDriveMotor();
 
         lastAngle = getState().angle.getDegrees();
+    }
+
+    private Rotation2d getAngle(){
+        return Rotation2d.fromDegrees(Conversions.falconToDegrees(mAngleMotor.getSelectedSensorPosition(), Constants.Swerve.angleGearRatio));
     }
 
     public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop){
@@ -94,5 +99,12 @@ public class SwerveModule {
         Rotation2d angle = Rotation2d.fromDegrees(Conversions.falconToDegrees(mAngleMotor.getSelectedSensorPosition(), Constants.Swerve.angleGearRatio));
         return new SwerveModuleState(velocity, angle);
     }
+
+    public SwerveModulePosition getPosition(){
+        return new SwerveModulePosition(
+            Conversions.falconToMeters(mDriveMotor.getSelectedSensorPosition(), Constants.Swerve.wheelCircumference, Constants.Swerve.driveGearRatio), 
+            getAngle()
+        );
     
+    }
 }

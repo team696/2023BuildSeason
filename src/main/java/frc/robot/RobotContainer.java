@@ -43,8 +43,7 @@ public class RobotContainer {
 
   /* Subsystems */
   public final Swerve s_Swerve = new Swerve();
-  public final ArmSub armSub = new ArmSub();
-  public final Gripper gripper = new Gripper();
+ 
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -52,7 +51,6 @@ public class RobotContainer {
     boolean fieldRelative = true;
     boolean openLoop = true;
     s_Swerve.setDefaultCommand(new TeleopSwerve(s_Swerve, driver, translationAxis, strafeAxis, rotationAxis, fieldRelative, openLoop));
-    armSub.setDefaultCommand(new ArmPercentageCommand(armSub, 2, 3, driver));
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -66,11 +64,8 @@ public class RobotContainer {
   private void configureButtonBindings() {
     /* Driver Buttons */
     zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
-    armPos1.whileTrue(new InstantCommand(() -> armSub.moveArmPosition(0)) );
-    armPos2.whileTrue(new ArmPositionCommand(armSub, 1000));
-    armPos3.whileTrue(new ArmPositionCommand(armSub, 2000));
-    gripperFor.whileTrue(new GripperCommand(gripper, 0.3));
-    gripperRev.whileTrue(new GripperCommand(gripper, -0.3));
+    gripperFor.whileTrue(new exampleAuto(s_Swerve));
+   
 
   }
 

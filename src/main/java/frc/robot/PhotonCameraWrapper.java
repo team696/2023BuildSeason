@@ -7,6 +7,8 @@ package frc.robot;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import javax.naming.spi.DirStateFactory.Result;
+
 import org.photonvision.PhotonCamera;
 import org.photonvision.RobotPoseEstimator;
 import org.photonvision.RobotPoseEstimator.PoseStrategy;
@@ -30,31 +32,31 @@ public class PhotonCameraWrapper
 
     public PhotonCameraWrapper() {
         final AprilTag tag02 = 
-                new AprilTag(02, new Pose3d(
+                new AprilTag(01, new Pose3d(
                                                 new Pose2d(
                                                     0,
                                                     Units.feetToMeters(3 + 1.5/12) ,
                                                     Rotation2d.fromDegrees(0.0))));
 
         final AprilTag tag01 =
-                new AprilTag(01,
+                new AprilTag(02,
                                     new Pose3d(
                                                 new Pose2d(
                                                    0,
                                                    Units.feetToMeters(8 + 11/12), 
                                                     Rotation2d.fromDegrees(0.0))));
-        final AprilTag tag03 =
-                new AprilTag(03,
-                                    new Pose3d(
-                                                new Pose2d(
-                                                   0,
-                                                   Units.feetToMeters(14 + 8.5/12), 
-                                                    Rotation2d.fromDegrees(0.0))));
+         final AprilTag tag03 =
+                 new AprilTag(03,
+                                     new Pose3d(
+                                                 new Pose2d(
+                                                    0,
+                                                    Units.feetToMeters(14 + 8.5/12), 
+                                                     Rotation2d.fromDegrees(0.0))));
         ArrayList<AprilTag> atList = new ArrayList<AprilTag>();
         
         atList.add(tag02);
         atList.add(tag01);
-        atList.add(tag03);
+         atList.add(tag03);
         AprilTagFieldLayout atf1 = new AprilTagFieldLayout(atList, FieldConstants.length, FieldConstants.width);
         camera = new PhotonCamera(VisionConstants.cameraName);
 
@@ -64,6 +66,19 @@ public class PhotonCameraWrapper
         robotPoseEstimator = new RobotPoseEstimator(atf1, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, camList);
     }
 
+    // public double horOffset(){
+    //            var result = camera.getLatestResult();
+
+    //     return result.getBestTarget().getYaw();
+    // }
+
+    // public boolean hasTarget(){
+    //     var result = camera.getLatestResult();
+
+    //     return result.hasTargets();
+    // }
+
+    
     public Pair<Pose2d, Double> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
         robotPoseEstimator.setReferencePose(prevEstimatedRobotPose);
 

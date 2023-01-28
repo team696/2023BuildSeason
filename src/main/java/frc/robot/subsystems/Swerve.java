@@ -11,11 +11,13 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -26,10 +28,12 @@ public class Swerve extends SubsystemBase {
     private final Field2d m_fieldSim = new Field2d();
     public PhotonCameraWrapper pcw;
     public AHRS gyro;
-    private final SwerveModule m_frontLeft = new SwerveModule(0, Constants.Swerve.Mod0.constants);
-    private final SwerveModule m_frontRight = new SwerveModule(1, Constants.Swerve.Mod1.constants);
-    private final SwerveModule m_backLeft = new SwerveModule(2, Constants.Swerve.Mod2.constants);
-    private final SwerveModule m_backRight = new SwerveModule(3, Constants.Swerve.Mod3.constants);
+    public ProfiledPIDController rotatePID;
+
+    private  SwerveModule m_frontLeft = new SwerveModule(0, Constants.Swerve.Mod0.constants);
+    private  SwerveModule m_frontRight = new SwerveModule(1, Constants.Swerve.Mod1.constants);
+    private  SwerveModule m_backLeft = new SwerveModule(2, Constants.Swerve.Mod2.constants);
+    private  SwerveModule m_backRight = new SwerveModule(3, Constants.Swerve.Mod3.constants);
     public SwerveModule[] mSwerveMods = { m_frontLeft, m_frontRight, m_backLeft, m_backRight };
 
 private  SwerveDrivePoseEstimator m_poseEstimator;
@@ -42,8 +46,15 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
         
         zeroGyro();
         SmartDashboard.putData("Field", m_fieldSim);
+
+        rotatePID = new ProfiledPIDController(
+            Constants.rotatePid_P,
+            Constants.rotatePid_I,
+            Constants.rotatePid_D, new TrapezoidProfile.Constraints(1, 3));
+
+    rotatePID.setTolerance(Constants.rotatePid_Tol);
  
-        mSwerveModulePositions =new SwerveModulePosition[] {
+        mSwerveModulePositions = new SwerveModulePosition[] {
             new SwerveModulePosition(0, m_frontRight.getCanCoder()),
             new SwerveModulePosition(0, m_frontLeft.getCanCoder()),
             new SwerveModulePosition(0, m_backRight.getCanCoder()),
@@ -70,6 +81,8 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
         }
 
         m_fieldSim.setRobotPose(m_poseEstimator.getEstimatedPosition());
+    
+        System.out.println(m_poseEstimator.getEstimatedPosition().getX());
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
@@ -103,11 +116,22 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
     }    
 
     public Pose2d getPose() {
+    //  return    m_poseEstimator.update(getYaw(), mSwerveModulePositions);
+        // updateOdometry();       
         return swerveOdometry.getPoseMeters();
+    //   return  m_poseEstimator.getEstimatedPosition();
     }
 
     public void resetOdometry(Pose2d pose) {
         swerveOdometry.resetPosition(getYaw(), mSwerveModulePositions, pose);
+    }
+
+    public void normalizeOdometry(){
+        swerveOdometry.resetPosition(getYaw(), mSwerveModulePositions, m_poseEstimator.getEstimatedPosition());
+    }
+
+    public Pose2d getAprilTagEstPosition(){
+        return m_poseEstimator.getEstimatedPosition();
     }
 
     public SwerveModuleState[] getStates(){
@@ -129,12 +153,61 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
            return Rotation2d.fromDegrees(360.0 - gyro.getYaw());
     }
 
+   
+//     public double limelightOffset(){
+
+//         // float Kp = -0.1f;
+// double min_command = 0.09;
+
+
+//         double heading_error = pcw.horOffset();
+//         double steering_adjust = 0.0;
+//         if ((pcw.horOffset()+1) > 2)
+//         {
+//                 steering_adjust = /* Kp*heading_error */ - min_command;
+//         }
+//         else if ((pcw.horOffset()+1) < 0)
+//         {
+//                 steering_adjust =/*  Kp*heading_error + */ min_command;
+//         }
+
+//         if(pcw.horOffset() > (0.01) ||
+//         pcw.horOffset() <  -(0.01)){
+//       return (rotatePID.calculate(pcw.horOffset(), 1) + steering_adjust);
+//         }
+//         else {
+//         return 0;
+//         }
+// }
+
+// public double joyControlUntilLock(double joystick){
+
+//       if(pcw.hasTarget()){
+//               return limelightOffset();
+//       }
+//       else {
+//               return joystick;
+//       }
+// }
+
+    
     
 
     @Override
     public void periodic(){
+        // updateOdometry();
         // m_poseEstimator.
-         swerveOdometry.update(getYaw(), mSwerveModulePositions);  
+         swerveOdometry.update(getYaw(), new SwerveModulePosition[] {
+            m_frontRight.getPosition(),
+            m_frontLeft.getPosition(),
+            m_backRight.getPosition(),
+            m_backLeft.getPosition()
+          });  
+
+
+           SmartDashboard.putNumber("lmao X", getPose().getX());
+        SmartDashboard.putNumber("lmao Y", getPose().getY());
+
 
         for(SwerveModule mod : mSwerveMods){
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoder().getDegrees());
