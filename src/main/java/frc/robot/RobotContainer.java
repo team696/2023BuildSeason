@@ -11,9 +11,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.GlobalVariables.ArmPositions;
 import frc.robot.autos.*;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
+import frc.robot.subsystems.Gripper.GripperState;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -23,7 +25,7 @@ import frc.robot.subsystems.*;
  */
 public class RobotContainer {
   /* Controllers */
-  private final Joystick driver = new Joystick(0);
+  private final Joystick driver = new Joystick(1);
 
   /* Drive Controls */
   private final int translationAxis = /* XboxController.Axis.kLeftY.value */ 1;
@@ -32,9 +34,10 @@ public class RobotContainer {
 
   /* Driver Buttons */
   private final Trigger zeroGyro = new JoystickButton(driver, 6);
-  private final Trigger armPos1 = new JoystickButton(driver, 3);
-  private final Trigger armPos2 = new JoystickButton(driver, 4);
-  private final Trigger armPos3 = new JoystickButton(driver, 2);
+  private final Trigger buttonX = new JoystickButton(driver, 3);
+  private final Trigger buttonY = new JoystickButton(driver, 4);
+  private final Trigger buttonB = new JoystickButton(driver, 2);
+  private final Trigger buttonA = new JoystickButton(driver, 1);
   private final Trigger gripperRev = new JoystickButton(driver, 5);
   private final Trigger gripperFor = new JoystickButton(driver, 7);
 
@@ -43,6 +46,8 @@ public class RobotContainer {
 
   /* Subsystems */
   public final Swerve s_Swerve = new Swerve();
+  public final ArmSub armSub = new ArmSub();
+  public final Gripper gripper = new Gripper();
  
 
 
@@ -51,6 +56,7 @@ public class RobotContainer {
     boolean fieldRelative = true;
     boolean openLoop = true;
     s_Swerve.setDefaultCommand(new TeleopSwerve(s_Swerve, driver, translationAxis, strafeAxis, rotationAxis, fieldRelative, openLoop));
+    armSub.setDefaultCommand(new ArmPercentageCommand(armSub, 3, 2, driver));
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -64,7 +70,17 @@ public class RobotContainer {
   private void configureButtonBindings() {
     /* Driver Buttons */
     zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
-    gripperFor.whileTrue(new exampleAuto(s_Swerve));
+    // gripperFor.whileTrue(new exampleAuto(s_Swerve));
+    buttonA.whileTrue(new ArmPositionCommand(armSub, ArmPositions.STOWED));
+    buttonB.whileTrue(new ArmPositionCommand(armSub, ArmPositions.MID_SCORE));
+    // buttonB.whileTrue(new ArmPositionCommand(armSub, ArmPositions.HIGH_SCORE));
+    // buttonA.whileTrue(new ArmPositionCommand(armSub, ArmPositions.SHELF_PICKUP));
+
+    buttonX.onTrue(new InstantCommand(() -> gripper.setClaw(GripperState.OPEN)));
+    buttonY.onTrue(new InstantCommand(() -> gripper.setClaw(GripperState.CONE)));
+    // buttonB.onTrue(new InstantCommand(() -> gripper.setClaw(GripperState.CUBE)));
+
+    gripperFor.whileTrue(new GripperCommand(gripper, 0.8));
    
 
   }

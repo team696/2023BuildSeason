@@ -5,18 +5,10 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.GlobalVariables;
-import frc.robot.subsystems.ArmSub;
 
-public class ArmPositionCommand extends CommandBase {
-  ArmSub armSub;
-  GlobalVariables.ArmPositions armPos;
-  /** Creates a new ArmPositionCommand. */
-  public ArmPositionCommand(ArmSub armSub, GlobalVariables.ArmPositions armPos) {
- this.armSub = armSub;
- this.armPos = armPos;
-  
- addRequirements(armSub);
+public class GroundIntake extends CommandBase {
+  /** Creates a new GroundIntake. */
+  public GroundIntake() {
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -26,10 +18,7 @@ public class ArmPositionCommand extends CommandBase {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    armSub.armPresetPositions(armPos);
-    System.out.print("RUNNING COMMAND");
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override

@@ -44,7 +44,8 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
         pcw = new PhotonCameraWrapper();
         gyro  = new AHRS();
         
-        zeroGyro();
+        
+        // zeroGyro();
         SmartDashboard.putData("Field", m_fieldSim);
 
         rotatePID = new ProfiledPIDController(
@@ -80,7 +81,8 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
             m_fieldSim.getObject("Cam Est Pos").setPose(new Pose2d(-100, -100, new Rotation2d()));
         }
 
-        m_fieldSim.setRobotPose(m_poseEstimator.getEstimatedPosition());
+        // m_fieldSim.setRobotPose(m_poseEstimator.getEstimatedPosition());
+        m_fieldSim.setRobotPose(swerveOdometry.getPoseMeters());
     
         System.out.println(m_poseEstimator.getEstimatedPosition().getX());
     }
@@ -147,10 +149,10 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
     }
 
     public Rotation2d getYaw() {
-        if (gyro.isMagnetometerCalibrated()) {
+        // if (gyro.isMagnetometerCalibrated()) {
             return Rotation2d.fromDegrees(gyro.getFusedHeading());
-          }
-           return Rotation2d.fromDegrees(360.0 - gyro.getYaw());
+        //   }
+        //    return Rotation2d.fromDegrees(360.0 - gyro.getYaw());
     }
 
    
@@ -207,11 +209,12 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
 
            SmartDashboard.putNumber("lmao X", getPose().getX());
         SmartDashboard.putNumber("lmao Y", getPose().getY());
+        SmartDashboard.putNumber("Gyro", gyro.getYaw());
 
 
         for(SwerveModule mod : mSwerveMods){
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoder().getDegrees());
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Integrated", mod.getState().angle.getDegrees());
+            // SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Integrated", mod.getState().angle.getDegrees());
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);    
         }
     }

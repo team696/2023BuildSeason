@@ -20,6 +20,13 @@ public final class Constants {
     public static final double rotatePid_D = /* 0.003 */0.002125;
     public static final double rotatePid_Tol = 1;
 
+    public static final double stowedPosValue = 224;
+    public static final double grndIntakePosValue = 207;
+    public static final double grndScorePosValue = 207; 
+    public static final double midScorePosValue = 120;
+    public static final double highScorePosValue = 113; 
+    public static final double shelfIntakePosValue = 37;
+
     public static final class Swerve {
         public static final int pigeonID = 1;
         public static final boolean invertGyro = false; // Always ensure Gyro is CCW+ CW-
@@ -30,7 +37,7 @@ public final class Constants {
         public static final double wheelDiameter = Units.inchesToMeters(3.94);
         public static final double wheelCircumference = wheelDiameter * Math.PI;
 
-        public static final double openLoopRamp = 0.3;
+        public static final double openLoopRamp = 1;
         public static final double closedLoopRamp = 0.0;
 
         public static final double driveGearRatio = (8.14 / 1.0); //6.86:1
@@ -148,6 +155,8 @@ public final class Constants {
         static final double length = Units.feetToMeters(54 + 3.25/12);
         static final double width = Units.feetToMeters(26 + 3.5/12);
     }
+
+
 
     static class VisionConstants {
         static final Transform3d robotToCam =
