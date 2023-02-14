@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -26,11 +29,14 @@ import frc.robot.subsystems.Gripper.GripperState;
 public class RobotContainer {
   /* Controllers */
   private final Joystick driver = new Joystick(1);
+  private final Joystick joystickPanel = new Joystick(0);
+  private final Joystick operatorPanel = new Joystick(2);
+
 
   /* Drive Controls */
   private final int translationAxis = /* XboxController.Axis.kLeftY.value */ 1;
   private final int strafeAxis = /* XboxController.Axis.kLeftX.value */ 0;
-  private final int rotationAxis = /* XboxController.Axis.kRightX.value */ 4;
+  private final int rotationAxis = /* XboxController.Axis.kRightX.value */ 2;
 
   /* Driver Buttons */
   private final Trigger zeroGyro = new JoystickButton(driver, 6);
@@ -40,6 +46,10 @@ public class RobotContainer {
   private final Trigger buttonA = new JoystickButton(driver, 1);
   private final Trigger gripperRev = new JoystickButton(driver, 5);
   private final Trigger gripperFor = new JoystickButton(driver, 7);
+  private final Trigger leftJoy = new JoystickButton(joystickPanel, 1);
+  private final Trigger rightJoy = new JoystickButton(joystickPanel, 2);
+  private final Trigger operatorDeploy = new JoystickButton(operatorPanel, 11);
+  private final Trigger operatorShoot = new JoystickButton(operatorPanel, 3);
 
 
 
@@ -55,7 +65,7 @@ public class RobotContainer {
   public RobotContainer() {
     boolean fieldRelative = true;
     boolean openLoop = true;
-    s_Swerve.setDefaultCommand(new TeleopSwerve(s_Swerve, driver, translationAxis, strafeAxis, rotationAxis, fieldRelative, openLoop));
+    s_Swerve.setDefaultCommand(new TeleopSwerve(s_Swerve, joystickPanel, translationAxis, strafeAxis, rotationAxis, fieldRelative, openLoop));
     armSub.setDefaultCommand(new ArmPercentageCommand(armSub, 3, 2, driver));
     // Configure the button bindings
     configureButtonBindings();
@@ -69,9 +79,9 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     /* Driver Buttons */
-    zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
+    leftJoy.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
     // gripperFor.whileTrue(new exampleAuto(s_Swerve));
-    buttonA.whileTrue(new ArmPositionCommand(armSub, ArmPositions.STOWED));
+    buttonA.toggleOnTrue(new ArmPositionCommand(armSub, ArmPositions.STOWED));
     buttonB.whileTrue(new ArmPositionCommand(armSub, ArmPositions.MID_SCORE));
     // buttonB.whileTrue(new ArmPositionCommand(armSub, ArmPositions.HIGH_SCORE));
     // buttonA.whileTrue(new ArmPositionCommand(armSub, ArmPositions.SHELF_PICKUP));
@@ -80,7 +90,13 @@ public class RobotContainer {
     buttonY.onTrue(new InstantCommand(() -> gripper.setClaw(GripperState.CONE)));
     // buttonB.onTrue(new InstantCommand(() -> gripper.setClaw(GripperState.CUBE)));
 
-    gripperFor.whileTrue(new GripperCommand(gripper, 0.8));
+    gripperRev.whileTrue(new GripperCommand(gripper, 0.8));
+
+    gripperFor.toggleOnTrue(new GroundIntake(armSub, gripper));
+
+    rightJoy.onTrue(new InstantCommand(() -> s_Swerve.resetOdometry(new Pose2d(new Translation2d(1.82942, 0.21511), new Rotation2d(Math.toRadians(180))))));
+
+    operatorDeploy.onTrue(new exampleAuto(s_Swerve));
    
 
   }

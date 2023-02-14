@@ -5,15 +5,19 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.ColorSensorV3;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.PneumaticsControlModule;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Gripper extends SubsystemBase {
@@ -23,6 +27,11 @@ public class Gripper extends SubsystemBase {
   DoubleSolenoid coneSolenoid;
   public PneumaticsControlModule module;
   Compressor compressor;
+  public final  I2C.Port i2cPort = I2C.Port.kMXP;
+
+  public final ColorSensorV3 colorSensor = new ColorSensorV3(i2cPort);
+;
+  public Color detectedColor;
 
   public enum GripperState{
     OPEN, CONE, CUBE
@@ -43,8 +52,32 @@ public class Gripper extends SubsystemBase {
     module = new PneumaticsControlModule(1);
     module.clearAllStickyFaults();
     
+    detectedColor = colorSensor.getColor();
 
   }
+
+  public void getColorSensor(){
+    detectedColor = colorSensor.getColor();
+ }
+  public double getRed(){
+    getColorSensor();
+    return detectedColor.red;
+  }
+
+  public double getBlue(){
+    getColorSensor();
+    return detectedColor.blue;
+  }
+
+  public double getGreen(){
+    getColorSensor();
+    return detectedColor.green;
+  }
+
+  public double colorSensorDistance(){
+    return colorSensor.getProximity();
+  }
+
 
   public void moveGripper(double percent ){
     gripperMotor.set(percent);
@@ -71,5 +104,11 @@ public class Gripper extends SubsystemBase {
 
 
   @Override
-  public void periodic() { }
+  public void periodic() { 
+    SmartDashboard.putNumber("RED", colorSensor.getRed());
+    SmartDashboard.putNumber("BLUE", colorSensor.getBlue());
+    SmartDashboard.putNumber("GREEN", colorSensor.getGreen());
+    SmartDashboard.putNumber("Distance", colorSensor.getProximity());
+    // System.out.print(colorSensor.getBlue());
+  }
 }

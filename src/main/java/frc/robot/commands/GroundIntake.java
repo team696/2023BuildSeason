@@ -5,28 +5,50 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.GlobalVariables.ArmPositions;
+import frc.robot.subsystems.ArmSub;
+import frc.robot.subsystems.Gripper;
+import frc.robot.subsystems.Gripper.GripperState;
 
 public class GroundIntake extends CommandBase {
+  
   /** Creates a new GroundIntake. */
-  public GroundIntake() {
-    // Use addRequirements() here to declare subsystem dependencies.
+  ArmSub armSub;
+  Gripper gripper;
+
+  public GroundIntake(ArmSub armSub, Gripper gripper) {
+    this.gripper = gripper;
+    this.armSub = armSub;
+    addRequirements(armSub, gripper);
+
   }
 
-  // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    gripper.setClaw(GripperState.CONE);
+  }
 
-  // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    gripper.moveGripper(0.8);
+    armSub.armPresetPositions(ArmPositions.GROUND_PICKUP);
 
-  // Called once the command ends or is interrupted.
+  }
+
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    gripper.setClaw(GripperState.OPEN);
+    gripper.moveGripper(0);
+  }
 
-  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    if(gripper.colorSensorDistance() > 300){
+      return true;
+
+    }
+    else{
     return false;
+    }
   }
 }

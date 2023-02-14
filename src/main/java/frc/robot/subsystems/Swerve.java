@@ -82,9 +82,8 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
         }
 
         // m_fieldSim.setRobotPose(m_poseEstimator.getEstimatedPosition());
-        m_fieldSim.setRobotPose(swerveOdometry.getPoseMeters());
+        m_fieldSim.setRobotPose(getPose());
     
-        System.out.println(m_poseEstimator.getEstimatedPosition().getX());
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
@@ -125,7 +124,8 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
     }
 
     public void resetOdometry(Pose2d pose) {
-        swerveOdometry.resetPosition(getYaw(), mSwerveModulePositions, pose);
+        // swerveOdometry.resetPosition(getYaw(), mSwerveModulePositions, pose);
+        swerveOdometry.resetPosition(getYaw(), mSwerveModulePositions, new Pose2d());
     }
 
     public void normalizeOdometry(){
@@ -135,6 +135,10 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
     public Pose2d getAprilTagEstPosition(){
         return m_poseEstimator.getEstimatedPosition();
     }
+
+    // public void relocalizeOdometry(){
+    //     swerveOdometry.r
+    // }
 
     public SwerveModuleState[] getStates(){
         SwerveModuleState[] states = new SwerveModuleState[4];
@@ -150,9 +154,9 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
 
     public Rotation2d getYaw() {
         // if (gyro.isMagnetometerCalibrated()) {
-            return Rotation2d.fromDegrees(gyro.getFusedHeading());
+            // return Rotation2d.fromDegrees( gyro.getYaw() );
         //   }
-        //    return Rotation2d.fromDegrees(360.0 - gyro.getYaw());
+           return Rotation2d.fromDegrees(360.0 - gyro.getYaw());
     }
 
    
@@ -209,7 +213,21 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
 
            SmartDashboard.putNumber("lmao X", getPose().getX());
         SmartDashboard.putNumber("lmao Y", getPose().getY());
-        SmartDashboard.putNumber("Gyro", gyro.getYaw());
+        SmartDashboard.putNumber("Gyro FH", gyro.getFusedHeading());
+        SmartDashboard.putNumber("Gyro YAW", gyro.getYaw());
+        SmartDashboard.putNumber("Gyro RawGyroZ", gyro.getRawGyroZ());
+
+        SmartDashboard.putBoolean("Gyro IsRotating", gyro.isRotating());
+        SmartDashboard.putNumber(" Gyro AngleAdjustment ", gyro.getAngleAdjustment());
+        SmartDashboard.putNumber("Gyro Rotation2d", gyro.getRotation2d().getDegrees());
+        SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
+        SmartDashboard.putNumber("Gyro Compass Heading", gyro.getCompassHeading());
+        SmartDashboard.putNumber("Gyro Temp", gyro.getTempC());
+        SmartDashboard.putNumber("Gyro RawMagZ", gyro.getRawMagZ());
+        SmartDashboard.putBoolean("Gyro IsMagnometerCalibrated", gyro.isMagnetometerCalibrated());
+        SmartDashboard.putBoolean("Gyro isMagneticDisturbance", gyro.isMagneticDisturbance());
+
+
 
 
         for(SwerveModule mod : mSwerveMods){

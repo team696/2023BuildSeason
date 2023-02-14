@@ -28,7 +28,6 @@ public class ArmPositionCommand extends CommandBase {
   @Override
   public void execute() {
     armSub.armPresetPositions(armPos);
-    System.out.print("RUNNING COMMAND");
   }
 
   // Called once the command ends or is interrupted.
