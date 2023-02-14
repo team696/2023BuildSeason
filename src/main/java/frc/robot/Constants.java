@@ -166,7 +166,8 @@ public final class Constants {
                                 0, 0,
                                 0)); // Cam mounted facing forward, half a meter forward of center, half a meter up
         // from center.
-        static final String cameraName = "USB_Camera_(1415:2000)";
+        static final String camera1Name = "OV9281-01";
+        static final String camera2Name = "OV9281-02";
     }
 /* USB_Camera-B4.04.27.1 */
 }

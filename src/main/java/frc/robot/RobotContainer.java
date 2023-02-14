@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.GlobalVariables.ArmPositions;
@@ -81,18 +82,18 @@ public class RobotContainer {
     /* Driver Buttons */
     leftJoy.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
     // gripperFor.whileTrue(new exampleAuto(s_Swerve));
-    buttonA.toggleOnTrue(new ArmPositionCommand(armSub, ArmPositions.STOWED));
-    buttonB.whileTrue(new ArmPositionCommand(armSub, ArmPositions.MID_SCORE));
+    buttonA.toggleOnTrue(new ArmPositionCommand(armSub, ArmPositions.STOWED).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+    buttonB.whileTrue(new ArmPositionCommand(armSub, ArmPositions.MID_SCORE).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     // buttonB.whileTrue(new ArmPositionCommand(armSub, ArmPositions.HIGH_SCORE));
     // buttonA.whileTrue(new ArmPositionCommand(armSub, ArmPositions.SHELF_PICKUP));
 
-    buttonX.onTrue(new InstantCommand(() -> gripper.setClaw(GripperState.OPEN)));
-    buttonY.onTrue(new InstantCommand(() -> gripper.setClaw(GripperState.CONE)));
+    buttonX.onTrue(new InstantCommand(() -> gripper.setClaw(GripperState.OPEN)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+    buttonY.onTrue(new InstantCommand(() -> gripper.setClaw(GripperState.CONE)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     // buttonB.onTrue(new InstantCommand(() -> gripper.setClaw(GripperState.CUBE)));
 
     gripperRev.whileTrue(new GripperCommand(gripper, 0.8));
 
-    gripperFor.toggleOnTrue(new GroundIntake(armSub, gripper));
+    gripperFor.toggleOnTrue(new GroundIntake(armSub, gripper).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
     rightJoy.onTrue(new InstantCommand(() -> s_Swerve.resetOdometry(new Pose2d(new Translation2d(1.82942, 0.21511), new Rotation2d(Math.toRadians(180))))));
 
@@ -100,6 +101,21 @@ public class RobotContainer {
    
 
   }
+/*   _                        
+  \`*-.                    
+   )  _`-.                 
+  .  : `. .                
+  : _   '  \               
+  ; *` _.   `*-._          
+  `-.-'          `-.       
+    ;       `       `.     
+    :.       .        \    
+    . \  .   :   .-'   .   
+    '  `+.;  ;  '      :   
+    :  '  |    ;       ;-. 
+    ; '   : :`-:     _.`* ;
+[bug] .*' /  .*' ; .*`- +'  `*' 
+ `*-*   `*-*  `*-*' */
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

@@ -1,5 +1,9 @@
 package frc.robot.subsystems;
 
+import java.util.Optional;
+
+import org.photonvision.EstimatedRobotPose;
+
 import com.kauailabs.navx.frc.AHRS;
 
 import frc.robot.SwerveModule;
@@ -70,19 +74,31 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
     public void updateOdometry() {
         m_poseEstimator.update(getYaw(), mSwerveModulePositions);
                
-        Pair<Pose2d, Double> result = pcw.getEstimatedGlobalPose(m_poseEstimator.getEstimatedPosition());
-        var camPose = result.getFirst();
-        var camPoseObsTime = result.getSecond();
+        Optional<EstimatedRobotPose> result = pcw.getEstimatedGlobalPose(m_poseEstimator.getEstimatedPosition());
+        // var camPose = result.getFirst;
+        // var camPoseObsTime = result.getSecond();
         
-        if (camPose != null) {
-            m_poseEstimator.addVisionMeasurement(camPose, camPoseObsTime);
-            m_fieldSim.getObject("Cam Est Pos").setPose(camPose);
+        // if (camPose != null) {
+        //     m_poseEstimator.addVisionMeasurement(camPose, camPoseObsTime);
+        //     m_fieldSim.getObject("Cam Est Pos").setPose(camPose);
+        // } else {
+        //     m_fieldSim.getObject("Cam Est Pos").setPose(new Pose2d(-100, -100, new Rotation2d()));
+        // }
+        
+        if (result.isPresent()) {
+            EstimatedRobotPose camPose = result.get();
+            m_poseEstimator.addVisionMeasurement(
+                    camPose.estimatedPose.toPose2d(), camPose.timestampSeconds);
+            m_fieldSim.getObject("Cam Est Pos").setPose(camPose.estimatedPose.toPose2d());
         } else {
+            // move it way off the screen to make it disappear
             m_fieldSim.getObject("Cam Est Pos").setPose(new Pose2d(-100, -100, new Rotation2d()));
         }
 
         // m_fieldSim.setRobotPose(m_poseEstimator.getEstimatedPosition());
-        m_fieldSim.setRobotPose(getPose());
+        // m_fieldSim.setRobotPose(getPose());
+        m_fieldSim.getObject("Actual Pos").setPose(getPose());
+        m_fieldSim.setRobotPose(m_poseEstimator.getEstimatedPosition());
     
     }
 

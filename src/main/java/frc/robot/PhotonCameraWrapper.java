@@ -9,12 +9,14 @@ import java.util.Optional;
 
 import javax.naming.spi.DirStateFactory.Result;
 
+import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
-import org.photonvision.RobotPoseEstimator;
-import org.photonvision.RobotPoseEstimator.PoseStrategy;
+import org.photonvision.PhotonPoseEstimator;
+
 
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -27,8 +29,10 @@ import frc.robot.Constants.VisionConstants;
 /** Add your docs here. */
 public class PhotonCameraWrapper 
 {
-    public PhotonCamera camera;
-    public RobotPoseEstimator robotPoseEstimator;
+    public PhotonCamera camera1;
+    public PhotonCamera camera2;
+    public PhotonPoseEstimator photonPoseEstimator;
+    
 
     public PhotonCameraWrapper() {
         final AprilTag tag02 = 
@@ -57,13 +61,26 @@ public class PhotonCameraWrapper
         atList.add(tag02);
         atList.add(tag01);
          atList.add(tag03);
-        AprilTagFieldLayout atf1 = new AprilTagFieldLayout(atList, FieldConstants.length, FieldConstants.width);
-        camera = new PhotonCamera(VisionConstants.cameraName);
+        // AprilTagFieldLayout atf1 = new AprilTagFieldLayout(null);
+        AprilTagFieldLayout aprilTagFieldLayout;
+        try {
 
-        var camList = new ArrayList<Pair<PhotonCamera, Transform3d>>();
-        camList.add(new Pair<PhotonCamera, Transform3d>(camera, VisionConstants.robotToCam));
-        
-        robotPoseEstimator = new RobotPoseEstimator(atf1, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, camList);
+         aprilTagFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
+         camera1 = new PhotonCamera(VisionConstants.camera1Name);
+         camera2 = new PhotonCamera(VisionConstants.camera2Name);
+         var camList = new ArrayList<Pair<PhotonCamera, Transform3d>>();
+         camList.add(new Pair<PhotonCamera, Transform3d>(camera1, VisionConstants.robotToCam));
+         camList.add(new Pair<PhotonCamera, Transform3d>(camera2, VisionConstants.robotToCam));
+         photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, org.photonvision.PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY, camera1, VisionConstants.robotToCam);
+
+        }
+         
+        catch (Exception e) {
+            System.out.println("can't find field layout april tag.");
+
+        }
+
+
     }
 
     // public double horOffset(){
@@ -79,15 +96,23 @@ public class PhotonCameraWrapper
     // }
 
     
-    public Pair<Pose2d, Double> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
-        robotPoseEstimator.setReferencePose(prevEstimatedRobotPose);
+    // public Pair<Pose2d, Double> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
+    //     robotPoseEstimator.setReferencePose(prevEstimatedRobotPose);
 
-        double currentTime = Timer.getFPGATimestamp();
-        Optional<Pair<Pose3d, Double>> result = robotPoseEstimator.update();
-        if (result.isPresent() && result.get().getFirst() != null) {
-            return new Pair<Pose2d, Double>( result.get().getFirst().toPose2d(), currentTime - result.get().getSecond());
-        } else {
-            return new Pair<Pose2d, Double>(prevEstimatedRobotPose, 0.0);
+    //     double currentTime = Timer.getFPGATimestamp();
+    //     Optional<Pair<Pose3d, Double>> result = robotPoseEstimator.update();
+    //     if (result.isPresent() && result.get().getFirst() != null) {
+    //         return new Pair<Pose2d, Double>( result.get().getFirst().toPose2d(), currentTime - result.get().getSecond());
+    //     } else {
+    //         return new Pair<Pose2d, Double>(prevEstimatedRobotPose, 0.0);
+    //     }
+    // }
+    public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
+        if (photonPoseEstimator == null) {
+            // The field layout failed to load, so we cannot estimate poses.
+            return Optional.empty();
         }
+        photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
+        return photonPoseEstimator.update();
     }
 }
