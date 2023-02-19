@@ -47,7 +47,7 @@ public class ArmSub extends SubsystemBase {
     
 
 
-    pidLoop = new PIDController(0.006, 0.004, 0.001);
+    pidLoop = new PIDController(0.006, 0.003, 0.001);
 
     leftArm = new WPI_TalonFX(20, "Abu");
     rightArm = new WPI_TalonFX(21, "Abu");

@@ -23,13 +23,14 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Swerve extends SubsystemBase {
     public SwerveDriveOdometry swerveOdometry;
     public SwerveModulePosition[] mSwerveModulePositions;
-    private final Field2d m_fieldSim = new Field2d();
+    public Field2d m_fieldSim = new Field2d();
     public PhotonCameraWrapper pcw;
     public AHRS gyro;
     public ProfiledPIDController rotatePID;
@@ -40,11 +41,32 @@ public class Swerve extends SubsystemBase {
     private  SwerveModule m_backRight = new SwerveModule(3, Constants.Swerve.Mod3.constants);
     public SwerveModule[] mSwerveMods = { m_frontLeft, m_frontRight, m_backLeft, m_backRight };
 
-private  SwerveDrivePoseEstimator m_poseEstimator;
+    public static SendableChooser<Integer> AprilTagGrid = new SendableChooser<>();
+    public static SendableChooser<Integer> HeightGrid = new SendableChooser<>();
+    public static SendableChooser<Integer> PositionGrid = new SendableChooser<>();
+    public final int gridTag1  = 0;
+    public final int gridTag2 = 1;
+    public final int gridTag3 = 2;
+    public final int gridHeightLow = 0;
+    public final int gridHeightMid = 1;
+    public final int gridHeightHigh = 2;
+    public final int gridPosLeft = 0;
+    public final int gridPosMid = 1;
+    public final int gridPosRight =2;
+
+    public int tag;
+    public int hor;
+    public int height;
+
+
+public  SwerveDrivePoseEstimator m_poseEstimator;
 
   
 
     public Swerve() {
+       
+
+    
         pcw = new PhotonCameraWrapper();
         gyro  = new AHRS();
         
@@ -69,36 +91,52 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
 
         swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, getYaw(), mSwerveModulePositions);
 
-        m_poseEstimator = new SwerveDrivePoseEstimator( Constants.Swerve.swerveKinematics, getYaw(), mSwerveModulePositions, getPose());
+        m_poseEstimator = new SwerveDrivePoseEstimator( Constants.Swerve.swerveKinematics, getYaw(), new SwerveModulePosition[] {
+            m_frontRight.getPosition(),
+            m_frontLeft.getPosition(),
+            m_backRight.getPosition(),
+            m_backLeft.getPosition()}, getPose());
+    }
+
+    public void kyslol(){
+        tag = AprilTagGrid.getSelected();
+        hor = PositionGrid.getSelected();
+        height = HeightGrid.getSelected();
     }
     public void updateOdometry() {
-        m_poseEstimator.update(getYaw(), mSwerveModulePositions);
                
         Optional<EstimatedRobotPose> result = pcw.getEstimatedGlobalPose(m_poseEstimator.getEstimatedPosition());
-        // var camPose = result.getFirst;
-        // var camPoseObsTime = result.getSecond();
-        
-        // if (camPose != null) {
-        //     m_poseEstimator.addVisionMeasurement(camPose, camPoseObsTime);
-        //     m_fieldSim.getObject("Cam Est Pos").setPose(camPose);
-        // } else {
-        //     m_fieldSim.getObject("Cam Est Pos").setPose(new Pose2d(-100, -100, new Rotation2d()));
-        // }
-        
+      
+        m_poseEstimator.update(getYaw(), new SwerveModulePosition[] {
+            m_frontRight.getPosition(),
+            m_frontLeft.getPosition(),
+            m_backRight.getPosition(),
+            m_backLeft.getPosition()});
         if (result.isPresent()) {
+
             EstimatedRobotPose camPose = result.get();
+
             m_poseEstimator.addVisionMeasurement(
-                    camPose.estimatedPose.toPose2d(), camPose.timestampSeconds);
-            m_fieldSim.getObject("Cam Est Pos").setPose(camPose.estimatedPose.toPose2d());
+                    camPose.estimatedPose.toPose2d(), camPose.timestampSeconds); 
+                
+            m_fieldSim.getObject("Cam Est Pos").setPose(  m_poseEstimator.getEstimatedPosition() );
         } else {
-            // move it way off the screen to make it disappear
-            m_fieldSim.getObject("Cam Est Pos").setPose(new Pose2d(-100, -100, new Rotation2d()));
+            m_fieldSim.getObject("Cam Est Pos").setPose(m_poseEstimator.getEstimatedPosition());
         }
 
-        // m_fieldSim.setRobotPose(m_poseEstimator.getEstimatedPosition());
-        // m_fieldSim.setRobotPose(getPose());
-        m_fieldSim.getObject("Actual Pos").setPose(getPose());
+         m_poseEstimator.update(getYaw(), new SwerveModulePosition[] {
+            m_frontRight.getPosition(),
+            m_frontLeft.getPosition(),
+            m_backRight.getPosition(),
+            m_backLeft.getPosition()});
+
         m_fieldSim.setRobotPose(m_poseEstimator.getEstimatedPosition());
+        SmartDashboard.putNumber("lmao X", m_poseEstimator.getEstimatedPosition().getX());
+        SmartDashboard.putNumber("lmao Y",  m_poseEstimator.getEstimatedPosition().getY());
+        SmartDashboard.putBoolean("AprilTag in View", result.isPresent());
+        // m_fieldSim.setRobotPose(getPose());
+        // m_fieldSim.getObject("Actual Pos").setPose(getPose());
+        // m_fieldSim.setRobotPose(m_poseEstimator.getEstimatedPosition());
     
     }
 
@@ -139,13 +177,21 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
     //   return  m_poseEstimator.getEstimatedPosition();
     }
 
+    public Pose2d getGlobalPose(){
+        return m_poseEstimator.getEstimatedPosition();
+    }
+
     public void resetOdometry(Pose2d pose) {
         // swerveOdometry.resetPosition(getYaw(), mSwerveModulePositions, pose);
         swerveOdometry.resetPosition(getYaw(), mSwerveModulePositions, new Pose2d());
     }
 
     public void normalizeOdometry(){
-        swerveOdometry.resetPosition(getYaw(), mSwerveModulePositions, m_poseEstimator.getEstimatedPosition());
+        swerveOdometry.resetPosition(getYaw(), new SwerveModulePosition[] {
+            m_frontRight.getPosition(),
+            m_frontLeft.getPosition(),
+            m_backRight.getPosition(),
+            m_backLeft.getPosition()}, m_poseEstimator.getEstimatedPosition());
     }
 
     public Pose2d getAprilTagEstPosition(){
@@ -217,8 +263,23 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
 
     @Override
     public void periodic(){
-        // updateOdometry();
-        // m_poseEstimator.
+
+        AprilTagGrid.setDefaultOption("Left Tag", gridTag1);
+        AprilTagGrid.addOption("Mid Tag", gridTag2);
+        AprilTagGrid.addOption("Right Tag", gridTag3);
+    
+        HeightGrid.setDefaultOption("Low Height", gridHeightLow);
+        HeightGrid.addOption("Mid Height", gridHeightMid);
+        HeightGrid.addOption("High Height", gridHeightMid);
+    
+        PositionGrid.setDefaultOption("Left Position", gridPosLeft);
+        PositionGrid.addOption("Mid Position", gridPosMid);
+        PositionGrid.addOption("Right Position", gridPosRight);
+        
+        SmartDashboard.putData(AprilTagGrid);
+    SmartDashboard.putData(HeightGrid);
+    SmartDashboard.putData(PositionGrid);
+        kyslol();
          swerveOdometry.update(getYaw(), new SwerveModulePosition[] {
             m_frontRight.getPosition(),
             m_frontLeft.getPosition(),
@@ -226,29 +287,8 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
             m_backLeft.getPosition()
           });  
 
-
-           SmartDashboard.putNumber("lmao X", getPose().getX());
-        SmartDashboard.putNumber("lmao Y", getPose().getY());
-        SmartDashboard.putNumber("Gyro FH", gyro.getFusedHeading());
-        SmartDashboard.putNumber("Gyro YAW", gyro.getYaw());
-        SmartDashboard.putNumber("Gyro RawGyroZ", gyro.getRawGyroZ());
-
-        SmartDashboard.putBoolean("Gyro IsRotating", gyro.isRotating());
-        SmartDashboard.putNumber(" Gyro AngleAdjustment ", gyro.getAngleAdjustment());
-        SmartDashboard.putNumber("Gyro Rotation2d", gyro.getRotation2d().getDegrees());
-        SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
-        SmartDashboard.putNumber("Gyro Compass Heading", gyro.getCompassHeading());
-        SmartDashboard.putNumber("Gyro Temp", gyro.getTempC());
-        SmartDashboard.putNumber("Gyro RawMagZ", gyro.getRawMagZ());
-        SmartDashboard.putBoolean("Gyro IsMagnometerCalibrated", gyro.isMagnetometerCalibrated());
-        SmartDashboard.putBoolean("Gyro isMagneticDisturbance", gyro.isMagneticDisturbance());
-
-
-
-
         for(SwerveModule mod : mSwerveMods){
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoder().getDegrees());
-            // SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Integrated", mod.getState().angle.getDegrees());
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);    
         }
     }

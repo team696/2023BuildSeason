@@ -1,6 +1,7 @@
 package frc.robot.autos;
 
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.Swerve;
 
 import java.util.List;
@@ -12,38 +13,34 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 
-public class exampleAuto extends SequentialCommandGroup {
-    public exampleAuto(Swerve s_Swerve, int tag, int horizontal, int height){
+public class exampleAuto2 extends SequentialCommandGroup {
+            
 
+
+    public exampleAuto2(Swerve s_Swerve){
+       
         TrajectoryConfig config =
             new TrajectoryConfig(
-                    Constants.AutoConstants.kMaxSpeedMetersPerSecond,
-                    Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+                    0.5,
+                    0.5)
                 .setKinematics(Constants.Swerve.swerveKinematics).setReversed(false);
-
-        // Trajectory exampleTrajectory =
-        //     TrajectoryGenerator.generateTrajectory(List.of(
-        //             new Pose2d(2.55, 2.73,new Rotation2d(Math.PI)), 
-        //             new Pose2d(2.4, 2.73,new Rotation2d(Math.PI))),
-        //         config);
-
-        double[] pose = Constants.AutoConstants.RobotPositions[tag][horizontal][height];
-
+        
+        double[] pose = Constants.AutoConstants.RobotPositions[s_Swerve.tag][s_Swerve.height][s_Swerve.hor];
 
         Trajectory exampleTrajectory =
             TrajectoryGenerator.generateTrajectory(List.of(
-                    new Pose2d(2.55, pose[1], new Rotation2d(0)), 
-                    new Pose2d(2.4, pose[1], new Rotation2d(0))),
-                config);
-
+                new Pose2d(pose[0]+0.7, pose[1], new Rotation2d(Math.PI)),
+                new Pose2d(pose[0], pose[1], new Rotation2d(Math.PI))),
+            config);
+        
         var thetaController =
             new ProfiledPIDController(
-               3, 0, 0, Constants.AutoConstants.kThetaControllerConstraints);
+                0.2, 0, 0, Constants.AutoConstants.kThetaControllerConstraints);
 
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
@@ -52,16 +49,19 @@ public class exampleAuto extends SequentialCommandGroup {
                 exampleTrajectory,
                 s_Swerve::getPose,
                 Constants.Swerve.swerveKinematics,
-                new PIDController(1, 0.2, 0),
-                new PIDController(1, 0.2, 0),
+                new PIDController(1, 0, 0),
+                new PIDController(1, 0, 0),
                 thetaController,
                 s_Swerve::setModuleStates,
                 s_Swerve);
 
-        s_Swerve.m_fieldSim.getObject("traj").setTrajectory(exampleTrajectory);
-                
+        s_Swerve.m_fieldSim.getObject("traj2").setTrajectory(exampleTrajectory);
+             
         addCommands(
             new InstantCommand(() -> s_Swerve.normalizeOdometry()),
             swerveControllerCommand);
     }
+
+    
+    
 }

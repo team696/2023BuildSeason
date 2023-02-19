@@ -10,8 +10,12 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -32,6 +36,10 @@ public class RobotContainer {
   private final Joystick driver = new Joystick(1);
   private final Joystick joystickPanel = new Joystick(0);
   private final Joystick operatorPanel = new Joystick(2);
+ 
+ 
+
+
 
 
   /* Drive Controls */
@@ -49,7 +57,7 @@ public class RobotContainer {
   private final Trigger gripperFor = new JoystickButton(driver, 7);
   private final Trigger leftJoy = new JoystickButton(joystickPanel, 1);
   private final Trigger rightJoy = new JoystickButton(joystickPanel, 2);
-  private final Trigger operatorDeploy = new JoystickButton(operatorPanel, 11);
+  public final Trigger operatorDeploy = new JoystickButton(operatorPanel, 11);
   private final Trigger operatorShoot = new JoystickButton(operatorPanel, 3);
 
 
@@ -68,6 +76,8 @@ public class RobotContainer {
     boolean openLoop = true;
     s_Swerve.setDefaultCommand(new TeleopSwerve(s_Swerve, joystickPanel, translationAxis, strafeAxis, rotationAxis, fieldRelative, openLoop));
     armSub.setDefaultCommand(new ArmPercentageCommand(armSub, 3, 2, driver));
+
+    
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -83,7 +93,7 @@ public class RobotContainer {
     leftJoy.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
     // gripperFor.whileTrue(new exampleAuto(s_Swerve));
     buttonA.toggleOnTrue(new ArmPositionCommand(armSub, ArmPositions.STOWED).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-    buttonB.whileTrue(new ArmPositionCommand(armSub, ArmPositions.MID_SCORE).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+    buttonB.toggleOnTrue(new ArmPositionCommand(armSub, ArmPositions.MID_SCORE).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     // buttonB.whileTrue(new ArmPositionCommand(armSub, ArmPositions.HIGH_SCORE));
     // buttonA.whileTrue(new ArmPositionCommand(armSub, ArmPositions.SHELF_PICKUP));
 
@@ -95,10 +105,15 @@ public class RobotContainer {
 
     gripperFor.toggleOnTrue(new GroundIntake(armSub, gripper).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
-    rightJoy.onTrue(new InstantCommand(() -> s_Swerve.resetOdometry(new Pose2d(new Translation2d(1.82942, 0.21511), new Rotation2d(Math.toRadians(180))))));
+    // rightJoy.onTrue(new InstantCommand(() -> s_Swerve.resetOdometry(new Pose2d(new Translation2d(1.82942, 0.21511), new Rotation2d(Math.toRadians(180))))));
+//.andThen(new ArmPositionCommand(armSub, ArmPositions.MID_SCORE)
 
-    operatorDeploy.onTrue(new exampleAuto(s_Swerve));
-   
+    
+    
+    operatorDeploy.onTrue(new Test(s_Swerve));//.andThen(new WaitCommand(1).andThen(new exampleAuto2(s_Swerve, 1,1,2)
+    // operatorShoot.onTrue(new InstantCommand(() -> reset()));    
+    // .andThen(new TeleopSwerve(s_Swerve, joystickPanel, translationAxis, strafeAxis, rotationAxis, true, true)));
+   //operatorDeploy.onTrue(new GroundIntake(armSub, gripper).alongWith(new exampleAuto(s_Swerve, 0, 0, 0, s_Swerve.getPose()).andThen(new TeleopSwerve(s_Swerve, joystickPanel, translationAxis, strafeAxis, rotationAxis, true, true))));
 
   }
 /*   _                        
@@ -124,6 +139,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return new exampleAuto(s_Swerve);
+    return new exampleAuto2(s_Swerve);
   }
 }

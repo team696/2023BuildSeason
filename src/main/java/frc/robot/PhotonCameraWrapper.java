@@ -24,6 +24,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.VisionConstants;
 /** Add your docs here. */
@@ -32,87 +33,41 @@ public class PhotonCameraWrapper
     public PhotonCamera camera1;
     public PhotonCamera camera2;
     public PhotonPoseEstimator photonPoseEstimator;
+    public PhotonPoseEstimator photonPoseEstimator2;
     
 
     public PhotonCameraWrapper() {
-        final AprilTag tag02 = 
-                new AprilTag(01, new Pose3d(
-                                                new Pose2d(
-                                                    0,
-                                                    Units.feetToMeters(3 + 1.5/12) ,
-                                                    Rotation2d.fromDegrees(0.0))));
-
-        final AprilTag tag01 =
-                new AprilTag(02,
-                                    new Pose3d(
-                                                new Pose2d(
-                                                   0,
-                                                   Units.feetToMeters(8 + 11/12), 
-                                                    Rotation2d.fromDegrees(0.0))));
-         final AprilTag tag03 =
-                 new AprilTag(03,
-                                     new Pose3d(
-                                                 new Pose2d(
-                                                    0,
-                                                    Units.feetToMeters(14 + 8.5/12), 
-                                                     Rotation2d.fromDegrees(0.0))));
-        ArrayList<AprilTag> atList = new ArrayList<AprilTag>();
-        
-        atList.add(tag02);
-        atList.add(tag01);
-         atList.add(tag03);
-        // AprilTagFieldLayout atf1 = new AprilTagFieldLayout(null);
         AprilTagFieldLayout aprilTagFieldLayout;
         try {
-
          aprilTagFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
          camera1 = new PhotonCamera(VisionConstants.camera1Name);
          camera2 = new PhotonCamera(VisionConstants.camera2Name);
-         var camList = new ArrayList<Pair<PhotonCamera, Transform3d>>();
-         camList.add(new Pair<PhotonCamera, Transform3d>(camera1, VisionConstants.robotToCam));
-         camList.add(new Pair<PhotonCamera, Transform3d>(camera2, VisionConstants.robotToCam));
-         photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, org.photonvision.PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY, camera1, VisionConstants.robotToCam);
 
-        }
-         
-        catch (Exception e) {
+         photonPoseEstimator2 = new PhotonPoseEstimator(aprilTagFieldLayout, org.photonvision.PhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE, camera2, VisionConstants.robotToCam1);
+         photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, org.photonvision.PhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE, camera1, VisionConstants.robotToCam2);
+            
+        } catch (Exception e) {
             System.out.println("can't find field layout april tag.");
-
         }
-
-
     }
 
-    // public double horOffset(){
-    //            var result = camera.getLatestResult();
-
-    //     return result.getBestTarget().getYaw();
-    // }
-
-    // public boolean hasTarget(){
-    //     var result = camera.getLatestResult();
-
-    //     return result.hasTargets();
-    // }
-
-    
-    // public Pair<Pose2d, Double> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
-    //     robotPoseEstimator.setReferencePose(prevEstimatedRobotPose);
-
-    //     double currentTime = Timer.getFPGATimestamp();
-    //     Optional<Pair<Pose3d, Double>> result = robotPoseEstimator.update();
-    //     if (result.isPresent() && result.get().getFirst() != null) {
-    //         return new Pair<Pose2d, Double>( result.get().getFirst().toPose2d(), currentTime - result.get().getSecond());
-    //     } else {
-    //         return new Pair<Pose2d, Double>(prevEstimatedRobotPose, 0.0);
-    //     }
-    // }
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
-        if (photonPoseEstimator == null) {
-            // The field layout failed to load, so we cannot estimate poses.
-            return Optional.empty();
-        }
-        photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
-        return photonPoseEstimator.update();
+            if (photonPoseEstimator == null || photonPoseEstimator2 == null) 
+                return Optional.empty();
+
+            photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
+            photonPoseEstimator2.setReferencePose(prevEstimatedRobotPose);
+            Optional<EstimatedRobotPose> ppe1 = photonPoseEstimator.update();
+            Optional<EstimatedRobotPose> ppe2 = photonPoseEstimator2.update();
+            if (ppe2.isPresent()) {
+                
+                if (ppe1.isPresent())  {
+                    photonPoseEstimator2.setReferencePose(ppe1.get().estimatedPose);
+                } 
+                return photonPoseEstimator2.update();
+            } 
+            else {
+                return photonPoseEstimator.update();
+            }
     }
 }
