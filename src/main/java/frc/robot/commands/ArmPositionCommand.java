@@ -11,6 +11,8 @@ import frc.robot.subsystems.ArmSub;
 public class ArmPositionCommand extends CommandBase {
   ArmSub armSub;
   GlobalVariables.ArmPositions armPos;
+  int timer;
+
   /** Creates a new ArmPositionCommand. */
   public ArmPositionCommand(ArmSub armSub, GlobalVariables.ArmPositions armPos) {
  this.armSub = armSub;
@@ -22,11 +24,14 @@ public class ArmPositionCommand extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    timer = 0;
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    timer ++;
     armSub.armPresetPositions(armPos);
   }
 
@@ -37,6 +42,11 @@ public class ArmPositionCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    if(timer >= 500){
+      return true;
+    }
+    else{
+      return false;
+    }
   }
 }

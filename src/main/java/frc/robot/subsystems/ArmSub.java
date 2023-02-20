@@ -191,7 +191,7 @@ public class ArmSub extends SubsystemBase {
     SmartDashboard.putNumber("Arm Motor Position", getArmMotorPos());
     SmartDashboard.putNumber("Arm Motor 1 Current", leftArm.getStatorCurrent());
     SmartDashboard.putNumber("Arm Motor 2 Current", rightArm.getStatorCurrent());
-    
+
     
     // This method will be called once per scheduler run
   }

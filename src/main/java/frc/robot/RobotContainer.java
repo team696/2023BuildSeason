@@ -74,7 +74,8 @@ public class RobotContainer {
   public RobotContainer() {
     boolean fieldRelative = true;
     boolean openLoop = true;
-    s_Swerve.setDefaultCommand(new TeleopSwerve(s_Swerve, joystickPanel, translationAxis, strafeAxis, rotationAxis, fieldRelative, openLoop));
+    s_Swerve.setDefaultCommand(new TeleopSwerve(s_Swerve, joystickPanel, translationAxis, strafeAxis, rotationAxis, fieldRelative, openLoop).
+    withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     armSub.setDefaultCommand(new ArmPercentageCommand(armSub, 3, 2, driver));
 
     
@@ -110,16 +111,14 @@ public class RobotContainer {
 
     
     
-    operatorDeploy.onTrue(new Test(s_Swerve));//.andThen(new WaitCommand(1).andThen(new exampleAuto2(s_Swerve, 1,1,2)
-    // operatorShoot.onTrue(new InstantCommand(() -> reset()));    
-    // .andThen(new TeleopSwerve(s_Swerve, joystickPanel, translationAxis, strafeAxis, rotationAxis, true, true)));
-   //operatorDeploy.onTrue(new GroundIntake(armSub, gripper).alongWith(new exampleAuto(s_Swerve, 0, 0, 0, s_Swerve.getPose()).andThen(new TeleopSwerve(s_Swerve, joystickPanel, translationAxis, strafeAxis, rotationAxis, true, true))));
-
+    operatorDeploy.onTrue(new Test(s_Swerve).andThen(new InstantCommand(() -> gripper.setClaw(GripperState.OPEN))));
+    operatorDeploy.onTrue(new ArmPositionCommand(armSub, ArmPositions.MID_SCORE));
+    
   }
 /*   _                        
   \`*-.                    
    )  _`-.                 
-  .  : `. .                
+  .  : `. .   < - PET HERE 
   : _   '  \               
   ; *` _.   `*-._          
   `-.-'          `-.       
