@@ -200,4 +200,8 @@ public final class Constants {
         static final String camera1Name = "OV9281-01";
         static final String camera2Name = "OV9281-02";
     }
+    
+    public static class CANdle {
+        public static final int id = 19;
+    }
 }

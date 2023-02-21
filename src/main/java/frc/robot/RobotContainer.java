@@ -67,6 +67,7 @@ public class RobotContainer {
   public final Swerve s_Swerve = new Swerve();
   public final ArmSub armSub = new ArmSub();
   public final Gripper gripper = new Gripper();
+  public final CANdleSub candle = new CANdleSub();
  
 
 
@@ -82,7 +83,7 @@ public class RobotContainer {
     // Configure the button bindings
     configureButtonBindings();
   }
-
+  
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
@@ -92,20 +93,17 @@ public class RobotContainer {
   private void configureButtonBindings() {
     /* Driver Buttons */
     leftJoy.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
-    // gripperFor.whileTrue(new exampleAuto(s_Swerve));
     buttonA.toggleOnTrue(new ArmPositionCommand(armSub, ArmPositions.STOWED).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     buttonB.toggleOnTrue(new ArmPositionCommand(armSub, ArmPositions.MID_SCORE).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-    // buttonB.whileTrue(new ArmPositionCommand(armSub, ArmPositions.HIGH_SCORE));
-    // buttonA.whileTrue(new ArmPositionCommand(armSub, ArmPositions.SHELF_PICKUP));
 
     buttonX.onTrue(new InstantCommand(() -> gripper.setClaw(GripperState.OPEN)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     buttonY.onTrue(new InstantCommand(() -> gripper.setClaw(GripperState.CONE)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-    // buttonB.onTrue(new InstantCommand(() -> gripper.setClaw(GripperState.CUBE)));
 
     gripperRev.whileTrue(new GripperCommand(gripper, 0.8));
 
     gripperFor.toggleOnTrue(new GroundIntake(armSub, gripper).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
+<<<<<<< Updated upstream
     // rightJoy.onTrue(new InstantCommand(() -> s_Swerve.resetOdometry(new Pose2d(new Translation2d(1.82942, 0.21511), new Rotation2d(Math.toRadians(180))))));
 //.andThen(new ArmPositionCommand(armSub, ArmPositions.MID_SCORE)
 
@@ -114,6 +112,9 @@ public class RobotContainer {
     operatorDeploy.onTrue(new Test(s_Swerve).andThen(new InstantCommand(() -> gripper.setClaw(GripperState.OPEN))));
     operatorDeploy.onTrue(new ArmPositionCommand(armSub, ArmPositions.MID_SCORE));
     
+=======
+    operatorDeploy.onTrue(new Test(s_Swerve));
+>>>>>>> Stashed changes
   }
 /*   _                        
   \`*-.                    

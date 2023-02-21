@@ -25,5 +25,10 @@
       }
     },
   ],
-  "java.test.defaultConfig": "WPIlibUnitTests"
+  "java.test.defaultConfig": "WPIlibUnitTests",
+<<<<<<< Updated upstream
+  "wpilib.autoSaveOnDeploy": true
+=======
+  "synthwave84.brightness": 1
+>>>>>>> Stashed changes
 }

@@ -5,11 +5,9 @@ import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 
 import com.kauailabs.navx.frc.AHRS;
-
 import frc.robot.SwerveModule;
 import frc.robot.Constants;
 import frc.robot.PhotonCameraWrapper;
-// import frc.robot.PhotonCameraWrapper;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
@@ -41,6 +39,7 @@ public class Swerve extends SubsystemBase {
     private  SwerveModule m_backRight = new SwerveModule(3, Constants.Swerve.Mod3.constants);
     public SwerveModule[] mSwerveMods = { m_frontLeft, m_frontRight, m_backLeft, m_backRight };
 
+<<<<<<< Updated upstream
     public static SendableChooser<Integer> AprilTagGrid = new SendableChooser<>();
     public static SendableChooser<Integer> HeightGrid = new SendableChooser<>();
     public static SendableChooser<Integer> PositionGrid = new SendableChooser<>();
@@ -63,6 +62,9 @@ public  SwerveDrivePoseEstimator m_poseEstimator;
 
   
 
+=======
+private  SwerveDrivePoseEstimator m_poseEstimator;
+>>>>>>> Stashed changes
     public Swerve() {
        
 
@@ -103,6 +105,8 @@ public  SwerveDrivePoseEstimator m_poseEstimator;
         hor = PositionGrid.getSelected();
         height = HeightGrid.getSelected();
     }
+
+    
     public void updateOdometry() {
                
         Optional<EstimatedRobotPose> result = pcw.getEstimatedGlobalPose(m_poseEstimator.getEstimatedPosition());
@@ -221,6 +225,10 @@ public  SwerveDrivePoseEstimator m_poseEstimator;
            return Rotation2d.fromDegrees(360.0 - gyro.getYaw());
     }
 
+    public double getPitch(){
+        return gyro.getRoll();
+    }
+
    
 //     public double limelightOffset(){
 
@@ -279,6 +287,8 @@ public  SwerveDrivePoseEstimator m_poseEstimator;
         SmartDashboard.putData(AprilTagGrid);
     SmartDashboard.putData(HeightGrid);
     SmartDashboard.putData(PositionGrid);
+
+    SmartDashboard.putNumber("Gyro Pitch ", getPitch());
         kyslol();
          swerveOdometry.update(getYaw(), new SwerveModulePosition[] {
             m_frontRight.getPosition(),

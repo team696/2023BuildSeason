@@ -45,6 +45,7 @@ public class Test extends CommandBase {
         .setKinematics(Constants.Swerve.swerveKinematics).setReversed(false);
 
     double[] pose = Constants.AutoConstants.RobotPositions[swerve.tag][swerve.height][swerve.hor];
+<<<<<<< Updated upstream
 
     Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(List.of(
         new Pose2d(pose[0] + 0.7, pose[1], new Rotation2d(Math.PI)),
