@@ -26,6 +26,7 @@ public class HoldArmPos extends CommandBase {
   @Override
   public void initialize() {
     timer = 0;
+    System.out.println("ARM COMMAND INIT");
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -33,11 +34,16 @@ public class HoldArmPos extends CommandBase {
   public void execute() {
     timer ++;
     armSub.armPresetPositions(armPos);
+    System.out.println("ARM COMMAND EXEC");
+
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    System.out.println("ARM COMMAND END");
+
+  }
 
   // Returns true when the command should end.
   @Override

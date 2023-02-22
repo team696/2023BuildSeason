@@ -19,6 +19,7 @@ public class PhotonCameraWrapper
 {
     public PhotonCamera camera1;
     public PhotonCamera camera2;
+    public PhotonCamera frontCam;
     public PhotonPoseEstimator photonPoseEstimator;
     public PhotonPoseEstimator photonPoseEstimator2;
     
@@ -29,12 +30,24 @@ public class PhotonCameraWrapper
          aprilTagFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
          camera1 = new PhotonCamera(VisionConstants.camera1Name);
          camera2 = new PhotonCamera(VisionConstants.camera2Name);
+
+         frontCam = new PhotonCamera(VisionConstants.frontCamName);
          photonPoseEstimator2 = new PhotonPoseEstimator(aprilTagFieldLayout, org.photonvision.PhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE, camera2, VisionConstants.robotToCam1);
          photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, org.photonvision.PhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE, camera1, VisionConstants.robotToCam2);
             
         } catch (Exception e) {
             System.out.println(e);
         }
+    }
+
+    public double getYOffset(){
+        var result = frontCam.getLatestResult();
+       return  result.getBestTarget().getYaw();
+        
+    }
+
+    public void frontCamPipeline(int pipelineIndex){
+        frontCam.setPipelineIndex(pipelineIndex);
     }
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {

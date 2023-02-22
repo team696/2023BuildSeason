@@ -199,6 +199,7 @@ public final class Constants {
                                 Math.toRadians(-45)));
         static final String camera1Name = "OV9281-01";
         static final String camera2Name = "OV9281-02";
+        static final String frontCamName = "PLACE";
     }
     
     public static class CANdle {

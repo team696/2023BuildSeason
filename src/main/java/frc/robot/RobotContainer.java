@@ -142,24 +142,16 @@ public class RobotContainer {
     operatorLatch.onTrue(new InstantCommand(() -> gripper.setClaw(GripperState.CONE)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     operatorHook.onTrue(new InstantCommand(() -> gripper.setClaw(GripperState.CUBE)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     operatorShoot.onTrue(new InstantCommand(() -> gripper.setClaw(GripperState.OPEN)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-
+    rightJoy.whileTrue(new LockToGamePiece(s_Swerve, joystickPanel, translationAxis, strafeAxis, true, false, 1));
     operatorSpinup.whileTrue(new BalanceStation(s_Swerve, joystickPanel, translationAxis, strafeAxis, rotationAxis, true, false));
-    
 
-    // operatorLatch.ont(new InstantCommand(() -> gripper.setClaw(GripperState.OPEN)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-
-
-
-    // rightJoy.onTrue(new InstantCommand(() -> s_Swerve.resetOdometry(new Pose2d(new Translation2d(1.82942, 0.21511), new Rotation2d(Math.toRadians(180))))));
-//.andThen(new ArmPositionCommand(armSub, ArmPositions.MID_SCORE)
-
+  
     
     
     // operatorDeploy.onTrue(new Test(s_Swerve).andThen(new InstantCommand(() -> gripper.setClaw(GripperState.CONE))));
     // operatorDeploy.onTrue(new ArmPositionCommand(armSub, ArmPositions.MID_SCORE));
     // operatorDeploy.onTrue(new WaitCommand(2).andThen(new InstantCommand(() -> gripper.setClaw(GripperState.CONE))));
     operatorDeploy.onTrue(placeCommand);
-    // operatorDeploy.onTrue(new exampleAuto(s_Swerve, rotationAxis, strafeAxis, rotationAxis));
     
   }
 /*   _                        
@@ -179,7 +171,7 @@ public class RobotContainer {
  `*-*   `*-*  `*-*' */
 //  　　　　 　　 ＿__＿
 //  　　　 　 　／＞　　フ
-//  　　　 　　| 　_　 _|  < - PET HERE 
+//  　　　 　　| 　_　 _ l  < - PET HERE 
 //  　 　　 　／` ミ＿xノ
 //  　　 　 /　　　 　 |
 //  　　　 /　 ヽ　　 ﾉ

@@ -73,18 +73,23 @@ public class Test extends CommandBase {
 
     swerve.normalizeOdometry();
     swerveControllerCommand.schedule();
+    System.out.println("TEST COMMAND INIT");
+
 
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    System.out.println("TEST COMMAND EXEC");
+
         // System.out.println("execute ");
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    System.out.println("TEST COMMAND END");
 
     // System.out.println("end");
 

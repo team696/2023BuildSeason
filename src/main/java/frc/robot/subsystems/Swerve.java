@@ -13,6 +13,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -140,6 +141,7 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
     
     }
 
+   
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
         SwerveModuleState[] swerveModuleStates =
             Constants.Swerve.swerveKinematics.toSwerveModuleStates(
@@ -225,7 +227,12 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
         return gyro.getRoll();
     }
 
-   
+    public double frontCamOffset(int pipeline){
+        pcw.frontCamPipeline(pipeline);
+        double headingError = pcw.getYOffset();
+
+        return rotatePID.calculate(headingError, 0);
+    }
 //     public double limelightOffset(){
 
 //         // float Kp = -0.1f;
