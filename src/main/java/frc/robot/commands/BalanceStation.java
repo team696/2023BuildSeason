@@ -32,7 +32,7 @@ public class BalanceStation extends CommandBase {
     public BalanceStation(Swerve s_Swerve, Joystick controller, int translationAxis, int strafeAxis, int rotationAxis, boolean fieldRelative, boolean openLoop) {
         this.s_Swerve = s_Swerve;
         addRequirements(s_Swerve);
-        pidController = new PIDController(1, 0, 0);
+        pidController = new PIDController(0.01, 0, 0);
         pidController.setTolerance(2);
 
         this.controller = controller;
@@ -45,7 +45,7 @@ public class BalanceStation extends CommandBase {
 
     @Override
     public void execute() {
-        double yAxis = -pidController.calculate(s_Swerve.getPitch(), 0);
+        double yAxis = pidController.calculate(s_Swerve.getPitch(), 0);
         double xAxis = controller.getRawAxis(strafeAxis);
         double rAxis = controller.getRawAxis(rotationAxis);
         

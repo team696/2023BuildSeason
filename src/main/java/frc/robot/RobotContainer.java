@@ -67,6 +67,7 @@ public class RobotContainer {
   private final Trigger operatorHook = new JoystickButton(operatorPanel, 8);
   private final Trigger operatorIntakeUp = new JoystickButton(operatorPanel, 13);
   private final Trigger operatorIntakeDown = new JoystickButton(operatorPanel, 14);
+  private final Trigger operatorSpinup = new JoystickButton(operatorPanel, 1);
 
 
   // XboxController test = new XboxController(0);
@@ -142,6 +143,9 @@ public class RobotContainer {
     operatorHook.onTrue(new InstantCommand(() -> gripper.setClaw(GripperState.CUBE)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     operatorShoot.onTrue(new InstantCommand(() -> gripper.setClaw(GripperState.OPEN)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
+    operatorSpinup.whileTrue(new BalanceStation(s_Swerve, joystickPanel, translationAxis, strafeAxis, rotationAxis, true, false));
+    
+
     // operatorLatch.ont(new InstantCommand(() -> gripper.setClaw(GripperState.OPEN)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
 
@@ -175,7 +179,7 @@ public class RobotContainer {
  `*-*   `*-*  `*-*' */
 //  　　　　 　　 ＿__＿
 //  　　　 　 　／＞　　フ
-//  　　　 　　| 　_　 _ l  < - PET HERE 
+//  　　　 　　| 　_　 _|  < - PET HERE 
 //  　 　　 　／` ミ＿xノ
 //  　　 　 /　　　 　 |
 //  　　　 /　 ヽ　　 ﾉ
