@@ -24,7 +24,7 @@ public class Gripper extends SubsystemBase {
 
   CANSparkMax gripperMotor;
   DoubleSolenoid cubeSolenoid;
-  DoubleSolenoid coneSolenoid;
+  Solenoid coneSolenoid;
   public PneumaticsControlModule module;
   Compressor compressor;
   public final  I2C.Port i2cPort = I2C.Port.kMXP;
@@ -47,7 +47,8 @@ public class Gripper extends SubsystemBase {
     compressor.enableDigital();
 
     cubeSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 2);
-    coneSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 1, 3);
+    // coneSolenoid = new DoubleS/olenoid(PneumaticsModuleType.REVPH, 1, 3);
+    coneSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 1);
 
     module = new PneumaticsControlModule(1);
     module.clearAllStickyFaults();
@@ -86,18 +87,18 @@ public class Gripper extends SubsystemBase {
   public void setClaw(GripperState state){
     switch(state){
       case OPEN:
-      cubeSolenoid.set(Value.kForward);
-      coneSolenoid.set(Value.kForward);
+      cubeSolenoid.set(Value.kReverse);
+      coneSolenoid.set(false);
       break;
 
       case CONE:
-      cubeSolenoid.set(Value.kReverse);
-      coneSolenoid.set(Value.kReverse);
+      cubeSolenoid.set(Value.kForward);
+      coneSolenoid.set(false);
       break;
 
       case CUBE:
-      // cubeSolenoid.set(Value.kForward);
-      // coneSolenoid.set(Value.kOff);
+      cubeSolenoid.set(Value.kOff);
+      coneSolenoid.set(true);
       break;
   }
 }

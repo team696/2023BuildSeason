@@ -22,8 +22,8 @@ public class exampleAuto extends SequentialCommandGroup {
 
         TrajectoryConfig config =
             new TrajectoryConfig(
-                    Constants.AutoConstants.kMaxSpeedMetersPerSecond,
-                    Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+                    0.5,
+                    0.25)
                 .setKinematics(Constants.Swerve.swerveKinematics).setReversed(false);
 
         // Trajectory exampleTrajectory =
@@ -37,23 +37,23 @@ public class exampleAuto extends SequentialCommandGroup {
 
         Trajectory exampleTrajectory =
             TrajectoryGenerator.generateTrajectory(List.of(
-                    new Pose2d(2.55, pose[1], new Rotation2d(0)), 
-                    new Pose2d(2.4, pose[1], new Rotation2d(0))),
+                    new Pose2d(11, 3.57, new Rotation2d(0)), 
+                    new Pose2d(12.47, 3.57, new Rotation2d(0))),
                 config);
 
         var thetaController =
             new ProfiledPIDController(
-               3, 0, 0, Constants.AutoConstants.kThetaControllerConstraints);
+               01, 0, 0, Constants.AutoConstants.kThetaControllerConstraints);
 
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
         SwerveControllerCommand swerveControllerCommand =
             new SwerveControllerCommand(
                 exampleTrajectory,
-                s_Swerve::getPose,
+                s_Swerve::getAprilTagEstPosition,
                 Constants.Swerve.swerveKinematics,
-                new PIDController(1, 0.2, 0),
-                new PIDController(1, 0.2, 0),
+                new PIDController(2,2, 0),
+                new PIDController(2, 2,  0),
                 thetaController,
                 s_Swerve::setModuleStates,
                 s_Swerve);

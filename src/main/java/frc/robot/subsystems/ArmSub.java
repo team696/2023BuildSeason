@@ -47,7 +47,8 @@ public class ArmSub extends SubsystemBase {
     
 
 
-    pidLoop = new PIDController(0.006, 0.003, 0.001);
+    // pidLoop = new PIDController(0.006, 0.003, 0.001);  
+    pidLoop = new PIDController(0.01  , 0.00, 0.01   );
 
     leftArm = new WPI_TalonFX(20, "Abu");
     rightArm = new WPI_TalonFX(21, "Abu");
@@ -61,7 +62,7 @@ public class ArmSub extends SubsystemBase {
       leftArm.config_kD(0, 0.0);
       leftArm.config_kF(0, 0.06);
       leftArm.setSensorPhase(true);
-      leftArm.setInverted(InvertType.InvertMotorOutput);
+      leftArm.setInverted(InvertType.None);
       leftArm.configRemoteFeedbackFilter(testCanCoder, 0);
       leftArm.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
  

@@ -32,25 +32,21 @@ public class CANdleSub extends SubsystemBase {
     m_candle.configAllSettings(configAll, 100);
   }
 
+  public void disabledLed(){
+    m_candle.animate(new SingleFadeAnimation(0, 255, 0, 0, 0.7, numLed, ledOffset));
+
+  }
+
+  public void enabledLed(){
+    m_candle.animate(new SingleFadeAnimation(255, 0, 0, 0, 0.7, numLed, ledOffset));
+
+  }
+
+
+
   @Override
   public void periodic() {
-    //m_candle.setLEDs(255, 0, 0);
-   // m_candle.animate(new FireAnimation(1, 0.2, numLed, 0.6, 0.2, false, 8));
-    //    m_candle.animate(new LarsonAnimation(0, 255, 46, 0, 1, 48, BounceMode.Front, 3, 120));
-    // m_candle.animate(new LarsonAnimation(0, 255, 46, 0, 1, 32, BounceMode.Front, 3, 88));
-
-    // m_candle.animate(new LarsonAnimation(0, 255, 46, 0, 1, 48, BounceMode.Front, 3, ledOffset));
-    // m_candle.animate(new LarsonAnimation(0, 255, 46, 0, 1, 32, BounceMode.Front, 3, 56));
-    // m_candle.animate(new SingleFadeAnimation(50, 2, 200, 0, 0.5, numLed));
-    // m_candle.animate( new FireAnimation(0.5, 0.7, 48, 0.3, 0.1, true, ledOffset));
-    // m_candle.animate( new StrobeAnimation(240, 10, 180, 0, 98.0 / 256.0, numLed,ledOffset));
-    m_candle.animate( new RainbowAnimation(1, 0.1, numLed, true, ledOffset));
-
-
-
-    //m_candle.animate(new ColorFlowAnimation(255, 80, 160, 255, 0.6, numLed - 32, Direction.Forward, ledOffset));
-   // m_candle.animate(new ColorFlowAnimation(255, 80, 160, 255, 0.6, 32, Direction.Backward, numLed + ledOffset));
-   
+    
 
   }
 }

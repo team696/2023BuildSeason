@@ -4,18 +4,13 @@
 
 package frc.robot;
 
-<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-<<<<<<< Updated upstream
 import frc.robot.autos.exampleAuto2;
-=======
->>>>>>> Stashed changes
+import frc.robot.subsystems.CANdleSub;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -30,6 +25,8 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
+  private CANdleSub candlesub;
+
 
   // PhotonCamera camera = new PhotonCamera("photonvision");
 
@@ -40,6 +37,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     ctreConfigs = new CTREConfigs();
+    candlesub = new CANdleSub();
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
@@ -55,6 +53,41 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
      m_robotContainer.s_Swerve.updateOdometry();
+
+    //  m_robotContainer.operatorPanel.setOutput(2, true );
+    //  m_robotContainer.operatorPanel.setOutput(1, true );
+    //  m_robotContainer.operatorPanel.setOutput(5, true );
+    //  m_robotContainer.operatorPanel.setOutput(6, true );
+    //  m_robotContainer.operatorPanel.setOutput(10, true );
+    //  m_robotContainer.operatorPanel.setOutput(13, true );
+    //  m_robotContainer.operatorPanel.setOutput(16, true );
+ 
+ 
+    //  m_robotContainer.operatorPanel.setOutput(3, true );
+    //  m_robotContainer.operatorPanel.setOutput(4, true );
+    //  m_robotContainer.operatorPanel.setOutput(7, true );
+    //  m_robotContainer.operatorPanel.setOutput(8, true );
+    //  m_robotContainer.operatorPanel.setOutput(9, true );
+    //  m_robotContainer.operatorPanel.setOutput(11, true );
+    //  m_robotContainer.operatorPanel.setOutput(12, true );
+    //  m_robotContainer.operatorPanel.setOutput(14, true );
+    //  m_robotContainer.operatorPanel.setOutput(15, true );
+    //  m_robotContainer.operatorPanel.setOutput(17, true );
+    //  m_robotContainer.operatorPanel.setOutput(18, true );
+    //  m_robotContainer.operatorPanel.setOutput(19, true );
+    //  m_robotContainer.operatorPanel.setOutput(20, true );
+    //  m_robotContainer.operatorPanel.setOutput(21, true );
+    //  m_robotContainer.operatorPanel.setOutput(22, true );
+    //  m_robotContainer.operatorPanel.setOutput(23, true );
+    //  m_robotContainer.operatorPanel.setOutput(24, true );
+    //  m_robotContainer.operatorPanel.setOutput(25, true );
+    //  m_robotContainer.operatorPanel.setOutput(26, true );
+    //  m_robotContainer.operatorPanel.setOutput(27, true );
+    //  m_robotContainer.operatorPanel.setOutput(28, true );
+    //  m_robotContainer.operatorPanel.setOutput(29, true );
+    //  m_robotContainer.operatorPanel.setOutput(30, true );
+    //  m_robotContainer.operatorPanel.setOutput(31, true );
+    //  m_robotContainer.operatorPanel.setOutput(32, true );
     
     CommandScheduler.getInstance().run();
     
@@ -66,7 +99,9 @@ public class Robot extends TimedRobot {
   public void disabledInit() {}
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    candlesub.disabledLed();
+  }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
@@ -96,7 +131,11 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    candlesub.enabledLed();
+
+
+  }
 
   @Override
   public void testInit() {

@@ -15,6 +15,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -35,7 +37,7 @@ public class RobotContainer {
   /* Controllers */
   private final Joystick driver = new Joystick(1);
   private final Joystick joystickPanel = new Joystick(0);
-  private final Joystick operatorPanel = new Joystick(2);
+  public  final Joystick operatorPanel = new Joystick(2);
  
  
 
@@ -59,6 +61,18 @@ public class RobotContainer {
   private final Trigger rightJoy = new JoystickButton(joystickPanel, 2);
   public final Trigger operatorDeploy = new JoystickButton(operatorPanel, 11);
   private final Trigger operatorShoot = new JoystickButton(operatorPanel, 3);
+  private final Trigger operatorLeftEmpty  = new JoystickButton(operatorPanel, 9);
+  private final Trigger operatorRightEmpty = new JoystickButton(operatorPanel, 11);
+  private final Trigger operatorLatch = new JoystickButton(operatorPanel, 7);
+  private final Trigger operatorHook = new JoystickButton(operatorPanel, 8);
+  private final Trigger operatorIntakeUp = new JoystickButton(operatorPanel, 13);
+  private final Trigger operatorIntakeDown = new JoystickButton(operatorPanel, 14);
+
+
+  // XboxController test = new XboxController(0);
+  
+  private SequentialCommandGroup placeCommand;
+  
 
 
 
@@ -75,11 +89,28 @@ public class RobotContainer {
   public RobotContainer() {
     boolean fieldRelative = true;
     boolean openLoop = true;
-    s_Swerve.setDefaultCommand(new TeleopSwerve(s_Swerve, joystickPanel, translationAxis, strafeAxis, rotationAxis, fieldRelative, openLoop).
-    withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-    armSub.setDefaultCommand(new ArmPercentageCommand(armSub, 3, 2, driver));
+    operatorPanel.setOutput(2, true );
+    operatorPanel.setOutput(1, true );
+    operatorPanel.setOutput(5, true );
+    operatorPanel.setOutput(6, true );
+    operatorPanel.setOutput(10, true );
+    operatorPanel.setOutput(13, true );
+    operatorPanel.setOutput(16, true );
+
 
     
+
+
+
+
+
+
+    s_Swerve.setDefaultCommand(new TeleopSwerve(s_Swerve, joystickPanel, translationAxis, strafeAxis, rotationAxis, fieldRelative, openLoop).
+    withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+    // armSub.setDefaultCommand(new ArmPositionCommand(armSub, ArmPositions.GROUND_PICKUP).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+    // armSub.setDefaultCommand(new ArmPercentageCommand(armSub, 3, 2, driver));
+
+    placeCommand = new AutoPlaceTest2(s_Swerve, armSub, gripper);
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -93,8 +124,8 @@ public class RobotContainer {
   private void configureButtonBindings() {
     /* Driver Buttons */
     leftJoy.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
-    buttonA.toggleOnTrue(new ArmPositionCommand(armSub, ArmPositions.STOWED).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-    buttonB.toggleOnTrue(new ArmPositionCommand(armSub, ArmPositions.MID_SCORE).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+    // buttonA.toggleOnTrue(new ArmPositionCommand(armSub, ArmPositions.STOWED).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+    // buttonB.toggleOnTrue(new ArmPositionCommand(armSub, ArmPositions.MID_SCORE).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
     buttonX.onTrue(new InstantCommand(() -> gripper.setClaw(GripperState.OPEN)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     buttonY.onTrue(new InstantCommand(() -> gripper.setClaw(GripperState.CONE)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
@@ -103,18 +134,29 @@ public class RobotContainer {
 
     gripperFor.toggleOnTrue(new GroundIntake(armSub, gripper).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
-<<<<<<< Updated upstream
+    // operatorIntakeUp.whileTrue(new HoldArmPos(armSub, ArmPositions.STOWED).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+    // operatorIntakeUp.whileFalse(new HoldArmPos(armSub, ArmPositions.GROUND_PICKUP).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+    // operatorIntakeDown.whileTrue(new HoldArmPos(armSub, ArmPositions.MID_SCORE).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+
+    operatorLatch.onTrue(new InstantCommand(() -> gripper.setClaw(GripperState.CONE)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+    operatorHook.onTrue(new InstantCommand(() -> gripper.setClaw(GripperState.CUBE)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+    operatorShoot.onTrue(new InstantCommand(() -> gripper.setClaw(GripperState.OPEN)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+
+    // operatorLatch.ont(new InstantCommand(() -> gripper.setClaw(GripperState.OPEN)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+
+
+
     // rightJoy.onTrue(new InstantCommand(() -> s_Swerve.resetOdometry(new Pose2d(new Translation2d(1.82942, 0.21511), new Rotation2d(Math.toRadians(180))))));
 //.andThen(new ArmPositionCommand(armSub, ArmPositions.MID_SCORE)
 
     
     
-    operatorDeploy.onTrue(new Test(s_Swerve).andThen(new InstantCommand(() -> gripper.setClaw(GripperState.OPEN))));
-    operatorDeploy.onTrue(new ArmPositionCommand(armSub, ArmPositions.MID_SCORE));
+    // operatorDeploy.onTrue(new Test(s_Swerve).andThen(new InstantCommand(() -> gripper.setClaw(GripperState.CONE))));
+    // operatorDeploy.onTrue(new ArmPositionCommand(armSub, ArmPositions.MID_SCORE));
+    // operatorDeploy.onTrue(new WaitCommand(2).andThen(new InstantCommand(() -> gripper.setClaw(GripperState.CONE))));
+    operatorDeploy.onTrue(placeCommand);
+    // operatorDeploy.onTrue(new exampleAuto(s_Swerve, rotationAxis, strafeAxis, rotationAxis));
     
-=======
-    operatorDeploy.onTrue(new Test(s_Swerve));
->>>>>>> Stashed changes
   }
 /*   _                        
   \`*-.                    
@@ -133,7 +175,7 @@ public class RobotContainer {
  `*-*   `*-*  `*-*' */
 //  　　　　 　　 ＿__＿
 //  　　　 　 　／＞　　フ
-//  　　　 　　| 　_　 _ l
+//  　　　 　　| 　_　 _ l  < - PET HERE 
 //  　 　　 　／` ミ＿xノ
 //  　　 　 /　　　 　 |
 //  　　　 /　 ヽ　　 ﾉ

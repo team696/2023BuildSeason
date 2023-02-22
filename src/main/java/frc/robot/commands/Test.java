@@ -24,14 +24,15 @@ import frc.robot.subsystems.Gripper.GripperState;
 public class Test extends CommandBase {
   Swerve swerve;
   int timer;
-
+  double xOffset1;
+  double xOffset2;
   SwerveControllerCommand swerveControllerCommand;
 
   /** Creates a new Test. */
-  public Test(Swerve swerve) {
+  public Test(Swerve swerve, double xOffset1, double xOffset2) {
     this.swerve = swerve;
-
-    addRequirements(swerve);
+    this.xOffset1 = xOffset1;
+    this.xOffset2 = xOffset2;
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -44,12 +45,12 @@ public class Test extends CommandBase {
         0.5)
         .setKinematics(Constants.Swerve.swerveKinematics).setReversed(false);
 
-    double[] pose = Constants.AutoConstants.RobotPositions[swerve.tag][swerve.height][swerve.hor];
-<<<<<<< Updated upstream
+    double[] pose = Constants.AutoConstants.RobotPositions[swerve.tag][swerve.hor][swerve.height];
 
-    Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(List.of(
-        new Pose2d(pose[0] + 0.7, pose[1], new Rotation2d(Math.PI)),
-        new Pose2d(pose[0], pose[1], new Rotation2d(Math.PI))),
+    Trajectory exampleTrajectory =
+        TrajectoryGenerator.generateTrajectory(List.of(swerve.getAprilTagEstPosition(),
+            new Pose2d(pose[0]+xOffset1, pose[1], new Rotation2d(Math.PI)),
+            new Pose2d(pose[0]+xOffset2, pose[1], new Rotation2d(Math.PI))),
         config);
 
     var thetaController = new ProfiledPIDController(
@@ -59,7 +60,7 @@ public class Test extends CommandBase {
 
     swerveControllerCommand = new SwerveControllerCommand(
         exampleTrajectory,
-        swerve::getPose,
+        swerve::getAprilTagEstPosition,
         Constants.Swerve.swerveKinematics,
         new PIDController(1, 0, 0),
         new PIDController(1, 0, 0),
@@ -68,7 +69,7 @@ public class Test extends CommandBase {
         swerve);
 
     swerve.m_fieldSim.getObject("traj2").setTrajectory(exampleTrajectory);
-            System.out.println("initialize");
+            // System.out.println("initialize");
 
     swerve.normalizeOdometry();
     swerveControllerCommand.schedule();
@@ -78,20 +79,14 @@ public class Test extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-        timer++;
-        System.out.println("execute ");
-
-   
-
+        // System.out.println("execute ");
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    System.out.println(interrupted);
 
-    System.out.println("end");
-
+    // System.out.println("end");
 
   }
 
@@ -99,12 +94,6 @@ public class Test extends CommandBase {
   @Override
   public boolean isFinished() {
     // return swerveControllerCommand.isFinished();
-    if (timer > 200){
-      return true;
-    }
-    else{
-      return false;
-    }
-
+      return swerveControllerCommand.isFinished();
   }
 }

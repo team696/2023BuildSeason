@@ -39,7 +39,6 @@ public class Swerve extends SubsystemBase {
     private  SwerveModule m_backRight = new SwerveModule(3, Constants.Swerve.Mod3.constants);
     public SwerveModule[] mSwerveMods = { m_frontLeft, m_frontRight, m_backLeft, m_backRight };
 
-<<<<<<< Updated upstream
     public static SendableChooser<Integer> AprilTagGrid = new SendableChooser<>();
     public static SendableChooser<Integer> HeightGrid = new SendableChooser<>();
     public static SendableChooser<Integer> PositionGrid = new SendableChooser<>();
@@ -58,13 +57,10 @@ public class Swerve extends SubsystemBase {
     public int height;
 
 
-public  SwerveDrivePoseEstimator m_poseEstimator;
 
   
 
-=======
 private  SwerveDrivePoseEstimator m_poseEstimator;
->>>>>>> Stashed changes
     public Swerve() {
        
 
@@ -287,6 +283,11 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
         SmartDashboard.putData(AprilTagGrid);
     SmartDashboard.putData(HeightGrid);
     SmartDashboard.putData(PositionGrid);
+
+    SmartDashboard.putNumber("Odometry X", getPose().getX());
+    SmartDashboard.putNumber("Odometry Y", getPose().getY());
+
+
 
     SmartDashboard.putNumber("Gyro Pitch ", getPitch());
         kyslol();
