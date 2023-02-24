@@ -25,7 +25,7 @@ public class GroundIntake extends CommandBase {
 
   @Override
   public void initialize() {
-    gripper.setClaw(GripperState.CONE);
+    gripper.setClaw(GripperState.OPEN);
   }
 
   @Override
@@ -37,13 +37,14 @@ public class GroundIntake extends CommandBase {
 
   @Override
   public void end(boolean interrupted) {
-    gripper.setClaw(GripperState.OPEN);
+    gripper.setClaw(GripperState.CONE);
     gripper.moveGripper(0);
+    System.out.println("END");
   }
 
   @Override
   public boolean isFinished() {
-    if(gripper.colorSensorDistance() > 300){
+    if(gripper.colorSensorDistance() > 200){
       return true;
 
     }

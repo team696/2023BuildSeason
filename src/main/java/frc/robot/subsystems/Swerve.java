@@ -74,11 +74,11 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
         SmartDashboard.putData("Field", m_fieldSim);
 
         rotatePID = new ProfiledPIDController(
-            Constants.rotatePid_P,
-            Constants.rotatePid_I,
-            Constants.rotatePid_D, new TrapezoidProfile.Constraints(1, 3));
+            0.007,
+            0,
+            0.001, new TrapezoidProfile.Constraints(1, 3));
 
-    rotatePID.setTolerance(Constants.rotatePid_Tol);
+    rotatePID.setTolerance(0.0001);
  
         mSwerveModulePositions = new SwerveModulePosition[] {
             new SwerveModulePosition(0, m_frontRight.getCanCoder()),
@@ -230,47 +230,22 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
     public double frontCamOffset(int pipeline){
         pcw.frontCamPipeline(pipeline);
         double headingError = pcw.getYOffset();
+       /*  double steering_adjust;
+        steering_adjust = 0;
+        if (headingError > 0.05)
+        {
+                steering_adjust =  0.09;
+        }
+        else if (headingError < -0.05)
+        {
+                steering_adjust = -0.09;
+        } */
 
-        return rotatePID.calculate(headingError, 0);
-    }
-//     public double limelightOffset(){
 
-//         // float Kp = -0.1f;
-// double min_command = 0.09;
+        return (rotatePID.calculate(headingError, 0)/* +steering_adjust */);
+    }    
 
 
-//         double heading_error = pcw.horOffset();
-//         double steering_adjust = 0.0;
-//         if ((pcw.horOffset()+1) > 2)
-//         {
-//                 steering_adjust = /* Kp*heading_error */ - min_command;
-//         }
-//         else if ((pcw.horOffset()+1) < 0)
-//         {
-//                 steering_adjust =/*  Kp*heading_error + */ min_command;
-//         }
-
-//         if(pcw.horOffset() > (0.01) ||
-//         pcw.horOffset() <  -(0.01)){
-//       return (rotatePID.calculate(pcw.horOffset(), 1) + steering_adjust);
-//         }
-//         else {
-//         return 0;
-//         }
-// }
-
-// public double joyControlUntilLock(double joystick){
-
-//       if(pcw.hasTarget()){
-//               return limelightOffset();
-//       }
-//       else {
-//               return joystick;
-//       }
-// }
-
-    
-    
 
     @Override
     public void periodic(){
@@ -288,11 +263,12 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
         PositionGrid.addOption("Right Position", gridPosRight);
         
         SmartDashboard.putData(AprilTagGrid);
-    SmartDashboard.putData(HeightGrid);
-    SmartDashboard.putData(PositionGrid);
+        SmartDashboard.putData(HeightGrid);
+        SmartDashboard.putData(PositionGrid);
 
-    SmartDashboard.putNumber("Odometry X", getPose().getX());
-    SmartDashboard.putNumber("Odometry Y", getPose().getY());
+        SmartDashboard.putNumber("Odometry X", getPose().getX());
+        SmartDashboard.putNumber("Odometry Y", getPose().getY());
+        SmartDashboard.putNumber("CONE OFFSET ", frontCamOffset(0));
 
 
 

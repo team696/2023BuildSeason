@@ -88,17 +88,17 @@ public class Gripper extends SubsystemBase {
     switch(state){
       case OPEN:
       cubeSolenoid.set(Value.kReverse);
-      coneSolenoid.set(false);
+      // coneSolenoid.set(false);
       break;
 
       case CONE:
       cubeSolenoid.set(Value.kForward);
-      coneSolenoid.set(false);
+      // coneSolenoid.set(false);
       break;
 
       case CUBE:
-      cubeSolenoid.set(Value.kOff);
-      coneSolenoid.set(true);
+      // cubeSolenoid.set(Value.kOff);
+      // coneSolenoid.set(true);
       break;
   }
 }
@@ -110,6 +110,5 @@ public class Gripper extends SubsystemBase {
     SmartDashboard.putNumber("BLUE", colorSensor.getBlue());
     SmartDashboard.putNumber("GREEN", colorSensor.getGreen());
     SmartDashboard.putNumber("Distance", colorSensor.getProximity());
-    // System.out.print(colorSensor.getBlue());
   }
 }

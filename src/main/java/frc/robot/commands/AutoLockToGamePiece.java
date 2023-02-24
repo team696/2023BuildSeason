@@ -3,12 +3,12 @@ package frc.robot.commands;
 import frc.robot.Constants;
 import frc.robot.subsystems.Swerve;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 
-public class BalanceStation extends CommandBase {
+public class AutoLockToGamePiece extends CommandBase {
 
     private double rotation;
     private Translation2d translation;
@@ -16,12 +16,11 @@ public class BalanceStation extends CommandBase {
     private boolean openLoop;
     
     private Swerve s_Swerve;
-    private Joystick controller;
+    // private Joystick controller;
     private int translationAxis;
     private int strafeAxis;
-    private int rotationAxis;
-    PIDController pidController;
 
+    private int pipeline;
     private double mapdouble(double x, double in_min, double in_max, double out_min, double out_max){
         return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     }
@@ -29,25 +28,24 @@ public class BalanceStation extends CommandBase {
     /**
      * Driver control
      */
-    public BalanceStation(Swerve s_Swerve, Joystick controller, int translationAxis, int strafeAxis, int rotationAxis, boolean fieldRelative, boolean openLoop) {
+    public AutoLockToGamePiece(Swerve s_Swerve,  int translationAxis, int strafeAxis,  boolean fieldRelative, boolean openLoop, int pipeline) {
         this.s_Swerve = s_Swerve;
         addRequirements(s_Swerve);
-        pidController = new PIDController(0.01  , 0, 0);
-        pidController.setTolerance(2);
 
-        this.controller = controller;
+        // this.controller = controller;
         this.translationAxis = translationAxis;
         this.strafeAxis = strafeAxis;
-        this.rotationAxis = rotationAxis;
         this.fieldRelative = fieldRelative;
         this.openLoop = openLoop;
+        this.pipeline = pipeline;
     }
 
     @Override
     public void execute() {
-        double yAxis = pidController.calculate(s_Swerve.getPitch(), 0);
-        double xAxis = controller.getRawAxis(strafeAxis);
-        double rAxis = controller.getRawAxis(rotationAxis);
+        double yAxis = 0.3;
+        double xAxis = 0;
+        double rAxis = s_Swerve.frontCamOffset(pipeline);
+        
         
         /* Deadbands */
 
@@ -73,11 +71,11 @@ public class BalanceStation extends CommandBase {
             xAxis = 0;
         }
 
-        if (Math.abs(rAxis) > Constants.stickDeadband) {
+        if (Math.abs(rAxis) > 0.01) {
             if (rAxis > 0){
-                rAxis = mapdouble(rAxis, Constants.stickDeadband, 1, 0, 1);
+                rAxis = mapdouble(rAxis, 0.01, 1, 0, 1);
             } else {
-                rAxis = mapdouble(rAxis, -Constants.stickDeadband, -1, 0, -1);
+                rAxis = mapdouble(rAxis, -0.01, -1, 0, -1);
             }
         }
         else{
@@ -86,6 +84,6 @@ public class BalanceStation extends CommandBase {
 
         translation = new Translation2d(yAxis, xAxis).times(Constants.Swerve.maxSpeed);
         rotation = rAxis * Constants.Swerve.maxAngularVelocity;
-        s_Swerve.drive(translation, rotation, fieldRelative, openLoop);
+        s_Swerve.drive(translation, rotation, false, false);
     }
 }

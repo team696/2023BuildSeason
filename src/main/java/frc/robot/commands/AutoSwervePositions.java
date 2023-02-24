@@ -21,19 +21,31 @@ import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Gripper.GripperState;
 
-public class Test extends CommandBase {
+public class AutoSwervePositions extends CommandBase {
   Swerve swerve;
   int timer;
-  double xOffset1;
-  double xOffset2;
+  double x1;
+  double x2;
+
+  double rot1;
+
+  double y1;
+  double y2;
+
+  double rot2;
+
   boolean reversed;
-  SwerveControllerCommand swerveControllerCommand;
+ private SwerveControllerCommand swerveControllerCommand;
 
   /** Creates a new Test. */
-  public Test(Swerve swerve, double xOffset1, double xOffset2, boolean reversed) {
+  public AutoSwervePositions(Swerve swerve, double x1, double y1, double rot1, double x2, double y2, double rot2, boolean reversed) {
     this.swerve = swerve;
-    this.xOffset1 = xOffset1;
-    this.xOffset2 = xOffset2;
+    this.x1 = x1;
+    this.x2 = x2;
+    this.rot1 = rot1;
+    this.rot2 = rot2;
+    this.y1 = y1;
+    this.y2 = y2;
     this.reversed = reversed;
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -47,20 +59,12 @@ public class Test extends CommandBase {
         0.5)
         .setKinematics(Constants.Swerve.swerveKinematics).setReversed(reversed);
 
-    double[] pose = Constants.AutoConstants.RobotPositions[swerve.tag][swerve.hor][swerve.height];
 
-    // Trajectory exampleTrajectory =
-    //     TrajectoryGenerator.generateTrajectory(List.of(/* swerve.getAprilTagEstPosition(), */
-    //         new Pose2d(pose[0]+xOffset1, pose[1], new Rotation2d(Math.PI)),
-    //         new Pose2d(pose[0]+xOffset2, pose[1], new Rotation2d(Math.PI))),
-    //     config);
-
-        Trajectory exampleTrajectory =
+    Trajectory exampleTrajectory =
         TrajectoryGenerator.generateTrajectory(List.of(/* swerve.getAprilTagEstPosition(), */
-            new Pose2d(2.8, 5.06, new Rotation2d(Math.PI)),
-            new Pose2d(2.1, 5.06, new Rotation2d(Math.PI))),
+            new Pose2d(x1, y1, new Rotation2d(rot1)),
+            new Pose2d(x2, y2, new Rotation2d(rot2))),
         config);
-
 
     var thetaController = new ProfiledPIDController(
         0.2, 0, 0, Constants.AutoConstants.kThetaControllerConstraints);
@@ -82,7 +86,7 @@ public class Test extends CommandBase {
 
     swerve.normalizeOdometry();
     swerveControllerCommand.schedule();
-    System.out.println("TEST COMMAND INIT");
+    System.out.println("SWERVE COMMAND INIT");
 
 
   }
@@ -90,7 +94,7 @@ public class Test extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    System.out.println("TEST COMMAND EXEC" + xOffset2);
+    System.out.println("SWERVE COMMAND EXEC" );
 
         // System.out.println("execute ");
   }
@@ -98,7 +102,7 @@ public class Test extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    System.out.println("TEST COMMAND END");
+    System.out.println("SWERVE COMMAND END");
 
     // System.out.println("end");
 

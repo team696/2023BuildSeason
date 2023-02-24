@@ -42,7 +42,12 @@ public class PhotonCameraWrapper
 
     public double getYOffset(){
         var result = frontCam.getLatestResult();
-       return  result.getBestTarget().getYaw();
+
+        if (!result.hasTargets())
+            return 0;
+      
+      
+            return  result.getBestTarget().getYaw();
         
     }
 

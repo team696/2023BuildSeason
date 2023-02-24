@@ -23,11 +23,11 @@ public final class Constants {
     public static final double rotatePid_Tol = 1;
 
     public static final double stowedPosValue = 230;
-    public static final double grndIntakePosValue = 216;
+    public static final double grndIntakePosValue = 217;
     public static final double grndScorePosValue = 207; 
     public static final double midScorePosValue = 130;
-    public static final double highScorePosValue = 113; 
-    public static final double shelfIntakePosValue = 37;
+    public static final double highScorePosValue = 110; 
+    public static final double shelfIntakePosValue = 137;
 
     public static final class Swerve {
         public static final int pigeonID = 1;
@@ -149,7 +149,7 @@ public final class Constants {
     
         public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
             new TrapezoidProfile.Constraints(
-                kMaxAngularSpeedRadiansPerSecond/8, kMaxAngularSpeedRadiansPerSecondSquared/2);
+                kMaxAngularSpeedRadiansPerSecond/2, kMaxAngularSpeedRadiansPerSecondSquared/2);
 
                 // [AprilTag #] [Left To Right] [ Bottom To Top]
         public static final double RobotPositions[][][][] = {
@@ -199,7 +199,7 @@ public final class Constants {
                                 Math.toRadians(-45)));
         static final String camera1Name = "OV9281-01";
         static final String camera2Name = "OV9281-02";
-        static final String frontCamName = "PLACE";
+        static final String frontCamName = "USB_Camera-B4.04.27.1";
     }
     
     public static class CANdle {

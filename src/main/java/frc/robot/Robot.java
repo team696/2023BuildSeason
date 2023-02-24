@@ -5,7 +5,9 @@
 package frc.robot;
 
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -54,44 +56,7 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
      m_robotContainer.s_Swerve.updateOdometry();
 
-    //  m_robotContainer.operatorPanel.setOutput(2, true );
-    //  m_robotContainer.operatorPanel.setOutput(1, true );
-    //  m_robotContainer.operatorPanel.setOutput(5, true );
-    //  m_robotContainer.operatorPanel.setOutput(6, true );
-    //  m_robotContainer.operatorPanel.setOutput(10, true );
-    //  m_robotContainer.operatorPanel.setOutput(13, true );
-    //  m_robotContainer.operatorPanel.setOutput(16, true );
- 
- 
-    //  m_robotContainer.operatorPanel.setOutput(3, true );
-    //  m_robotContainer.operatorPanel.setOutput(4, true );
-    //  m_robotContainer.operatorPanel.setOutput(7, true );
-    //  m_robotContainer.operatorPanel.setOutput(8, true );
-    //  m_robotContainer.operatorPanel.setOutput(9, true );
-    //  m_robotContainer.operatorPanel.setOutput(11, true );
-    //  m_robotContainer.operatorPanel.setOutput(12, true );
-    //  m_robotContainer.operatorPanel.setOutput(14, true );
-    //  m_robotContainer.operatorPanel.setOutput(15, true );
-    //  m_robotContainer.operatorPanel.setOutput(17, true );
-    //  m_robotContainer.operatorPanel.setOutput(18, true );
-    //  m_robotContainer.operatorPanel.setOutput(19, true );
-    //  m_robotContainer.operatorPanel.setOutput(20, true );
-    //  m_robotContainer.operatorPanel.setOutput(21, true );
-    //  m_robotContainer.operatorPanel.setOutput(22, true );
-    //  m_robotContainer.operatorPanel.setOutput(23, true );
-    //  m_robotContainer.operatorPanel.setOutput(24, true );
-    //  m_robotContainer.operatorPanel.setOutput(25, true );
-    //  m_robotContainer.operatorPanel.setOutput(26, true );
-    //  m_robotContainer.operatorPanel.setOutput(27, true );
-    //  m_robotContainer.operatorPanel.setOutput(28, true );
-    //  m_robotContainer.operatorPanel.setOutput(29, true );
-    //  m_robotContainer.operatorPanel.setOutput(30, true );
-    //  m_robotContainer.operatorPanel.setOutput(31, true );
-    //  m_robotContainer.operatorPanel.setOutput(32, true );
-    
     CommandScheduler.getInstance().run();
-    
-   // m_robotContainer.
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -132,6 +97,10 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+    Alliance alliance;
+alliance = DriverStation.getAlliance();
+System.out.println(alliance);
+
     candlesub.enabledLed();
 
 

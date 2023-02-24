@@ -111,7 +111,8 @@ public class RobotContainer {
     // armSub.setDefaultCommand(new ArmPositionCommand(armSub, ArmPositions.GROUND_PICKUP).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     // armSub.setDefaultCommand(new ArmPercentageCommand(armSub, 3, 2, driver));
 
-    placeCommand = new AutoPlaceTest2(s_Swerve, armSub, gripper);
+    placeCommand = new 
+     LeftSideAuto(s_Swerve, armSub, gripper);
     // Configure the button bindings
     configureButtonBindings();
   }
@@ -135,24 +136,25 @@ public class RobotContainer {
 
     gripperFor.toggleOnTrue(new GroundIntake(armSub, gripper).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
-    // operatorIntakeUp.whileTrue(new HoldArmPos(armSub, ArmPositions.STOWED).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-    // operatorIntakeUp.whileFalse(new HoldArmPos(armSub, ArmPositions.GROUND_PICKUP).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-    // operatorIntakeDown.whileTrue(new HoldArmPos(armSub, ArmPositions.MID_SCORE).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+    operatorIntakeUp.whileTrue(new HoldArmPos(armSub, ArmPositions.STOWED).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    operatorIntakeUp.whileFalse(new HoldArmPos(armSub, ArmPositions.GROUND_PICKUP).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+    operatorIntakeDown.whileTrue(new HoldArmPos(armSub, ArmPositions.MID_SCORE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    operatorIntakeDown.whileFalse(new HoldArmPos(armSub, ArmPositions.GROUND_PICKUP).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
-    operatorLatch.onTrue(new InstantCommand(() -> gripper.setClaw(GripperState.CONE)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-    operatorHook.onTrue(new InstantCommand(() -> gripper.setClaw(GripperState.CUBE)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-    operatorShoot.onTrue(new InstantCommand(() -> gripper.setClaw(GripperState.OPEN)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-    rightJoy.whileTrue(new LockToGamePiece(s_Swerve, joystickPanel, translationAxis, strafeAxis, true, false, 1));
-    operatorSpinup.whileTrue(new BalanceStation(s_Swerve, joystickPanel, translationAxis, strafeAxis, rotationAxis, true, false));
+    // operatorLatch.onTrue(new InstantCommand(() -> gripper.setClaw(GripperState.CONE)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+    // operatorHook.onTrue(new InstantCommand(() -> gripper.setClaw(GripperState.CUBE)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+    // operatorShoot.onTrue(new InstantCommand(() -> gripper.setClaw(GripperState.OPEN)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+
+    operatorLatch.toggleOnTrue(new InstantCommand(() -> gripper.setClaw(GripperState.CONE)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+    operatorHook.toggleOnTrue(new InstantCommand(() -> gripper.setClaw(GripperState.OPEN)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+    operatorSpinup.whileTrue(new LockToGamePiece(s_Swerve, joystickPanel, translationAxis, strafeAxis, true, false, 0).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+    // operatorSpinup.whileTrue(new BalanceStation(s_Swerve, joystickPanel, translationAxis, strafeAxis, rotationAxis, true, false));
 
   
     
-    
-    // operatorDeploy.onTrue(new Test(s_Swerve).andThen(new InstantCommand(() -> gripper.setClaw(GripperState.CONE))));
-    // operatorDeploy.onTrue(new ArmPositionCommand(armSub, ArmPositions.MID_SCORE));
-    // operatorDeploy.onTrue(new WaitCommand(2).andThen(new InstantCommand(() -> gripper.setClaw(GripperState.CONE))));
-    operatorDeploy.onTrue(placeCommand);
-    
+ 
+    // operatorDeploy.onTrue(placeCommand);
+    operatorDeploy.onTrue(new LeftSideAuto(s_Swerve, armSub, gripper));
   }
 /*   _                        
   \`*-.                    
@@ -186,6 +188,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return new exampleAuto2(s_Swerve);
+    return placeCommand;
   }
 }

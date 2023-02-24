@@ -3,6 +3,7 @@ package frc.robot.commands;
 import frc.robot.Constants;
 import frc.robot.subsystems.Swerve;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
@@ -44,6 +45,7 @@ public class LockToGamePiece extends CommandBase {
         double yAxis = -controller.getRawAxis(translationAxis);
         double xAxis = controller.getRawAxis(strafeAxis);
         double rAxis = s_Swerve.frontCamOffset(pipeline);
+        
         
         /* Deadbands */
 

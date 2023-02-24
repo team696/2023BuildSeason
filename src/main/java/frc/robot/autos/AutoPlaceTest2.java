@@ -45,12 +45,18 @@ public class AutoPlaceTest2 extends SequentialCommandGroup {
     this.gripper = gripper;
     
     addCommands(
+      // new InstantCommand(() -> swerve.normalizeOdometry()),
+      // new Test(swerve, 0.7, 0).raceWith(new HoldArmPos(armSub, ArmPositions.MID_SCORE)),
+      // new GripperStateCommand(gripper, GripperState.CONE),
+      // new HoldArmPos(armSub, ArmPositions.MID_SCORE).raceWith  (new WaitCommand(1)),
+      // new Test(swerve, 0, 0.7).raceWith(new HoldArmPos(armSub, ArmPositions.MID_SCORE)),
+      // new HoldArmPos(armSub, ArmPositions.GROUND_PICKUP).raceWith(new WaitCommand(0.1)),
+      // new GripperStateCommand(gripper, GripperState.OPEN)
       new InstantCommand(() -> swerve.normalizeOdometry()),
-      new Test(swerve, 0.7, 0).raceWith(new HoldArmPos(armSub, ArmPositions.MID_SCORE)),
-      new GripperStateCommand(gripper, GripperState.CONE),
-      new HoldArmPos(armSub, ArmPositions.MID_SCORE).raceWith  (new WaitCommand(1)),
-      new Test(swerve, 0, 0.7).raceWith(new HoldArmPos(armSub, ArmPositions.MID_SCORE)),
-      new HoldArmPos(armSub, ArmPositions.GROUND_PICKUP).raceWith(new WaitCommand(0.1)),
+      new Test(swerve, 0.7, 0, false),
+      // new GripperStateCommand(gripper, GripperState.CONE),
+      new WaitCommand(3),
+      new Test(swerve, 0.2, 0.7, true),
       new GripperStateCommand(gripper, GripperState.OPEN)
       
       );

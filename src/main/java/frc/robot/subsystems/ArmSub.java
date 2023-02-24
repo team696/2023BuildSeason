@@ -34,6 +34,8 @@ public class ArmSub extends SubsystemBase {
   public TalonSRX encorderTalon;
   public CANCoder testCanCoder;
   public TalonSRXFeedbackDevice encoder; 
+  public double maxSpeedFor;
+  public double maxSpeedRev;
   
 
 
@@ -44,19 +46,21 @@ public class ArmSub extends SubsystemBase {
     testCanCoder = new CANCoder(14, "Abu");
     testCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
 
-    
+    maxSpeedFor = 0.3;
+    maxSpeedRev = 0.6;
 
 
     // pidLoop = new PIDController(0.006, 0.003, 0.001);  
-    pidLoop = new PIDController(0.01  , 0.00, 0.01   );
+    pidLoop = new PIDController(0.012, 0.003, 0.00);
+    // pidLoop.
 
     leftArm = new WPI_TalonFX(20, "Abu");
     rightArm = new WPI_TalonFX(21, "Abu");
 
     leftArm.configFactoryDefault();
       leftArm.setNeutralMode(NeutralMode.Brake);
-      leftArm.configPeakOutputForward(1);
-      leftArm.configPeakOutputReverse(-1);
+      leftArm.configPeakOutputForward(maxSpeedFor);
+      leftArm.configPeakOutputReverse(-maxSpeedRev);
       leftArm.config_kP(0, 0.05);
       leftArm.config_kI(0, 0.0);
       leftArm.config_kD(0, 0.0);
@@ -69,8 +73,8 @@ public class ArmSub extends SubsystemBase {
 
 
     rightArm.configFactoryDefault();
-      rightArm.configPeakOutputForward(1);
-      rightArm.configPeakOutputReverse(-1);
+      rightArm.configPeakOutputForward(maxSpeedFor);
+      rightArm.configPeakOutputReverse(-maxSpeedRev);
       rightArm.setSensorPhase(true);
       rightArm.setInverted(InvertType.FollowMaster);
       rightArm.config_kP(0, 0.05);
@@ -116,45 +120,44 @@ public class ArmSub extends SubsystemBase {
     switch(position){
 
       case GROUND_PICKUP:
-      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.grndIntakePosValue));
-      // leftArm.set(TalonFXControlMode.Position, Constants.grndIntakePosValue);
-
-      
+      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.grndIntakePosValue));
+      // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.grndIntakePosValue));
       break;
 
       case STOWED:
-      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.stowedPosValue));
-      // leftArm.set(TalonFXControlMode.Position, Constants.stowedPosValue);
+      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.stowedPosValue));
+      // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.stowedPosValue));
+
       break;
 
       case GROUND_SCORE: 
-      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.grndScorePosValue));
-      // leftArm.set(TalonFXControlMode.Position, Constants.grndScorePosValue);
+      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.grndScorePosValue));
+      // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.grndScorePosValue));
 
       break;
 
       case MID_SCORE:
-      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.midScorePosValue));
-      // leftArm.set(TalonFXControlMode.Position, Constants.midScorePosValue);
+      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.midScorePosValue));
+      // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.midScorePosValue));
 
       break;
 
       case HIGH_SCORE:
-      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.highScorePosValue));
-      // leftArm.set(TalonFXControlMode.Position, Constants.highScorePosValue);
+      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.highScorePosValue));
+      // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.highScorePosValue));
 
       break;
 
       case SHELF_PICKUP:
-      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.shelfIntakePosValue));
-      // leftArm.set(TalonFXControlMode.Position, Constants.shelfIntakePosValue);
-
+      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.shelfIntakePosValue));
+      // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.shelfIntakePosValue));
 
       break;
-      default:
-      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.shelfIntakePosValue));
 
-        // leftArm.set(TalonFXControlMode.Position, Constants.shelfIntakePosValue);
+      default:
+      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.shelfIntakePosValue));
+      // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.shelfIntakePosValue));
+
       break;
     }
   }
@@ -185,15 +188,9 @@ public class ArmSub extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // getColorSensor();
-    // System.out.print( (leftArm.getSelectedSensorPosition() /* * 0.00274658 */) /* * (360.0 / ((64) * 2048.0)) */ );
-    // System.out.print(getArmMotorPos());
     SmartDashboard.putNumber("Arm Encoder Position", getArmPosition() );
     SmartDashboard.putNumber("Arm Motor Position", getArmMotorPos());
     SmartDashboard.putNumber("Arm Motor 1 Current", leftArm.getStatorCurrent());
     SmartDashboard.putNumber("Arm Motor 2 Current", rightArm.getStatorCurrent());
-
-    
-    // This method will be called once per scheduler run
   }
 } 

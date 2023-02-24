@@ -51,13 +51,13 @@ public class CANdleSub extends SubsystemBase {
   }
 
   public void disabledLed(){
-    // m_candle.animate(new SingleFadeAnimation(0, 255, 0, 0, 0.7, numLed, ledOffset));
-    m_candle.animate(new ColorFlowAnimation(128, 20, 70, 0, 0.7, numLed, Direction.Forward, 8));
+    m_candle.animate(new SingleFadeAnimation(0, 255, 0, 0, 0.7, numLed, ledOffset));
+    // m_candle.animate(new ColorFlowAnimation(128, 20, 70, 0, 0.7, numLed, Direction.Forward, 8));
 
   }
 
   public void enabledLed(){
-    m_candle.animate(new SingleFadeAnimation(255, 0, 0, 0, 0.7, numLed, ledOffset));
+    m_candle.animate(new SingleFadeAnimation(230, 10, 10, 0, 0.7, numLed, ledOffset));
 
   }
 
