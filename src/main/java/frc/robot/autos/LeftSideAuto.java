@@ -70,19 +70,12 @@ MinMax minMax;
         1.3)
         .setKinematics(Constants.Swerve.swerveKinematics).setReversed(false);
         config.addConstraint(new CentripetalAccelerationConstraint(50));
-        TrajectoryConfig configrev = new TrajectoryConfig(
-          1.3,
-          1.3)
-          .setKinematics(Constants.Swerve.swerveKinematics).setReversed(true);
-          configrev.addConstraint(new CentripetalAccelerationConstraint(50));
-    // double[] pose = Constants.AutoConstants.RobotPositions[swerve.tag][swerve.hor][swerve.height];
-
-    // Trajectory exampleTrajectory =
-    //     TrajectoryGenerator.generateTrajectory(List.of(/* swerve.getAprilTagEstPosition(), */
-    //         new Pose2d(pose[0]+xOffset1, pose[1], new Rotation2d(Math.PI)),
-    //         new Pose2d(pose[0]+xOffset2, pose[1], new Rotation2d(Math.PI))),
-    //     config);
-
+    TrajectoryConfig configrev = new TrajectoryConfig(
+        1.3,
+        1.3)
+        .setKinematics(Constants.Swerve.swerveKinematics).setReversed(true);
+        configrev.addConstraint(new CentripetalAccelerationConstraint(50));
+    
         Trajectory traj1 =
         TrajectoryGenerator.generateTrajectory(List.of(/* swerve.getAprilTagEstPosition(), */
             new Pose2d(3, 5.06, new Rotation2d(Math.PI)),
@@ -189,14 +182,13 @@ MinMax minMax;
                 thetaController,
                 swerve::setModuleStates,
                 swerve);
+                
     addCommands(
       
-      // new AutoSwervePositions(swerve, 2.8, 5.06, Math.PI, 2.1, 5.06, Math.PI, false),
       new WaitCommand(0.5).raceWith(new HoldArmPos(armSub, ArmPositions.MID_SCORE)),
       swerveControllerCommand1.raceWith(new HoldArmPos(armSub, ArmPositions.MID_SCORE)),
       new GripperStateCommand(gripper, GripperState.OPEN),
-      // new WaitCommand(3),
-      // new AutoSwervePositions(swerve, 2.1, 5.06, Math.PI, 2.8, 5.06, Math.PI, true ),
+
       swerveControllerCommand2.raceWith(new WaitCommand(0.5).andThen(new HoldArmPos(armSub, ArmPositions.GROUND_PICKUP))),
       swerveControllerCommand3.raceWith(new HoldArmPos(armSub, ArmPositions.GROUND_PICKUP)),
       new AutoLockToGamePiece(swerve, 0, 0, false, false , 0).raceWith(new GroundIntake(armSub, gripper)),
