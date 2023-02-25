@@ -23,6 +23,7 @@ import frc.robot.GlobalVariables.ArmPositions;
 import frc.robot.commands.ArmPositionCommand;
 import frc.robot.commands.GripperStateCommand;
 import frc.robot.commands.HoldArmPos;
+import frc.robot.commands.HoldArmPosAuto;
 import frc.robot.commands.Test;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.Gripper;
@@ -53,11 +54,13 @@ public class AutoPlaceTest2 extends SequentialCommandGroup {
       // new HoldArmPos(armSub, ArmPositions.GROUND_PICKUP).raceWith(new WaitCommand(0.1)),
       // new GripperStateCommand(gripper, GripperState.OPEN)
       new InstantCommand(() -> swerve.normalizeOdometry()),
-      new Test(swerve, 0.7, 0, false),
-      // new GripperStateCommand(gripper, GripperState.CONE),
-      new WaitCommand(3),
-      new Test(swerve, 0.2, 0.7, true),
-      new GripperStateCommand(gripper, GripperState.OPEN)
+      new WaitCommand(0.5).raceWith(new HoldArmPosAuto(armSub)),
+      new Test(swerve, 0.6, 0, false).raceWith(new HoldArmPosAuto(armSub)),
+      new GripperStateCommand(gripper, GripperState.OPEN).raceWith(new HoldArmPosAuto(armSub)),
+      new Test(swerve, 0.2, 0.7, true).raceWith(new WaitCommand(1.5).andThen(new HoldArmPos(armSub, ArmPositions.GROUND_PICKUP))),
+      new GripperStateCommand(gripper, GripperState.CONE).raceWith(new HoldArmPos(armSub, ArmPositions.GROUND_PICKUP)),
+      new HoldArmPos(armSub, ArmPositions.GROUND_PICKUP).raceWith(new WaitCommand(1))
+
       
       );
     

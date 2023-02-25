@@ -51,7 +51,7 @@ public class ArmSub extends SubsystemBase {
 
 
     // pidLoop = new PIDController(0.006, 0.003, 0.001);  
-    pidLoop = new PIDController(0.012, 0.003, 0.00);
+    pidLoop = new PIDController(0.012, 0.002, 0.00);
     // pidLoop.
 
     leftArm = new WPI_TalonFX(20, "Abu");
@@ -131,19 +131,30 @@ public class ArmSub extends SubsystemBase {
       break;
 
       case GROUND_SCORE: 
-      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.grndScorePosValue));
+      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.grndScorePosValueCone));
       // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.grndScorePosValue));
 
       break;
 
-      case MID_SCORE:
-      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.midScorePosValue));
+      case MID_SCORE_CONE:
+      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.midScorePosValueCone));
       // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.midScorePosValue));
 
       break;
 
-      case HIGH_SCORE:
-      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.highScorePosValue));
+      case HIGH_SCORE_CONE:
+      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.highScorePosValueCone));
+      // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.highScorePosValue));
+
+      break;
+      case MID_SCORE_CUBE:
+      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.midScorePosValueCube));
+      // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.midScorePosValue));
+
+      break;
+
+      case HIGH_SCORE_CUBE:
+      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.highScorePosValueCube));
       // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.highScorePosValue));
 
       break;

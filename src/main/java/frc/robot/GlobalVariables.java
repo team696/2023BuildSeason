@@ -7,10 +7,10 @@ package frc.robot;
 /** Add your docs here. */
 public class GlobalVariables {
     
-    public static boolean gamePiece;
-    public static int portionSelect;
+    public static int gamePiece = 0;
+    public static int tag;
     public static int rowSelect;
-    public static int columnSelect;
+    public static int height;
 
     public static enum StationSelect{
         CLOSE_RAMP, LEFT_SHELF, LEFT_RAMP, RIGHT_SHELF, RIGHT_RAMP
@@ -20,7 +20,7 @@ public class GlobalVariables {
 
 
     public static enum ArmPositions{
-        STOWED, GROUND_PICKUP, GROUND_SCORE, MID_SCORE, HIGH_SCORE, SHELF_PICKUP
+        STOWED, GROUND_PICKUP, GROUND_SCORE, MID_SCORE_CUBE, MID_SCORE_CONE, HIGH_SCORE_CUBE,HIGH_SCORE_CONE, SHELF_PICKUP, 
     }
 
     public static ArmPositions armPosition;

@@ -7,6 +7,7 @@ import org.photonvision.EstimatedRobotPose;
 import com.kauailabs.navx.frc.AHRS;
 import frc.robot.SwerveModule;
 import frc.robot.Constants;
+import frc.robot.GlobalVariables;
 import frc.robot.PhotonCameraWrapper;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -43,6 +44,7 @@ public class Swerve extends SubsystemBase {
     public static SendableChooser<Integer> AprilTagGrid = new SendableChooser<>();
     public static SendableChooser<Integer> HeightGrid = new SendableChooser<>();
     public static SendableChooser<Integer> PositionGrid = new SendableChooser<>();
+    public static SendableChooser<Integer> ConeVCube = new SendableChooser<>();
     public final int gridTag1  = 0;
     public final int gridTag2 = 1;
     public final int gridTag3 = 2;
@@ -52,11 +54,12 @@ public class Swerve extends SubsystemBase {
     public final int gridPosLeft = 0;
     public final int gridPosMid = 1;
     public final int gridPosRight =2;
-
+    
     public int tag;
     public int hor;
     public int height;
 
+   
 
 
   
@@ -101,6 +104,11 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
         tag = AprilTagGrid.getSelected();
         hor = PositionGrid.getSelected();
         height = HeightGrid.getSelected();
+
+        GlobalVariables.height = HeightGrid.getSelected();
+
+
+        // gamePiece = ConeVCube.getSelected();
     }
 
     
@@ -256,15 +264,17 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
     
         HeightGrid.setDefaultOption("Low Height", gridHeightLow);
         HeightGrid.addOption("Mid Height", gridHeightMid);
-        HeightGrid.addOption("High Height", gridHeightMid);
+        HeightGrid.addOption("High Height", gridHeightHigh);
     
         PositionGrid.setDefaultOption("Left Position", gridPosLeft);
         PositionGrid.addOption("Mid Position", gridPosMid);
         PositionGrid.addOption("Right Position", gridPosRight);
-        
+
+     
         SmartDashboard.putData(AprilTagGrid);
         SmartDashboard.putData(HeightGrid);
         SmartDashboard.putData(PositionGrid);
+
 
         SmartDashboard.putNumber("Odometry X", getPose().getX());
         SmartDashboard.putNumber("Odometry Y", getPose().getY());

@@ -12,6 +12,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import frc.lib.util.SwerveModuleConstants;
+import frc.robot.GlobalVariables.ArmPositions;
 
 public final class Constants {
     public static final double stickDeadband = 0.06;
@@ -24,10 +25,18 @@ public final class Constants {
 
     public static final double stowedPosValue = 230;
     public static final double grndIntakePosValue = 217;
-    public static final double grndScorePosValue = 207; 
-    public static final double midScorePosValue = 130;
-    public static final double highScorePosValue = 110; 
-    public static final double shelfIntakePosValue = 137;
+
+    public static final double grndScorePosValueCube = 187; 
+    public static final double grndScorePosValueCone = 187; 
+
+    public static final double midScorePosValueCube = 150;
+    public static final double midScorePosValueCone = 128;
+
+    public static final double highScorePosValueCube = 128; 
+    public static final double highScorePosValueCone = 110; 
+
+    public static final double shelfIntakePosValue = 127;
+
 
     public static final class Swerve {
         public static final int pigeonID = 1;
@@ -154,29 +163,30 @@ public final class Constants {
                 // [AprilTag #] [Left To Right] [ Bottom To Top]
         public static final double RobotPositions[][][][] = {
             { // Leftmost Tag
-                { {1.74, 5.06}, {2.1, 5.06}, {1.74, 5.06} }, //Left scoring
-                { {1.74, 4.46}, {2.1, 4.46}, {1.74, 4.46} }, //Middle Scoring
-                { {1.74, 3.87}, {2.1, 3.87}, {1.74, 3.87} },  //Top Scoring
+                { {2.1, 5.06}, {2.2, 5.06}, {1.74, 5.06} }, //Left scoring
+                { {2.1, 4.46}, {2.2, 4.46}, {1.74, 4.46} }, //Middle Scoring
+                { {2.1, 3.93}, {2.2, 3.93}, {1.74, 3.93} },  //Right Scoring
+                //  low             mid          high 
             }, 
             { //Middle Tag
-                { {1.74, 3.28}, {2.1, 3.28}, {1.74, 3.28} }, 
-                { {1.74, 2.7 }, {2.1, 2.70}, {1.74, 2.70} },
-                { {1.74, 2.16}, {2.1, 2.16}, {1.74, 2.16} },
+                { {2.1, 3.35}, {2.2, 3.35}, {1.74, 3.35} }, 
+                { {2.1, 2.85 }, {2.2, 2.70 }, { 1.74, 2.85 } },
+                { {2.1, 2.25}, {2.2, 2.25}, {1.7, 2.25} },
             },
             { // Right Tag
-                { {1.74, 1.59}, {2.1, 1.59}, {1.74, 1.59} }, 
-                { {1.74, 1.37}, {2.1, 1.37}, {1.74, 1.37} },
-                { {1.74, 0.58}, {2.1, 0.58}, {1.74, 0.58} },
+                { {2.1, 1.65}, {2.2, 1.65}, {1.78, 1.69} }, 
+                { {2.1, 1.37}, {2.2, 1.37}, {1.78, 1.37} },
+                { {2.1, 0.58}, {2.2, 0.58}, {1.78, 0.58} },
             }
         };
         // [0 is Cone, 1 is Cube] [Low, Mid, High]
-        public static final double ArmPositions[][] = {
-            { 1,1,1 }, 
-            { 1,1,1 }
-        };
+       
       }
 
-        
+         public static final double ArmPositions[][] = {
+            { grndScorePosValueCone,midScorePosValueCone,highScorePosValueCone }, 
+            { grndScorePosValueCube,midScorePosValueCube,highScorePosValueCube }
+        };
 
       static class FieldConstants {
         static final double length = Units.feetToMeters(54 + 3.25/12);

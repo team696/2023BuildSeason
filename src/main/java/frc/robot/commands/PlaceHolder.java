@@ -25,6 +25,6 @@ public class PlaceHolder extends ParallelCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(new Test(swerve,0,0, false), 
-                new ArmPositionCommand(armSub, ArmPositions.MID_SCORE));
+                new ArmPositionCommand(armSub, ArmPositions.MID_SCORE_CONE));
   }
 }

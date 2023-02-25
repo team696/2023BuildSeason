@@ -69,13 +69,12 @@ MinMax minMax;
         1.3,
         1.3)
         .setKinematics(Constants.Swerve.swerveKinematics).setReversed(false);
-        config.addConstraint(new CentripetalAccelerationConstraint(50));
+        config.addConstraint(new CentripetalAccelerationConstraint(0.3));
     TrajectoryConfig configrev = new TrajectoryConfig(
         1.3,
         1.3)
         .setKinematics(Constants.Swerve.swerveKinematics).setReversed(true);
-        configrev.addConstraint(new CentripetalAccelerationConstraint(50));
-    
+        configrev.addConstraint(new CentripetalAccelerationConstraint(0.3));
         Trajectory traj1 =
         TrajectoryGenerator.generateTrajectory(List.of(/* swerve.getAprilTagEstPosition(), */
             new Pose2d(3, 5.06, new Rotation2d(Math.PI)),
@@ -103,7 +102,7 @@ MinMax minMax;
         Trajectory traj5 =
         TrajectoryGenerator.generateTrajectory(List.of(/* swerve.getAprilTagEstPosition(), */
             new Pose2d(3, 5.06, new Rotation2d(Math.PI)),
-            new Pose2d(1.8, 5.15, new Rotation2d(Math.PI))),
+            new Pose2d(1.65, 5.15, new Rotation2d(Math.PI))),
         config);
         Trajectory traj6 =
         TrajectoryGenerator.generateTrajectory(List.of(/* swerve.getAprilTagEstPosition(), */
@@ -185,20 +184,22 @@ MinMax minMax;
                 
     addCommands(
       
-      new WaitCommand(0.5).raceWith(new HoldArmPos(armSub, ArmPositions.MID_SCORE)),
-      swerveControllerCommand1.raceWith(new HoldArmPos(armSub, ArmPositions.MID_SCORE)),
+      new WaitCommand(0.5).raceWith(new HoldArmPos(armSub, ArmPositions.MID_SCORE_CONE)),
+      swerveControllerCommand1.raceWith(new HoldArmPos(armSub, ArmPositions.MID_SCORE_CONE)),
       new GripperStateCommand(gripper, GripperState.OPEN),
 
       swerveControllerCommand2.raceWith(new WaitCommand(0.5).andThen(new HoldArmPos(armSub, ArmPositions.GROUND_PICKUP))),
       swerveControllerCommand3.raceWith(new HoldArmPos(armSub, ArmPositions.GROUND_PICKUP)),
       new AutoLockToGamePiece(swerve, 0, 0, false, false , 0).raceWith(new GroundIntake(armSub, gripper)),
       swerveControllerCommand4.raceWith(new HoldArmPos(armSub, ArmPositions.GROUND_PICKUP)),
-       new WaitCommand(0.5).raceWith(new HoldArmPos(armSub, ArmPositions.HIGH_SCORE)),
-      swerveControllerCommand5.raceWith(new HoldArmPos(armSub, ArmPositions.HIGH_SCORE)),
+       new WaitCommand(0.5).raceWith(new HoldArmPos(armSub, ArmPositions.HIGH_SCORE_CONE)),
+      swerveControllerCommand5.raceWith(new HoldArmPos(armSub, ArmPositions.HIGH_SCORE_CONE)),
       new GripperStateCommand(gripper, GripperState.OPEN),
-      swerveControllerCommand6.raceWith(new WaitCommand(0.5).andThen(new HoldArmPos(armSub, ArmPositions.GROUND_PICKUP)))
+      swerveControllerCommand6.raceWith(new WaitCommand(0.5).andThen(new HoldArmPos(armSub, ArmPositions.GROUND_PICKUP))),
+      new GripperStateCommand(gripper, GripperState.CONE),
+      new HoldArmPos(armSub, ArmPositions.GROUND_PICKUP)
 
-      // new GripperStateCommand(gripper, GripperState.OPEN)
+
       
       );
 

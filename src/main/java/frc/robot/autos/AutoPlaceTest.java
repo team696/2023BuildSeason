@@ -68,7 +68,7 @@ public class AutoPlaceTest extends SequentialCommandGroup {
     
     addCommands(
       new InstantCommand(() -> swerve.normalizeOdometry()),
-      swerveControllerCommand.alongWith(new ArmPositionCommand(armSub, ArmPositions.MID_SCORE))
+      swerveControllerCommand.alongWith(new ArmPositionCommand(armSub, ArmPositions.MID_SCORE_CONE))
 
 
     );

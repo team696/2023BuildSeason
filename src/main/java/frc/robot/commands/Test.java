@@ -49,30 +49,30 @@ public class Test extends CommandBase {
 
     double[] pose = Constants.AutoConstants.RobotPositions[swerve.tag][swerve.hor][swerve.height];
 
-    // Trajectory exampleTrajectory =
-    //     TrajectoryGenerator.generateTrajectory(List.of(/* swerve.getAprilTagEstPosition(), */
-    //         new Pose2d(pose[0]+xOffset1, pose[1], new Rotation2d(Math.PI)),
-    //         new Pose2d(pose[0]+xOffset2, pose[1], new Rotation2d(Math.PI))),
-    //     config);
-
-        Trajectory exampleTrajectory =
+    Trajectory exampleTrajectory =
         TrajectoryGenerator.generateTrajectory(List.of(/* swerve.getAprilTagEstPosition(), */
-            new Pose2d(2.8, 5.06, new Rotation2d(Math.PI)),
-            new Pose2d(2.1, 5.06, new Rotation2d(Math.PI))),
+            new Pose2d(pose[0]+xOffset1, pose[1], new Rotation2d(Math.PI)),
+            new Pose2d(pose[0]+xOffset2, pose[1], new Rotation2d(Math.PI))),
         config);
+    System.out.println(pose[0]);
+        // Trajectory exampleTrajectory =
+        // TrajectoryGenerator.generateTrajectory(List.of(/* swerve.getAprilTagEstPosition(), */
+        //     new Pose2d(2.8, 5.06, new Rotation2d(Math.PI)),
+        //     new Pose2d(2.1, 5.06, new Rotation2d(Math.PI))),
+        // config);
 
 
     var thetaController = new ProfiledPIDController(
-        0.2, 0, 0, Constants.AutoConstants.kThetaControllerConstraints);
+        1.5, 0, 0, Constants.AutoConstants.kThetaControllerConstraints);
 
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
-
+  
     swerveControllerCommand = new SwerveControllerCommand(
         exampleTrajectory,
         swerve::getAprilTagEstPosition,
         Constants.Swerve.swerveKinematics,
-        new PIDController(1, 0, 0),
-        new PIDController(1, 0, 0),
+        new PIDController(2, 0.01, 0),
+        new PIDController(2, 0.01, 0),
         thetaController,
         swerve::setModuleStates,
         swerve);

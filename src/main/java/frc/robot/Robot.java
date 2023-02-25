@@ -99,7 +99,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     Alliance alliance;
 alliance = DriverStation.getAlliance();
-System.out.println(alliance);
+// System.out.println(alliance);
 
     candlesub.enabledLed();
 
