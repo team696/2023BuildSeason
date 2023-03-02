@@ -39,7 +39,9 @@ public class PhotonCameraWrapper
             System.out.println(e);
         }
     }
-
+ public void frontCamPipeline(int pipelineIndex){
+        frontCam.setPipelineIndex(pipelineIndex);;
+    }
     public double getYOffset(){
         var result = frontCam.getLatestResult();
 
@@ -51,9 +53,7 @@ public class PhotonCameraWrapper
         
     }
 
-    public void frontCamPipeline(int pipelineIndex){
-        frontCam.setPipelineIndex(pipelineIndex);
-    }
+   
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
             if (photonPoseEstimator == null || photonPoseEstimator2 == null) 

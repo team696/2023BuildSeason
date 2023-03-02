@@ -23,19 +23,19 @@ public final class Constants {
     public static final double rotatePid_D = /* 0.003 */0.002125;
     public static final double rotatePid_Tol = 1;
 
-    public static final double stowedPosValue = 230;
-    public static final double grndIntakePosValue = 217;
+    public static final double stowedPosValue = 199;
+    public static final double grndIntakePosValue = 180;
 
-    public static final double grndScorePosValueCube = 187; 
-    public static final double grndScorePosValueCone = 187; 
+    public static final double grndScorePosValueCube = 166; 
+    public static final double grndScorePosValueCone = 166; 
 
-    public static final double midScorePosValueCube = 150;
-    public static final double midScorePosValueCone = 128;
+    public static final double midScorePosValueCube = 117;
+    public static final double midScorePosValueCone = 98;
 
-    public static final double highScorePosValueCube = 128; 
-    public static final double highScorePosValueCone = 110; 
+    public static final double highScorePosValueCube = 94; 
+    public static final double highScorePosValueCone = 80; 
 
-    public static final double shelfIntakePosValue = 127;
+    public static final double shelfIntakePosValue = 96;
 
 
     public static final class Swerve {
@@ -44,7 +44,7 @@ public final class Constants {
 
         /* Drivetrain Constants */ 
         public static final double trackWidth =  Units.inchesToMeters(24) /*  0.521 */;
-        public static final double wheelBase =  Units.inchesToMeters(24)     /* 0.622 */;
+        public static final double wheelBase =  Units.inchesToMeters(25)     /* 0.622 */;
         public static final double wheelDiameter = Units.inchesToMeters(3.94);
         public static final double wheelCircumference = wheelDiameter * Math.PI;
 
@@ -109,7 +109,7 @@ public final class Constants {
             public static final int driveMotorID = /* 2 */5;
             public static final int angleMotorID = /* 1 */4;
             public static final int canCoderID = /* 3 */6;
-            public static final double angleOffset =    /* 7.9 */ 275;
+            public static final double angleOffset =    /* 7.9 */ 304;
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -119,7 +119,7 @@ public final class Constants {
             public static final int driveMotorID = /* 11 */11;
             public static final int angleMotorID = /* 10 */10;
             public static final int canCoderID = /* 12 */12;
-            public static final double angleOffset =   /* 74  */240 ;
+            public static final double angleOffset =   /* 74  */218 ;
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -129,7 +129,7 @@ public final class Constants {
             public static final int driveMotorID = /* 5 */2;
             public static final int angleMotorID = /* 4 */1;
             public static final int canCoderID = /* 6 */3;
-            public static final double angleOffset = /* 307 */318;
+            public static final double angleOffset = /* 307 */312;
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -139,7 +139,7 @@ public final class Constants {
             public static final int driveMotorID = /* 8 */8;
             public static final int angleMotorID = /* 7 */7;
             public static final int canCoderID = /* 9 */9;
-            public static final double angleOffset = /* 146 */ 305  ;
+            public static final double angleOffset = /* 146 */ 289 ;
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -174,13 +174,35 @@ public final class Constants {
                 { {2.1, 2.25}, {2.2, 2.25}, {1.7, 2.25} },
             },
             { // Right Tag
-                { {2.1, 1.65}, {2.2, 1.65}, {1.78, 1.69} }, 
-                { {2.1, 1.37}, {2.2, 1.37}, {1.78, 1.37} },
-                { {2.1, 0.58}, {2.2, 0.58}, {1.78, 0.58} },
+                { {2.1, 1.72}, {2.2, 1.72}, {1.74, 1.72} }, 
+                { {2.1, 1.15}, {2.2, 1.15}, {1.74, 1.15} },
+                { {2.1, 0.5}, {2.2, 0.5}, {1.74, 0.5} },
             }
         };
         // [0 is Cone, 1 is Cube] [Low, Mid, High]
        
+
+        public static final double RobotPositionsRed[][][][] = {
+            { // Leftmost Tag
+                { {14.44, 0.5}, {14.34, 0.5}, {14.8, 0.5} },
+                { {14.44, 1.15}, {14.34, 1.15}, {14.8, 1.15} },
+                { {14.44, 1.72}, {14.34, 1.72}, {14.8, 1.72} }, 
+
+                //  low             mid          high 
+            }, 
+            { //Middle Tag
+                { {14.44, 2.25}, {14.34, 2.25}, {14.8, 2.25} },
+                { {14.44, 2.85 }, {14.34, 2.70 }, { 14.8, 2.85 } },   
+                { {14.44, 3.35}, {14.34, 3.35}, {14.8, 3.35} }, 
+
+            },
+            { // Right Tag
+                { {14.44, 3.93}, {14.34, 3.93}, {14.8, 3.93} },  //Right Scoring
+                { {14.44, 4.46}, {14.34, 4.46}, {14.8, 4.46} }, //Middle Scoring
+                { {14.44, 5.06}, {14.34, 5.06}, {14.8, 5.06} }, //Left scoring
+
+            }
+        };
       }
 
          public static final double ArmPositions[][] = {
@@ -196,20 +218,20 @@ public final class Constants {
     static class VisionConstants {
         static final Transform3d robotToCam1 =
                 new Transform3d(
-                        new Translation3d(-Units.feetToMeters(0.95096), Units.feetToMeters(0.924031), Units.feetToMeters(1.79878)),
-                        new Rotation3d(
-                                0, 0,
-                                Math.toRadians(45))); 
-
-        static final Transform3d robotToCam2 =
-                new Transform3d(
                         new Translation3d(-Units.feetToMeters(0.95096), -Units.feetToMeters(0.924031), Units.feetToMeters(1.79878)),
                         new Rotation3d(
                                 0, 0,
-                                Math.toRadians(-45)));
+                                Math.toRadians(-45))); 
+
+        static final Transform3d robotToCam2 =
+                new Transform3d(
+                        new Translation3d(-Units.feetToMeters(0.95096), Units.feetToMeters(0.924031), Units.feetToMeters(1.79878)),
+                        new Rotation3d(
+                                0, 0,
+                                Math.toRadians(45)));
         static final String camera1Name = "OV9281-01";
-        static final String camera2Name = "OV9281-02";
-        static final String frontCamName = "USB_Camera-B4.04.27.1";
+        static final String camera2Name = "Cam_2";
+        static final String frontCamName = "HD_USB_Camera";
     }
     
     public static class CANdle {

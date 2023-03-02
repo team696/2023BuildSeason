@@ -5,9 +5,6 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.led.CANdle.*;
-import com.ctre.phoenix.led.ColorFlowAnimation.Direction;
-import com.ctre.phoenix.led.LarsonAnimation.BounceMode;
-import com.ctre.phoenix.led.TwinkleAnimation.TwinklePercent;
 import com.ctre.phoenix.led.*;
 
 
@@ -19,25 +16,7 @@ public class CANdleSub extends SubsystemBase {
   private final CANdle m_candle = new CANdle(Constants.CANdle.id, "rio");
   private final int numLed = 48 + 32 + 32 + 48;
   private final int ledOffset = 8;
-//   public enum AnimationTypes {
-//     ColorFlow,
-//     Fire,
-//     Larson,
-//     Rainbow,
-//     RgbFade,
-//     SingleFade,
-//     Strobe,
-//     Twinkle,
-//     TwinkleOff,
-//     SetAll,
-//     Empty
-// }
 
-// public Animation colorflow = new ColorFlowAnimation(ledOffset, numLed, ledOffset)
-// private AnimationTypes m_currentAnimation;
-
-
-  /** Creates a new CANdle. */
   public CANdleSub() {
     CANdleConfiguration configAll = new CANdleConfiguration();
     configAll.statusLedOffWhenActive = true;
@@ -52,16 +31,19 @@ public class CANdleSub extends SubsystemBase {
 
   public void disabledLed(){
     m_candle.animate(new SingleFadeAnimation(0, 255, 0, 0, 0.7, numLed, ledOffset));
-    // m_candle.animate(new ColorFlowAnimation(128, 20, 70, 0, 0.7, numLed, Direction.Forward, 8));
-
   }
 
   public void enabledLed(){
     m_candle.animate(new SingleFadeAnimation(230, 10, 10, 0, 0.7, numLed, ledOffset));
-
   }
 
-
+  public void setColor(boolean cone) {
+    if (cone) {
+      m_candle.animate(new SingleFadeAnimation(252, 186, 3, 0, 0.7, numLed, ledOffset));
+      return;
+    }
+    m_candle.animate(new SingleFadeAnimation(111, 3, 252, 0, 0.7, numLed, ledOffset));
+  }
 
   @Override
   public void periodic() {

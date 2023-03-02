@@ -22,6 +22,7 @@ import edu.wpi.first.math.trajectory.constraint.CentripetalAccelerationConstrain
 import edu.wpi.first.math.trajectory.constraint.EllipticalRegionConstraint;
 import edu.wpi.first.math.trajectory.constraint.TrajectoryConstraint;
 import edu.wpi.first.math.trajectory.constraint.TrajectoryConstraint.MinMax;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -32,6 +33,7 @@ import frc.robot.commands.AutoSwervePositions;
 import frc.robot.commands.GripperStateCommand;
 import frc.robot.commands.GroundIntake;
 import frc.robot.commands.HoldArmPos;
+import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.Test;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.Gripper;
@@ -52,6 +54,7 @@ public class LeftSideAuto extends SequentialCommandGroup {
   SwerveControllerCommand swerveControllerCommand4;
   SwerveControllerCommand swerveControllerCommand5;
   SwerveControllerCommand swerveControllerCommand6;
+  Joystick controller;
 
 MinMax minMax;
     TrajectoryConstraint constraints;
@@ -61,7 +64,7 @@ MinMax minMax;
     this.swerve = swerve;
     this.armSub = armSub;
     this.gripper = gripper;
- 
+    controller = new Joystick(1);
     
            
     // constraints.getMinMaxAccelerationMetersPerSecondSq(null, 0, 0)
@@ -83,7 +86,7 @@ MinMax minMax;
 
         Trajectory traj2 =
         TrajectoryGenerator.generateTrajectory(List.of(/* swerve.getAprilTagEstPosition(), */
-            new Pose2d(2.1, 5.15, new Rotation2d(Math.PI)),
+            new Pose2d(2.2, 5.15, new Rotation2d(Math.PI)),
             new Pose2d(2.8, 5.15, new Rotation2d(Math.PI))),
         configrev);
 
@@ -102,7 +105,7 @@ MinMax minMax;
         Trajectory traj5 =
         TrajectoryGenerator.generateTrajectory(List.of(/* swerve.getAprilTagEstPosition(), */
             new Pose2d(3, 5.06, new Rotation2d(Math.PI)),
-            new Pose2d(1.65, 5.15, new Rotation2d(Math.PI))),
+            new Pose2d(1.8, 5.15, new Rotation2d(Math.PI))),
         config);
         Trajectory traj6 =
         TrajectoryGenerator.generateTrajectory(List.of(/* swerve.getAprilTagEstPosition(), */
@@ -186,7 +189,7 @@ MinMax minMax;
       
       new WaitCommand(0.5).raceWith(new HoldArmPos(armSub, ArmPositions.MID_SCORE_CONE)),
       swerveControllerCommand1.raceWith(new HoldArmPos(armSub, ArmPositions.MID_SCORE_CONE)),
-      new GripperStateCommand(gripper, GripperState.OPEN),
+      new GripperStateCommand(gripper, GripperState.OPEN).raceWith(new TeleopSwerve(swerve, controller, 0, 0, 0, false, false)),
 
       swerveControllerCommand2.raceWith(new WaitCommand(0.5).andThen(new HoldArmPos(armSub, ArmPositions.GROUND_PICKUP))),
       swerveControllerCommand3.raceWith(new HoldArmPos(armSub, ArmPositions.GROUND_PICKUP)),

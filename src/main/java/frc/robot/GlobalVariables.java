@@ -20,7 +20,16 @@ public class GlobalVariables {
 
 
     public static enum ArmPositions{
-        STOWED, GROUND_PICKUP, GROUND_SCORE, MID_SCORE_CUBE, MID_SCORE_CONE, HIGH_SCORE_CUBE,HIGH_SCORE_CONE, SHELF_PICKUP, 
+        STOWED,
+        GROUND_PICKUP, 
+        GROUND_SCORE, 
+        MID_SCORE_CUBE, 
+        MID_SCORE_CONE, 
+        HIGH_SCORE_CUBE,
+        HIGH_SCORE_CONE, 
+        SHELF_PICKUP, 
+        MID_SCORE_ADAPTIVE,
+        HIGH_SCORE_ADAPTIVE,
     }
 
     public static ArmPositions armPosition;

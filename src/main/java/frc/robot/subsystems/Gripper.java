@@ -46,7 +46,7 @@ public class Gripper extends SubsystemBase {
     compressor = new Compressor(PneumaticsModuleType.REVPH);
     compressor.enableDigital();
 
-    cubeSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 2);
+    cubeSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 15, 14);
     // coneSolenoid = new DoubleS/olenoid(PneumaticsModuleType.REVPH, 1, 3);
     coneSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 1);
 

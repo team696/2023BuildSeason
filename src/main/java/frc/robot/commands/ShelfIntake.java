@@ -10,35 +10,25 @@ import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.Gripper.GripperState;
 
-public class GroundIntake extends CommandBase {
+public class ShelfIntake extends CommandBase {
   
   /** Creates a new GroundIntake. */
-  ArmSub armSub;
   Gripper gripper;
-  double timer;
 
-  public GroundIntake(ArmSub armSub, Gripper gripper) {
+  public ShelfIntake( Gripper gripper) {
     this.gripper = gripper;
-    this.armSub = armSub;
-    addRequirements(armSub, gripper);
+    addRequirements( gripper);
 
   }
 
   @Override
   public void initialize() {
-    timer = 0;
+    gripper.setClaw(GripperState.OPEN);
   }
 
   @Override
   public void execute() {
-    timer++;
-    armSub.armPresetPositions(ArmPositions.GROUND_PICKUP);
-    if (timer >= 20){
-      gripper.setClaw(GripperState.OPEN);
-      gripper.moveGripper(1);
-
-    }
-
+    gripper.moveGripper(0.8);
 
   }
 

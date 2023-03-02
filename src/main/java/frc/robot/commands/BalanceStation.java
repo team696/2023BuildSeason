@@ -48,6 +48,7 @@ public class BalanceStation extends CommandBase {
         double yAxis = pidController.calculate(s_Swerve.getPitch(), 0);
         double xAxis = controller.getRawAxis(strafeAxis);
         double rAxis = controller.getRawAxis(rotationAxis);
+        System.out.println("AUTO BALANCING ");
         
         /* Deadbands */
 

@@ -59,6 +59,8 @@ public class Swerve extends SubsystemBase {
     public int hor;
     public int height;
 
+    public double gyroArtificialOffset;
+
    
 
 
@@ -77,11 +79,11 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
         SmartDashboard.putData("Field", m_fieldSim);
 
         rotatePID = new ProfiledPIDController(
-            0.007,
+            0.010,
             0,
             0.001, new TrapezoidProfile.Constraints(1, 3));
 
-    rotatePID.setTolerance(0.0001);
+    rotatePID.setTolerance(0.001);
  
         mSwerveModulePositions = new SwerveModulePosition[] {
             new SwerveModulePosition(0, m_frontRight.getCanCoder()),
@@ -222,21 +224,33 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
 
     public void zeroGyro(){
         gyro.zeroYaw();
+        
+        gyroArtificialOffset = 0;
+        // gyro.get
     }
 
+    public void autoZeroGyro(){
+        gyro.zeroYaw();
+        // gyroArtificialOffset = yaw;
+        gyroArtificialOffset =  getAprilTagEstPosition().getRotation().getDegrees() ;
+    }
+    
+    
     public Rotation2d getYaw() {
         // if (gyro.isMagnetometerCalibrated()) {
             // return Rotation2d.fromDegrees( gyro.getYaw() );
         //   }
-           return Rotation2d.fromDegrees(360.0 - gyro.getYaw());
+           return Rotation2d.fromDegrees(360.0 - (gyro.getYaw() + gyroArtificialOffset));
     }
 
     public double getPitch(){
         return gyro.getRoll();
     }
 
+
+        
     public double frontCamOffset(int pipeline){
-        pcw.frontCamPipeline(pipeline);
+        pcw.frontCamPipeline(GlobalVariables.gamePiece);
         double headingError = pcw.getYOffset();
        /*  double steering_adjust;
         steering_adjust = 0;
@@ -257,6 +271,7 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
 
     @Override
     public void periodic(){
+        // pcw.frontCamPipeline(2);
 
         AprilTagGrid.setDefaultOption("Left Tag", gridTag1);
         AprilTagGrid.addOption("Mid Tag", gridTag2);
@@ -278,12 +293,15 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
 
         SmartDashboard.putNumber("Odometry X", getPose().getX());
         SmartDashboard.putNumber("Odometry Y", getPose().getY());
-        SmartDashboard.putNumber("CONE OFFSET ", frontCamOffset(0));
+        SmartDashboard.putNumber("CONE OFFSET ", frontCamOffset(1));
 
 
 
-    SmartDashboard.putNumber("Gyro Pitch ", getPitch());
+    SmartDashboard.putNumber("Gyro Yaw ", gyro.getYaw());
+    SmartDashboard.putNumber("AprilTag Yaw ",  getAprilTagEstPosition().getRotation().getDegrees());
+
         kyslol();
+
          swerveOdometry.update(getYaw(), new SwerveModulePosition[] {
             m_frontRight.getPosition(),
             m_frontLeft.getPosition(),
