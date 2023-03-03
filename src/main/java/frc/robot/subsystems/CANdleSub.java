@@ -30,7 +30,7 @@ public class CANdleSub extends SubsystemBase {
   }
 
   public void disabledLed(){
-    m_candle.animate(new SingleFadeAnimation(0, 255, 0, 0, 0.7, numLed, ledOffset));
+    m_candle.animate(new SingleFadeAnimation(252, 40, 101, 0, 0.6, numLed, ledOffset));
   }
 
   public void enabledLed(){
@@ -38,17 +38,15 @@ public class CANdleSub extends SubsystemBase {
   }
 
   public void setColor(boolean cone) {
+    m_candle.clearAnimation(0);
     if (cone) {
-      m_candle.animate(new SingleFadeAnimation(252, 186, 3, 0, 0.7, numLed, ledOffset));
+      m_candle.setLEDs(252, 186, 3, 0, ledOffset, numLed);
       return;
     }
-    m_candle.animate(new SingleFadeAnimation(111, 3, 252, 0, 0.7, numLed, ledOffset));
+    m_candle.setLEDs(111, 3, 252, 0, ledOffset, numLed);
   }
 
   @Override
-  public void periodic() {
-    
-
-  }
+  public void periodic() { }
 }
 

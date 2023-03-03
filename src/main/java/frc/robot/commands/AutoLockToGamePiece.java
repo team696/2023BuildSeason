@@ -43,7 +43,7 @@ public class AutoLockToGamePiece extends CommandBase {
 
     @Override
     public void execute() {
-        double yAxis = 0.3;
+        double yAxis = 0.4;
         double xAxis = 0;
         double rAxis = s_Swerve.frontCamOffset(GlobalVariables.gamePiece);
         

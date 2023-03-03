@@ -51,7 +51,7 @@ public class GroundIntake extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    if(gripper.colorSensorDistance() > 200){
+    if(gripper.colorSensorDistance() > 150){
       return true;
 
     }

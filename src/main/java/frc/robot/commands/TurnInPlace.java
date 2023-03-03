@@ -8,12 +8,13 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 
-public class AutoBalanceStation extends CommandBase {
+public class TurnInPlace extends CommandBase {
 
     private double rotation;
     private Translation2d translation;
     private boolean fieldRelative;
     private boolean openLoop;
+    double goal;
     
     private Swerve s_Swerve;
    
@@ -26,21 +27,22 @@ public class AutoBalanceStation extends CommandBase {
     /**
      * Driver control
      */
-    public AutoBalanceStation(Swerve s_Swerve,  boolean fieldRelative, boolean openLoop) {
+    public TurnInPlace(Swerve s_Swerve,  boolean fieldRelative, boolean openLoop, double goal) {
         this.s_Swerve = s_Swerve;
         addRequirements(s_Swerve);
-        pidController = new PIDController(0.01 , 0, 0);
+        pidController = new PIDController(0.003  , 0.00, 0);
         pidController.setTolerance(1);
 
         this.fieldRelative = fieldRelative;
         this.openLoop = openLoop;
+        this.goal = goal;
     }
 
     @Override
     public void execute() {
-        double yAxis = pidController.calculate(s_Swerve.getPitch(), 0);
+        double yAxis = 0;
         double xAxis = 0;
-        double rAxis = 0;
+        double rAxis = pidController.calculate(s_Swerve.getAprilTagEstPosition().getRotation().getDegrees(), goal);
         System.out.println("AUTO BALANCING ");
         
         /* Deadbands */
@@ -67,19 +69,30 @@ public class AutoBalanceStation extends CommandBase {
             xAxis = 0;
         }
 
-        if (Math.abs(rAxis) > Constants.stickDeadband) {
-            if (rAxis > 0){
-                rAxis = mapdouble(rAxis, Constants.stickDeadband, 1, 0, 1);
-            } else {
-                rAxis = mapdouble(rAxis, -Constants.stickDeadband, -1, 0, -1);
-            }
-        }
-        else{
-            rAxis = 0;
-        }
+        // if (Math.abs(rAxis) > Constants.stickDeadband) {
+        //     if (rAxis > 0){
+        //         rAxis = mapdouble(rAxis, Constants.stickDeadband, 1, 0, 1);
+        //     } else {
+        //         rAxis = mapdouble(rAxis, -Constants.stickDeadband, -1, 0, -1);
+        //     }
+        // }
+        // else{
+        //     rAxis = 0;
+        // }
 
         translation = new Translation2d(yAxis, xAxis).times(Constants.Swerve.maxSpeed);
         rotation = rAxis * Constants.Swerve.maxAngularVelocity;
         s_Swerve.drive(translation, rotation, fieldRelative, openLoop);
     }
+    @Override
+    public boolean isFinished() {
+      // return swerveControllerCommand.isFinished();
+if (s_Swerve.getAprilTagEstPosition().getRotation().getDegrees() < (goal+3) && s_Swerve.getAprilTagEstPosition().getRotation().getDegrees() > (goal -3)){
+  return true;
+}
+else{
+  return false;
+}
+    }
+    
 }

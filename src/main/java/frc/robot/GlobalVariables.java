@@ -30,6 +30,7 @@ public class GlobalVariables {
         SHELF_PICKUP, 
         MID_SCORE_ADAPTIVE,
         HIGH_SCORE_ADAPTIVE,
+        CONE_UPRIGHT
     }
 
     public static ArmPositions armPosition;

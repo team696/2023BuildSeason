@@ -47,7 +47,7 @@ import frc.robot.subsystems.Gripper.GripperState;
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 
-public class BalanceAuto extends SequentialCommandGroup {
+public class BalanceAutoRed extends SequentialCommandGroup {
   Swerve swerve;
   ArmSub armsub;
   Gripper gripper;
@@ -62,7 +62,7 @@ public class BalanceAuto extends SequentialCommandGroup {
 
 
   /** Creates a new AutoPlaceTest. */
-  public BalanceAuto(Swerve swerve, ArmSub armsub, Gripper gripper) {
+  public BalanceAutoRed(Swerve swerve, ArmSub armsub, Gripper gripper) {
     this.swerve = swerve;
     this.armsub = armsub;
     this.gripper = gripper;
@@ -87,24 +87,24 @@ public class BalanceAuto extends SequentialCommandGroup {
 
         Trajectory traj1 =
         TrajectoryGenerator.generateTrajectory(List.of(/* swerve.getAprilTagEstPosition(), */
-            new Pose2d(2.6, 3.25, new Rotation2d(Math.PI)),
-            new Pose2d(1.82, 3.25, new Rotation2d(Math.PI))),
+            new Pose2d(13.94, 3.25, new Rotation2d(0)),
+            new Pose2d(14.72, 3.25, new Rotation2d(0))),
         config);
         Trajectory traj3 =
         TrajectoryGenerator.generateTrajectory(List.of(/* swerve.getAprilTagEstPosition(), */
-            new Pose2d(1.97, 3.25, new Rotation2d(Math.PI)),
-            new Pose2d(3.85, 3.25, new Rotation2d(Math.PI))),
+            new Pose2d(14.57, 3.25, new Rotation2d(0)),
+            new Pose2d(12.69, 3.25, new Rotation2d(0))),
         configrev);
 
         Trajectory traj4 =
         TrajectoryGenerator.generateTrajectory(List.of(/* swerve.getAprilTagEstPosition(), */
-            new Pose2d(3.85, 3.25, new Rotation2d(Math.PI)),
-            new Pose2d(5.4, 3.25, new Rotation2d(Math.PI))),
+            new Pose2d(12.69, 3.25, new Rotation2d(0)),
+            new Pose2d(11.14, 3.25, new Rotation2d(0))),
         configrev);
         Trajectory traj5 =
         TrajectoryGenerator.generateTrajectory(List.of(/* swerve.getAprilTagEstPosition(), */
-            new Pose2d(5.4, 3.25, new Rotation2d(Math.PI)),
-            new Pose2d(3.7, 3.25, new Rotation2d(Math.PI))),
+            new Pose2d(11.14, 3.25, new Rotation2d(0)),
+            new Pose2d(12.84, 3.25, new Rotation2d(0))),
         config);
 
 

@@ -23,19 +23,21 @@ public final class Constants {
     public static final double rotatePid_D = /* 0.003 */0.002125;
     public static final double rotatePid_Tol = 1;
 
-    public static final double stowedPosValue = 199;
+    public static final double stowedPosValue = 196;
     public static final double grndIntakePosValue = 180;
 
     public static final double grndScorePosValueCube = 166; 
     public static final double grndScorePosValueCone = 166; 
 
     public static final double midScorePosValueCube = 117;
-    public static final double midScorePosValueCone = 98;
+    public static final double midScorePosValueCone = 90;
 
     public static final double highScorePosValueCube = 94; 
     public static final double highScorePosValueCone = 80; 
 
-    public static final double shelfIntakePosValue = 96;
+    public static final double shelfIntakePosValue = 94;
+
+    public static final double coneUprightPosValue = 150;
 
 
     public static final class Swerve {
@@ -48,7 +50,7 @@ public final class Constants {
         public static final double wheelDiameter = Units.inchesToMeters(3.94);
         public static final double wheelCircumference = wheelDiameter * Math.PI;
 
-        public static final double openLoopRamp =0.2;
+        public static final double openLoopRamp = 0.2;
         public static final double closedLoopRamp = 0.5;
 
         public static final double driveGearRatio = (6.12 / 1.0); //8:14:1
@@ -163,20 +165,20 @@ public final class Constants {
                 // [AprilTag #] [Left To Right] [ Bottom To Top]
         public static final double RobotPositions[][][][] = {
             { // Leftmost Tag
-                { {2.1, 5.06}, {2.2, 5.06}, {1.74, 5.06} }, //Left scoring
-                { {2.1, 4.46}, {2.2, 4.46}, {1.74, 4.46} }, //Middle Scoring
-                { {2.1, 3.93}, {2.2, 3.93}, {1.74, 3.93} },  //Right Scoring
+                { {2.1, 5.0}, {2.3, 5.0}, {1.8, 5.0} }, //Left scoring
+                { {2.1, 4.46}, {2.3, 4.46}, {1.8, 4.46} }, //Middle Scoring
+                { {2.1, 3.88}, {2.3, 3.88}, {1.8, 3.88} },  //Right Scoring
                 //  low             mid          high 
             }, 
             { //Middle Tag
-                { {2.1, 3.35}, {2.2, 3.35}, {1.74, 3.35} }, 
-                { {2.1, 2.85 }, {2.2, 2.70 }, { 1.74, 2.85 } },
-                { {2.1, 2.25}, {2.2, 2.25}, {1.7, 2.25} },
+                { {2.1, 3.31}, {2.3, 3.31}, {1.8, 3.31} }, 
+                { {2.1, 2.85 }, {2.3, 2.70 }, { 1.8, 2.85 } },
+                { {2.1, 2.25}, {2.3, 2.25}, {1.8, 2.25} },
             },
             { // Right Tag
-                { {2.1, 1.72}, {2.2, 1.72}, {1.74, 1.72} }, 
-                { {2.1, 1.15}, {2.2, 1.15}, {1.74, 1.15} },
-                { {2.1, 0.5}, {2.2, 0.5}, {1.74, 0.5} },
+                { {2.1, 1.72}, {2.3, 1.72}, {1.8, 1.72} }, 
+                { {2.1, 1.15}, {2.3, 1.15}, {1.8, 1.15} },
+                { {2.1, 0.5}, {2.3, 0.5}, {1.8, 0.5} },
             }
         };
         // [0 is Cone, 1 is Cube] [Low, Mid, High]
@@ -184,22 +186,22 @@ public final class Constants {
 
         public static final double RobotPositionsRed[][][][] = {
             { // Leftmost Tag
-                { {14.44, 0.5}, {14.34, 0.5}, {14.8, 0.5} },
-                { {14.44, 1.15}, {14.34, 1.15}, {14.8, 1.15} },
-                { {14.44, 1.72}, {14.34, 1.72}, {14.8, 1.72} }, 
+                { {14.44, 0.5}, {14.24, 0.5}, {14.74, 0.5} },
+                { {14.44, 1.15}, {14.24, 1.15}, {14.74, 1.15} },
+                { {14.44, 1.72}, {14.24, 1.72}, {14.74, 1.72} }, 
 
                 //  low             mid          high 
             }, 
             { //Middle Tag
-                { {14.44, 2.25}, {14.34, 2.25}, {14.8, 2.25} },
-                { {14.44, 2.85 }, {14.34, 2.70 }, { 14.8, 2.85 } },   
-                { {14.44, 3.35}, {14.34, 3.35}, {14.8, 3.35} }, 
+                { {14.44, 2.25}, {14.24, 2.25}, {14.74, 2.25} },
+                { {14.44, 2.85 }, {14.24, 2.70 }, { 14.74, 2.85 } },   
+                { {14.44, 3.31}, {14.24, 3.31}, {14.74, 3.31} }, 
 
             },
             { // Right Tag
-                { {14.44, 3.93}, {14.34, 3.93}, {14.8, 3.93} },  //Right Scoring
-                { {14.44, 4.46}, {14.34, 4.46}, {14.8, 4.46} }, //Middle Scoring
-                { {14.44, 5.06}, {14.34, 5.06}, {14.8, 5.06} }, //Left scoring
+                { {14.44, 3.88}, {14.24, 3.88}, {14.8, 3.88} },  //Right Scoring
+                { {14.44, 4.46}, {14.24, 4.46}, {14.8, 4.46} }, //Middle Scoring
+                { {14.44, 5.0}, {14.24, 5.0}, {14.8, 5.0} }, //Left scoring
 
             }
         };

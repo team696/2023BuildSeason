@@ -189,6 +189,12 @@ public class ArmSub extends SubsystemBase {
 
       break;
 
+      case CONE_UPRIGHT:
+      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.coneUprightPosValue));
+      // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.highScorePosValue));
+
+      break;
+
 
       default:
       leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.shelfIntakePosValue));

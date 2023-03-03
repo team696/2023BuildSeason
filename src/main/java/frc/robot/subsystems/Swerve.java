@@ -251,6 +251,7 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
         
     public double frontCamOffset(int pipeline){
         pcw.frontCamPipeline(GlobalVariables.gamePiece);
+        
         double headingError = pcw.getYOffset();
        /*  double steering_adjust;
         steering_adjust = 0;
@@ -266,6 +267,29 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
 
         return (rotatePID.calculate(headingError, 0)/* +steering_adjust */);
     }    
+
+           
+    public double AutoFrontCamOffset(int pipeline){
+        pcw.frontCamPipeline(GlobalVariables.gamePiece);
+        
+        double headingError = pcw.AutoGetYOffset();
+       /*  double steering_adjust;
+        steering_adjust = 0;
+        if (headingError > 0.05)
+        {
+                steering_adjust =  0.09;
+        }
+        else if (headingError < -0.05)
+        {
+                steering_adjust = -0.09;
+        } */
+
+
+        return (rotatePID.calculate(headingError, 0)/* +steering_adjust */);
+    }    
+
+    
+
 
 
 

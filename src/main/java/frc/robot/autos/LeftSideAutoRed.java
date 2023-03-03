@@ -46,7 +46,7 @@ import frc.robot.subsystems.Gripper.GripperState;
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 
-public class LeftSideAuto extends SequentialCommandGroup {
+public class LeftSideAutoRed extends SequentialCommandGroup {
   Swerve swerve;
   ArmSub armSub;
   Gripper gripper;
@@ -62,7 +62,7 @@ MinMax minMax;
     TrajectoryConstraint constraints;
 
   /** Creates a new AutoPlaceTest. */
-  public LeftSideAuto(Swerve swerve, ArmSub armSub, Gripper gripper) {
+  public LeftSideAutoRed(Swerve swerve, ArmSub armSub, Gripper gripper) {
     this.swerve = swerve;
     this.armSub = armSub;
     this.gripper = gripper;
@@ -97,37 +97,37 @@ MinMax minMax;
 
         Trajectory traj1 =
         TrajectoryGenerator.generateTrajectory(List.of(/* swerve.getAprilTagEstPosition(), */
-            new Pose2d(3, 5.0, new Rotation2d(Math.PI)),
-            new Pose2d(2.3, 5.0, new Rotation2d(Math.PI))),
+            new Pose2d(13.54, 5.0, new Rotation2d(0)),
+            new Pose2d(14.24, 5.0, new Rotation2d(0))),
         placeConfig);
 
         Trajectory traj2 =
         TrajectoryGenerator.generateTrajectory(List.of(/* swerve.getAprilTagEstPosition(), */
-            new Pose2d(2.2, 5.15, new Rotation2d(Math.PI)),
-            new Pose2d(2.8, 5.15, new Rotation2d(Math.PI))),
+            new Pose2d(14.34, 5.15, new Rotation2d(0)),
+            new Pose2d(13.74, 5.15, new Rotation2d(0))),
         configrev);
 
         Trajectory traj3 =
         TrajectoryGenerator.generateTrajectory(List.of(/* swerve.getAprilTagEstPosition(), */
-            new Pose2d(2.8, 5.15, new Rotation2d(Math.PI)),
-            new Pose2d(4.0, 4.75, new Rotation2d(Math.PI))),
+            new Pose2d(13.74, 5.15, new Rotation2d(0)),
+            new Pose2d(12.54, 4.75, new Rotation2d(0))),
         configrevdfast);
 
         Trajectory traj4 =
         TrajectoryGenerator.generateTrajectory(List.of(/* swerve.getAprilTagEstPosition(), */
-            new Pose2d(4.0, 5.15, new Rotation2d(Math.PI)),
-            new Pose2d(2.8, 5.15, new Rotation2d(Math.PI))),
+            new Pose2d(12.54, 5.15, new Rotation2d(0)),
+            new Pose2d(13.74, 5.15, new Rotation2d(0))),
         config);
 
         Trajectory traj5 =
         TrajectoryGenerator.generateTrajectory(List.of(/* swerve.getAprilTagEstPosition(), */
-            new Pose2d(3, 5.15, new Rotation2d(Math.PI)),
-            new Pose2d(1.85, 5.0, new Rotation2d(Math.PI))),
+            new Pose2d(13.54, 5.15, new Rotation2d(0)),
+            new Pose2d(14.69, 5.0, new Rotation2d(0))),
         config);
         Trajectory traj6 =
         TrajectoryGenerator.generateTrajectory(List.of(/* swerve.getAprilTagEstPosition(), */
-            new Pose2d(2.1, 5.15, new Rotation2d(Math.PI)),
-            new Pose2d(2.8, 4.8, new Rotation2d(Math.PI))),
+            new Pose2d(14.44, 5.15, new Rotation2d(0)),
+            new Pose2d(13.74, 4.8, new Rotation2d(0))),
         configrev);
 
       
@@ -203,24 +203,20 @@ MinMax minMax;
                 swerve);
                 
     addCommands(
-      
       new WaitCommand(0.5).raceWith(new HoldArmPos(armSub, ArmPositions.MID_SCORE_CONE)),
       swerveControllerCommand1.raceWith(new HoldArmPos(armSub, ArmPositions.MID_SCORE_CONE)),
       new GripperStateCommand(gripper, GripperState.OPEN).raceWith(new TeleopSwerve(swerve, controller, 0, 0, 0, false, false)),
-
-    //   swerveControllerCommand2.raceWith(new WaitCommand(0.5).andThen(new HoldArmPos(armSub, ArmPositions.GROUND_PICKUP).alongWith(new GripperStateCommand(gripper, GripperState.CONE)))),
-    //   new GripperStateCommand(gripper, GripperState.CONE).raceWith(new TeleopSwerve(swerve, controller, 0, 0, 0, false, false)),
       new InstantCommand(() -> swerve.normalizeOdometry()),
       swerveControllerCommand3.raceWith(/* new HoldArmPos(armSub, ArmPositions.STOWED) */new WaitCommand(0.5).andThen(new HoldArmPos(armSub, ArmPositions.STOWED).alongWith(new GripperStateCommand(gripper, GripperState.CONE)))),
-      new TurnInPlace(swerve, true , false, 0),
+      new TurnInPlace(swerve, true , false, 178),
       new AutoLockToGamePiece(swerve, 0, 0, false, false , 0).raceWith(new GroundIntake(armSub, gripper)),
       new WaitCommand(0.4 ).raceWith(new TeleopSwerve(swerve, controller, 0, 0, 0, false, false)),
-      new TurnInPlace(swerve, true , false, 178),
+      new TurnInPlace(swerve, true , false, 0),
       swerveControllerCommand4.raceWith(new HoldArmPos(armSub, ArmPositions.STOWED)),
        new WaitCommand(0.5).raceWith(new HoldArmPos(armSub, ArmPositions.HIGH_SCORE_CONE)),
       swerveControllerCommand5.raceWith(new HoldArmPos(armSub, ArmPositions.HIGH_SCORE_CONE)),
       new GripperStateCommand(gripper, GripperState.OPEN).raceWith(new TeleopSwerve(swerve, controller, 0, 0, 0, false, false)),
-      swerveControllerCommand6.raceWith(new WaitCommand(01).andThen(new HoldArmPos(armSub, ArmPositions.GROUND_PICKUP))),
+      swerveControllerCommand6.raceWith(new WaitCommand(1).andThen(new HoldArmPos(armSub, ArmPositions.GROUND_PICKUP))),
       new GripperStateCommand(gripper, GripperState.CONE),
       new HoldArmPos(armSub, ArmPositions.GROUND_PICKUP)
 

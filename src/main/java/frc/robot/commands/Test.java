@@ -43,8 +43,8 @@ public class Test extends CommandBase {
   public void initialize() {
     timer = 0;
     TrajectoryConfig config = new TrajectoryConfig(
-        0.5,
-        0.5)
+        1,
+        1)
         .setKinematics(Constants.Swerve.swerveKinematics).setReversed(reversed);
 
     double[] pose = Constants.AutoConstants.RobotPositions[swerve.tag][swerve.hor][swerve.height];

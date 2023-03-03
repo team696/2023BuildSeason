@@ -53,7 +53,27 @@ public class PhotonCameraWrapper
         
     }
 
-   
+    public double AutoGetYOffset(){
+        var result = frontCam.getLatestResult();
+
+        if (!result.hasTargets())
+            return 0.5;
+      
+      
+            return  result.getBestTarget().getYaw();
+        
+    }
+    
+    public double AutoTurnTOCOne(){
+        var result = frontCam.getLatestResult();
+
+        if (!result.hasTargets())
+            return 0.5;
+      
+      
+            return  result.getBestTarget().getYaw();
+        
+    }
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
             if (photonPoseEstimator == null || photonPoseEstimator2 == null) 
