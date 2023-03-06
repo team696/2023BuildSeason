@@ -8,7 +8,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 
-public class BalanceStation extends CommandBase {
+public class LockRotation extends CommandBase {
 
     private double rotation;
     private Translation2d translation;
@@ -20,7 +20,12 @@ public class BalanceStation extends CommandBase {
     private int translationAxis;
     private int strafeAxis;
     private int rotationAxis;
+
     PIDController pidController;
+
+    double goal;
+
+
 
     private double mapdouble(double x, double in_min, double in_max, double out_min, double out_max){
         return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
@@ -29,26 +34,25 @@ public class BalanceStation extends CommandBase {
     /**
      * Driver control
      */
-    public BalanceStation(Swerve s_Swerve, Joystick controller, int translationAxis, int strafeAxis, int rotationAxis, boolean fieldRelative, boolean openLoop) {
+    public LockRotation(Swerve s_Swerve, Joystick controller, int translationAxis, int strafeAxis, int rotationAxis, boolean fieldRelative, boolean openLoop, double goal) {
         this.s_Swerve = s_Swerve;
         addRequirements(s_Swerve);
-        pidController = new PIDController(0.013  , 0, 0);
-        pidController.setTolerance(2);
-
+        pidController = new PIDController(0.003  , 0.00, 0);
+        pidController.setTolerance(1);
         this.controller = controller;
         this.translationAxis = translationAxis;
         this.strafeAxis = strafeAxis;
         this.rotationAxis = rotationAxis;
         this.fieldRelative = fieldRelative;
         this.openLoop = openLoop;
+        this.goal = goal;
     }
 
     @Override
     public void execute() {
-        double yAxis = pidController.calculate(s_Swerve.getPitch(), 0);
+        double yAxis = -controller.getRawAxis(translationAxis);
         double xAxis = controller.getRawAxis(strafeAxis);
-        double rAxis = controller.getRawAxis(rotationAxis);
-        System.out.println("AUTO BALANCING ");
+        double rAxis = pidController.calculate(s_Swerve.getYaw().getDegrees(), goal);
         
         /* Deadbands */
 
@@ -74,16 +78,16 @@ public class BalanceStation extends CommandBase {
             xAxis = 0;
         }
 
-        if (Math.abs(rAxis) > Constants.stickDeadband) {
-            if (rAxis > 0){
-                rAxis = mapdouble(rAxis, Constants.stickDeadband, 1, 0, 1);
-            } else {
-                rAxis = mapdouble(rAxis, -Constants.stickDeadband, -1, 0, -1);
-            }
-        }
-        else{
-            rAxis = 0;
-        }
+        // if (Math.abs(rAxis) > Constants.stickDeadband) {
+        //     if (rAxis > 0){
+        //         rAxis = mapdouble(rAxis, Constants.stickDeadband, 1, 0, 1);
+        //     } else {
+        //         rAxis = mapdouble(rAxis, -Constants.stickDeadband, -1, 0, -1);
+        //     }
+        // }
+        // else{
+        //     rAxis = 0;
+        // }
 
         translation = new Translation2d(yAxis, xAxis).times(Constants.Swerve.maxSpeed);
         rotation = rAxis * Constants.Swerve.maxAngularVelocity;

@@ -3,12 +3,11 @@ package frc.robot.commands;
 import frc.robot.Constants;
 import frc.robot.subsystems.Swerve;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 
-public class BalanceStation extends CommandBase {
+public class TeleopDriveSlow extends CommandBase {
 
     private double rotation;
     private Translation2d translation;
@@ -20,7 +19,6 @@ public class BalanceStation extends CommandBase {
     private int translationAxis;
     private int strafeAxis;
     private int rotationAxis;
-    PIDController pidController;
 
     private double mapdouble(double x, double in_min, double in_max, double out_min, double out_max){
         return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
@@ -29,11 +27,9 @@ public class BalanceStation extends CommandBase {
     /**
      * Driver control
      */
-    public BalanceStation(Swerve s_Swerve, Joystick controller, int translationAxis, int strafeAxis, int rotationAxis, boolean fieldRelative, boolean openLoop) {
+    public TeleopDriveSlow(Swerve s_Swerve, Joystick controller, int translationAxis, int strafeAxis, int rotationAxis, boolean fieldRelative, boolean openLoop) {
         this.s_Swerve = s_Swerve;
         addRequirements(s_Swerve);
-        pidController = new PIDController(0.013  , 0, 0);
-        pidController.setTolerance(2);
 
         this.controller = controller;
         this.translationAxis = translationAxis;
@@ -45,10 +41,9 @@ public class BalanceStation extends CommandBase {
 
     @Override
     public void execute() {
-        double yAxis = pidController.calculate(s_Swerve.getPitch(), 0);
-        double xAxis = controller.getRawAxis(strafeAxis);
-        double rAxis = controller.getRawAxis(rotationAxis);
-        System.out.println("AUTO BALANCING ");
+        double yAxis = (-controller.getRawAxis(translationAxis)/3);
+        double xAxis = (controller.getRawAxis(strafeAxis)/3);
+        double rAxis = (controller.getRawAxis(rotationAxis)/3);
         
         /* Deadbands */
 

@@ -121,57 +121,57 @@ public class ArmSub extends SubsystemBase {
     switch(position){
 
       case GROUND_PICKUP:
-      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.grndIntakePosValue));
+      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.grndIntakePosValue- GlobalVariables.armTrim) );
       // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.grndIntakePosValue));
       break;
 
       case STOWED:
-      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.stowedPosValue));
+      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.stowedPosValue- GlobalVariables.armTrim));
       // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.stowedPosValue));
 
       break;
 
       case GROUND_SCORE: 
-      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.grndScorePosValueCone));
+      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.grndScorePosValueCone- GlobalVariables.armTrim));
       // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.grndScorePosValue));
 
       break;
 
       case MID_SCORE_CONE:
-      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.midScorePosValueCone));
+      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.midScorePosValueCone- GlobalVariables.armTrim));
       // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.midScorePosValue));
 
       break;
 
       case HIGH_SCORE_CONE:
-      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.highScorePosValueCone));
+      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.highScorePosValueCone- GlobalVariables.armTrim));
       // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.highScorePosValue));
 
       break;
       case MID_SCORE_CUBE:
-      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.midScorePosValueCube));
+      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.midScorePosValueCube- GlobalVariables.armTrim));
       // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.midScorePosValue));
 
       break;
 
       case HIGH_SCORE_CUBE:
-      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.highScorePosValueCube));
+      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.highScorePosValueCube- GlobalVariables.armTrim));
       // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.highScorePosValue));
 
       break;
 
       case SHELF_PICKUP:
-      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.shelfIntakePosValue));
+      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.shelfIntakePosValue- GlobalVariables.armTrim));
       // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.shelfIntakePosValue));
 
       break;
 
       case MID_SCORE_ADAPTIVE:
       if(GlobalVariables.gamePiece == 0){
-        leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.midScorePosValueCone));
+        leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.midScorePosValueCone- GlobalVariables.armTrim));
       }
       else{
-        leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.midScorePosValueCube));
+        leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.midScorePosValueCube- GlobalVariables.armTrim));
 
       }
       // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.shelfIntakePosValue));
@@ -179,10 +179,10 @@ public class ArmSub extends SubsystemBase {
       break;
       case HIGH_SCORE_ADAPTIVE:
       if(GlobalVariables.gamePiece == 0){
-        leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.highScorePosValueCone));
+        leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.highScorePosValueCone- GlobalVariables.armTrim));
       }
       else{
-        leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.highScorePosValueCube));
+        leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.highScorePosValueCube- GlobalVariables.armTrim));
 
       }
       // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.shelfIntakePosValue));
@@ -190,14 +190,14 @@ public class ArmSub extends SubsystemBase {
       break;
 
       case CONE_UPRIGHT:
-      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.coneUprightPosValue));
+      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.coneUprightPosValue- GlobalVariables.armTrim));
       // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.highScorePosValue));
 
       break;
 
 
       default:
-      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.shelfIntakePosValue));
+      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.shelfIntakePosValue- GlobalVariables.armTrim));
       // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.shelfIntakePosValue));
 
       break;
@@ -236,5 +236,7 @@ public class ArmSub extends SubsystemBase {
     SmartDashboard.putNumber("Arm Motor Position", getArmMotorPos());
     SmartDashboard.putNumber("Arm Motor 1 Current", leftArm.getStatorCurrent());
     SmartDashboard.putNumber("Arm Motor 2 Current", rightArm.getStatorCurrent());
+    SmartDashboard.putNumber("ARM TRIM", GlobalVariables.armTrim);
+
   }
 } 

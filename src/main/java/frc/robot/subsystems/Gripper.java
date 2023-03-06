@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.PhotonCameraWrapper;
 
 public class Gripper extends SubsystemBase {
 
@@ -27,6 +28,7 @@ public class Gripper extends SubsystemBase {
   Solenoid coneSolenoid;
   public PneumaticsControlModule module;
   Compressor compressor;
+  private PhotonCameraWrapper pcw;
   public final  I2C.Port i2cPort = I2C.Port.kMXP;
 
   public final ColorSensorV3 colorSensor = new ColorSensorV3(i2cPort);
@@ -39,6 +41,8 @@ public class Gripper extends SubsystemBase {
   public GripperState gripperState = GripperState.OPEN;
   /** Creates a new Gripper. */
   public Gripper() {
+    pcw = new PhotonCameraWrapper();
+
     gripperMotor = new CANSparkMax(42, MotorType.kBrushless);
     gripperMotor.restoreFactoryDefaults();
     gripperMotor.setIdleMode(IdleMode.kBrake);
@@ -79,6 +83,10 @@ public class Gripper extends SubsystemBase {
     return colorSensor.getProximity();
   }
 
+  public double getCamArea(){
+    return pcw.frontCamArea();
+  }
+
 
   public void moveGripper(double percent ){
     gripperMotor.set(percent);
@@ -106,9 +114,11 @@ public class Gripper extends SubsystemBase {
 
   @Override
   public void periodic() { 
+    SmartDashboard.putNumber("CAM AREA", getCamArea());
     SmartDashboard.putNumber("RED", colorSensor.getRed());
     SmartDashboard.putNumber("BLUE", colorSensor.getBlue());
     SmartDashboard.putNumber("GREEN", colorSensor.getGreen());
     SmartDashboard.putNumber("Distance", colorSensor.getProximity());
+    SmartDashboard.putBoolean("GOOD", colorSensor.getProximity() > 250);
   }
 }
