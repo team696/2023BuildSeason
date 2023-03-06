@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.PhotonCameraWrapper;
 import frc.robot.GlobalVariables.ArmPositions;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.Gripper;
@@ -14,6 +15,7 @@ public class ShelfIntake extends CommandBase {
   
   /** Creates a new GroundIntake. */
   Gripper gripper;
+  PhotonCameraWrapper pcw;
 
   public ShelfIntake( Gripper gripper) {
     this.gripper = gripper;
@@ -41,7 +43,7 @@ public class ShelfIntake extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    if(gripper.colorSensorDistance() > 200){
+    if(gripper.getCamArea() > 40){
       return true;
 
     }

@@ -11,6 +11,7 @@ public class GlobalVariables {
     public static int tag;
     public static int rowSelect;
     public static int height;
+    public static double armTrim;
 
     public static enum StationSelect{
         CLOSE_RAMP, LEFT_SHELF, LEFT_RAMP, RIGHT_SHELF, RIGHT_RAMP

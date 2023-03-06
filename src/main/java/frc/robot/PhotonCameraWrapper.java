@@ -75,6 +75,17 @@ public class PhotonCameraWrapper
         
     }
 
+    public double frontCamArea(){
+        var result = frontCam.getLatestResult();
+
+        if (!result.hasTargets())
+            return 0.5;
+      
+      
+            return  result.getBestTarget().getArea();
+        
+    }
+
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
             if (photonPoseEstimator == null || photonPoseEstimator2 == null) 
                 return Optional.empty();
