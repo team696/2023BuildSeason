@@ -16,7 +16,14 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
+import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorSensorV3;
+import com.revrobotics.EncoderType;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxAbsoluteEncoder;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxRelativeEncoder.Type;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.I2C;
@@ -30,12 +37,22 @@ import frc.robot.GlobalVariables;
 public class ArmSub extends SubsystemBase {
   public TalonFX leftArm;
   public TalonFX rightArm; 
-  public PIDController pidLoop;
-  public TalonSRX encorderTalon;
+
+  public TalonFX telescopeArm;
+
+  public CANSparkMax gripperJointEncoder;
+  public CANSparkMax gripperJointNeo;
+  public SparkMaxAbsoluteEncoder encoder;
+  public PIDController armPID;
+  public PIDController jointPID;
+  public PIDController telescopePID;
   public CANCoder testCanCoder;
-  public TalonSRXFeedbackDevice encoder; 
-  public double maxSpeedFor;
-  public double maxSpeedRev;
+
+  public double rotMaxSpeedFor;
+  public double rotMaxSpeedRev;
+
+  public double telMaxSpeedFor;
+  public double telMaxSpeedRev;
   
 
 
@@ -45,23 +62,32 @@ public class ArmSub extends SubsystemBase {
   
     testCanCoder = new CANCoder(14, "Karen");
     testCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
+    
 
-    maxSpeedFor = 0.4;
-    maxSpeedRev = 0.65;
+    rotMaxSpeedFor = 0.4;
+    rotMaxSpeedRev = 0.65;
+
+    gripperJointEncoder = new CANSparkMax(55, MotorType.kBrushless);
+    encoder = gripperJointEncoder.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
+    gripperJointNeo = new CANSparkMax(56, MotorType.kBrushless);
+    gripperJointNeo.clearFaults();
+    gripperJointNeo.restoreFactoryDefaults();
+
 
 
     // pidLoop = new PIDController(0.006, 0.003, 0.001);  
-    pidLoop = new PIDController(0.014, 0.002, 0.00);
-    pidLoop.setTolerance(0.5);
+    armPID = new PIDController(0.014, 0.002, 0.00);
+    armPID.setTolerance(0.5);
     // pidLoop.
 
     leftArm = new WPI_TalonFX(20, "Karen");
     rightArm = new WPI_TalonFX(21, "Karen");
+    telescopeArm = new WPI_TalonFX(22, "Karen");
 
     leftArm.configFactoryDefault();
       leftArm.setNeutralMode(NeutralMode.Brake);
-      leftArm.configPeakOutputForward(maxSpeedFor);
-      leftArm.configPeakOutputReverse(-maxSpeedRev);
+      leftArm.configPeakOutputForward(rotMaxSpeedFor);
+      leftArm.configPeakOutputReverse(-rotMaxSpeedRev);
       leftArm.config_kP(0, 0.05);
       leftArm.config_kI(0, 0.0);
       leftArm.config_kD(0, 0.0);
@@ -74,8 +100,8 @@ public class ArmSub extends SubsystemBase {
 
 
     rightArm.configFactoryDefault();
-      rightArm.configPeakOutputForward(maxSpeedFor);
-      rightArm.configPeakOutputReverse(-maxSpeedRev);
+      rightArm.configPeakOutputForward(rotMaxSpeedFor);
+      rightArm.configPeakOutputReverse(-rotMaxSpeedRev);
       rightArm.setSensorPhase(true);
       rightArm.setInverted(InvertType.FollowMaster);
       rightArm.config_kP(0, 0.05);
@@ -84,7 +110,22 @@ public class ArmSub extends SubsystemBase {
       rightArm.config_kF(0, 0.06);
       rightArm.setNeutralMode(NeutralMode.Brake);
       rightArm.follow(leftArm);
+
+      telMaxSpeedFor = 0.5;
+      telMaxSpeedRev = 0.5;
     
+      telescopeArm.configFactoryDefault();
+      telescopeArm.configPeakOutputForward(telMaxSpeedFor);
+      telescopeArm.configPeakOutputReverse(-telMaxSpeedRev);
+      telescopeArm.setSensorPhase(true);
+      telescopeArm.setInverted(InvertType.None);
+      telescopeArm.config_kP(0, 0.05);
+      telescopeArm.config_kI(0, 0.0);
+      telescopeArm.config_kD(0, 0.0);
+      telescopeArm.config_kF(0, 0.06);
+      telescopeArm.setNeutralMode(NeutralMode.Brake);
+    
+
 
   }
  
@@ -107,11 +148,23 @@ public class ArmSub extends SubsystemBase {
     leftArm.setSelectedSensorPosition(absolutePosition);
 }
 /**
+ * Moves the arm telescope using percent control.
+ * @param percent 
+  */
+public void extendArmPercentOutput(double percent){
+  telescopeArm.set(TalonFXControlMode.PercentOutput, percent);
+}
+
+public void extendArmPosition(double position){
+  telescopeArm.set(TalonFXControlMode.Position, position);
+}
+
+/**
  * Moves the arm to a dedicated degree.
  * @param position Desired arm position in degrees
  */
   public void moveArmPosition(double position){
-    leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(testCanCoder.getAbsolutePosition(), position));
+    leftArm.set(ControlMode.PercentOutput ,armPID.calculate(testCanCoder.getAbsolutePosition(), position));
   }
 /**
  * Moves the arm to a dedicated preset positions
@@ -121,57 +174,57 @@ public class ArmSub extends SubsystemBase {
     switch(position){
 
       case GROUND_PICKUP:
-      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.grndIntakePosValue));
+      leftArm.set(ControlMode.PercentOutput ,armPID.calculate(getArmPosition(), Constants.grndIntakePosValue));
       // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.grndIntakePosValue));
       break;
 
       case STOWED:
-      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.stowedPosValue));
+      leftArm.set(ControlMode.PercentOutput ,armPID.calculate(getArmPosition(), Constants.stowedPosValue));
       // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.stowedPosValue));
 
       break;
 
       case GROUND_SCORE: 
-      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.grndScorePosValueCone));
+      leftArm.set(ControlMode.PercentOutput ,armPID.calculate(getArmPosition(), Constants.grndScorePosValueCone));
       // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.grndScorePosValue));
 
       break;
 
       case MID_SCORE_CONE:
-      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.midScorePosValueCone));
+      leftArm.set(ControlMode.PercentOutput ,armPID.calculate(getArmPosition(), Constants.midScorePosValueCone));
       // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.midScorePosValue));
 
       break;
 
       case HIGH_SCORE_CONE:
-      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.highScorePosValueCone));
+      leftArm.set(ControlMode.PercentOutput ,armPID.calculate(getArmPosition(), Constants.highScorePosValueCone));
       // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.highScorePosValue));
 
       break;
       case MID_SCORE_CUBE:
-      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.midScorePosValueCube));
+      leftArm.set(ControlMode.PercentOutput ,armPID.calculate(getArmPosition(), Constants.midScorePosValueCube));
       // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.midScorePosValue));
 
       break;
 
       case HIGH_SCORE_CUBE:
-      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.highScorePosValueCube));
+      leftArm.set(ControlMode.PercentOutput ,armPID.calculate(getArmPosition(), Constants.highScorePosValueCube));
       // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.highScorePosValue));
 
       break;
 
       case SHELF_PICKUP:
-      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.shelfIntakePosValue));
+      leftArm.set(ControlMode.PercentOutput ,armPID.calculate(getArmPosition(), Constants.shelfIntakePosValue));
       // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.shelfIntakePosValue));
 
       break;
 
       case MID_SCORE_ADAPTIVE:
       if(GlobalVariables.gamePiece == 0){
-        leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.midScorePosValueCone));
+        leftArm.set(ControlMode.PercentOutput ,armPID.calculate(getArmPosition(), Constants.midScorePosValueCone));
       }
       else{
-        leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.midScorePosValueCube));
+        leftArm.set(ControlMode.PercentOutput ,armPID.calculate(getArmPosition(), Constants.midScorePosValueCube));
 
       }
       // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.shelfIntakePosValue));
@@ -179,10 +232,10 @@ public class ArmSub extends SubsystemBase {
       break;
       case HIGH_SCORE_ADAPTIVE:
       if(GlobalVariables.gamePiece == 0){
-        leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.highScorePosValueCone));
+        leftArm.set(ControlMode.PercentOutput ,armPID.calculate(getArmPosition(), Constants.highScorePosValueCone));
       }
       else{
-        leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.highScorePosValueCube));
+        leftArm.set(ControlMode.PercentOutput ,armPID.calculate(getArmPosition(), Constants.highScorePosValueCube));
 
       }
       // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.shelfIntakePosValue));
@@ -190,14 +243,14 @@ public class ArmSub extends SubsystemBase {
       break;
 
       case CONE_UPRIGHT:
-      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.coneUprightPosValue));
+      leftArm.set(ControlMode.PercentOutput ,armPID.calculate(getArmPosition(), Constants.coneUprightPosValue));
       // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.highScorePosValue));
 
       break;
 
 
       default:
-      leftArm.set(ControlMode.PercentOutput ,pidLoop.calculate(getArmPosition(), Constants.shelfIntakePosValue));
+      leftArm.set(ControlMode.PercentOutput ,armPID.calculate(getArmPosition(), Constants.shelfIntakePosValue));
       // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.shelfIntakePosValue));
 
       break;
@@ -231,7 +284,7 @@ public class ArmSub extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putNumber("PID OUTPUT ", leftArm.getMotorOutputPercent());
-    SmartDashboard.putNumber("PID ERROR ", pidLoop.getPositionError());
+    SmartDashboard.putNumber("PID ERROR ", armPID.getPositionError());
     SmartDashboard.putNumber("Arm Encoder Position", getArmPosition() );
     SmartDashboard.putNumber("Arm Motor Position", getArmMotorPos());
     SmartDashboard.putNumber("Arm Motor 1 Current", leftArm.getStatorCurrent());

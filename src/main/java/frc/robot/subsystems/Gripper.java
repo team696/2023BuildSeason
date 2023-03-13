@@ -6,6 +6,8 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ColorSensorV3;
+import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -25,6 +27,7 @@ public class Gripper extends SubsystemBase {
   CANSparkMax gripperMotor;
   DoubleSolenoid cubeSolenoid;
   Solenoid coneSolenoid;
+  SparkMaxPIDController gripperPID;
   public PneumaticsControlModule module;
   Compressor compressor;
   public final  I2C.Port i2cPort = I2C.Port.kMXP;
@@ -42,7 +45,13 @@ public class Gripper extends SubsystemBase {
     gripperMotor = new CANSparkMax(42, MotorType.kBrushless);
     gripperMotor.restoreFactoryDefaults();
     gripperMotor.setIdleMode(IdleMode.kBrake);
-
+    gripperMotor.getEncoder().setPosition(0);
+    
+    gripperPID = gripperMotor.getPIDController();
+    gripperPID.setP(1);
+    gripperPID.setI(0);
+    gripperPID.setD(0);
+    gripperPID.setFeedbackDevice(gripperMotor.getEncoder());
     compressor = new Compressor(PneumaticsModuleType.REVPH);
     compressor.enableDigital();
 
@@ -84,6 +93,10 @@ public class Gripper extends SubsystemBase {
     gripperMotor.set(percent);
   }
 
+  public void moveGripperPos(double position){
+    gripperPID.setReference(position, ControlType.kPosition);
+  }
+
   public void setClaw(GripperState state){
     switch(state){
       case OPEN:
@@ -110,5 +123,6 @@ public class Gripper extends SubsystemBase {
     SmartDashboard.putNumber("BLUE", colorSensor.getBlue());
     SmartDashboard.putNumber("GREEN", colorSensor.getGreen());
     SmartDashboard.putNumber("Distance", colorSensor.getProximity());
+    SmartDashboard.putNumber("SPARKMAX POS", gripperMotor.getEncoder().getPosition());
   }
 }
