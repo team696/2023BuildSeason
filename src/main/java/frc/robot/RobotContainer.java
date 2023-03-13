@@ -140,11 +140,13 @@ public class RobotContainer {
     xboxRightJoyButton.whileTrue(new HoldArmPos(armSub, ArmPositions.CONE_UPRIGHT).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
 
 
+
     // leftBumper.toggleOnTrue(new GroundIntake(armSub, gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     leftBumper.whileTrue(new HoldArmPos(armSub, ArmPositions.SHELF_PICKUP).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     rightBumper.toggleOnTrue(new ShelfIntake(gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
 
-    operatorDeploy.onTrue(new TurnInPlace(s_Swerve, true, false, 0));
+    // operatorDeploy.onTrue(new TurnInPlace(s_Swerve, true, false, 0));
+    operatorDeploy.onTrue(new CustomSwerveTrajectory(s_Swerve, 10, 4, 0, 3, 10));
     // operatorRightEmpty.onTrue(new BalanceAuto(s_Swerve));
     // TODO RED SIDE 
     // LeftLittleButton.onTrue(new AutoPlaceRed(s_Swerve, armSub, gripper)) ;
@@ -186,7 +188,8 @@ public class RobotContainer {
     // An ExampleCommand will run in autonomous
     // return new BalanceAuto(s_Swerve, armSub, gripper);
     // return new BalanceAutoRed(s_Swerve, armSub, gripper);
-    return m_chooser.getSelected();
+    // return m_chooser.getSelected();
+    return new ButterAutoTest(s_Swerve);
     // return new LeftSideAuto(s_Swerve, armSub, gripper);
     // return new LeftSideAutoRed(s_Swerve, armSub, gripper);
   }

@@ -130,9 +130,9 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
             m_poseEstimator.addVisionMeasurement(
                     camPose.estimatedPose.toPose2d(), camPose.timestampSeconds); 
                 
-            m_fieldSim.getObject("Cam Est Pos").setPose(  m_poseEstimator.getEstimatedPosition() );
+            // m_fieldSim.getObject("Cam Est Pos").setPose(  m_poseEstimator.getEstimatedPosition() );
         } else {
-            m_fieldSim.getObject("Cam Est Pos").setPose(m_poseEstimator.getEstimatedPosition());
+            // m_fieldSim.getObject("Cam Est Pos").setPose(m_poseEstimator.getEstimatedPosition());
         }
 
          m_poseEstimator.update(getYaw(), new SwerveModulePosition[] {
@@ -141,7 +141,7 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
             m_backRight.getPosition(),
             m_backLeft.getPosition()});
 
-        m_fieldSim.setRobotPose(m_poseEstimator.getEstimatedPosition());
+        m_fieldSim.setRobotPose(getPose());
         SmartDashboard.putNumber("lmao X", m_poseEstimator.getEstimatedPosition().getX());
         SmartDashboard.putNumber("lmao Y",  m_poseEstimator.getEstimatedPosition().getY());
         SmartDashboard.putBoolean("AprilTag in View", result.isPresent());
@@ -195,7 +195,12 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
 
     public void resetOdometry(Pose2d pose) {
         // swerveOdometry.resetPosition(getYaw(), mSwerveModulePositions, pose);
-        swerveOdometry.resetPosition(getYaw(), mSwerveModulePositions, new Pose2d());
+        swerveOdometry.resetPosition(getYaw(), new SwerveModulePosition[] {
+            m_frontRight.getPosition(),
+            m_frontLeft.getPosition(),
+            m_backRight.getPosition(),
+            m_backLeft.getPosition()
+          }, pose);
     }
 
     public void normalizeOdometry(){
