@@ -32,7 +32,7 @@ public class ArmPositionCommand extends CommandBase {
   @Override
   public void execute() {
     timer ++;
-    armSub.armPresetPositions(armPos);
+    armSub.armRotPresetPositions(armPos);
   }
 
   // Called once the command ends or is interrupted.

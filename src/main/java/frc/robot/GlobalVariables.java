@@ -11,6 +11,8 @@ public class GlobalVariables {
     public static int tag;
     public static int rowSelect;
     public static int height;
+    public static boolean robotDirection;
+    public static double gripperConePlacement;
 
     public static enum StationSelect{
         CLOSE_RAMP, LEFT_SHELF, LEFT_RAMP, RIGHT_SHELF, RIGHT_RAMP
@@ -20,14 +22,14 @@ public class GlobalVariables {
 
 
     public static enum ArmPositions{
-        STOWED,
-        GROUND_PICKUP, 
-        GROUND_SCORE, 
+        STOWED_ADAPTIVE,
+        GROUND_PICKUP_ADAPTIVE, 
+        GROUND_SCORE_ADAPTIVE, 
         MID_SCORE_CUBE, 
         MID_SCORE_CONE, 
         HIGH_SCORE_CUBE,
         HIGH_SCORE_CONE, 
-        SHELF_PICKUP, 
+        SHELF_PICKUP_ADAPTIVE, 
         MID_SCORE_ADAPTIVE,
         HIGH_SCORE_ADAPTIVE,
         CONE_UPRIGHT

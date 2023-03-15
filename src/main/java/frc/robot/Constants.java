@@ -39,6 +39,116 @@ public final class Constants {
 
     public static final double coneUprightPosValue = 150;
 
+    public static final class ArmRotationValues {
+
+    public static final double armRotStow = 0;
+
+    public static final double armRotForHighCone = 0;
+    public static final double armRotForHighCube = 0;
+
+    public static final double armRotForMidCone = 0;
+    public static final double armRotForMidCube = 0;
+
+    public static final double armRotForLowCone = 0;
+    public static final double armRotForLowCube = 0;
+
+    public static final double armRotForConePickup = 0;
+    public static final double armRotForCubePickup = 0;
+
+    public static final double armRotForShelfCone = 0;
+    public static final double armRotForShelfCube = 0;
+
+    public static final double armRotRevHighCone = 0;
+    public static final double armRotRevHighCube = 0;
+
+    public static final double armRotRevMidCone = 0;
+    public static final double armRotRevMidCube = 0;
+
+    public static final double armRotRevLowCone = 0;
+    public static final double armRotRevLowCube = 0;
+
+    public static final double armRotRevConePickup = 0;
+    public static final double armRotRevCubePickup = 0;
+    
+    public static final double armRotRevShelfCone = 0;
+    public static final double armRotRevShelfCube = 0;
+
+    }
+
+    public static final class ArmExtendValues {
+        public static final double armExtendStow = 0;
+
+        public static final double armExtendConePickup = 0;
+        public static final double armExtendCubePickup = 0;
+
+
+        public static final double armExtendForHighCone = 0;
+        public static final double armExtendForHighCube = 0;
+
+        public static final double armExtendForMidCone = 0;
+        public static final double armExtendForMidCube = 0;
+
+        public static final double armExtendForLowCone = 0;
+        public static final double armExtendForLowCube = 0;
+
+        public static final double armExtendForConePickup = 0;
+        public static final double armExtendForCubePickup = 0;
+
+        public static final double armExtendForShelfCone = 0;
+        public static final double armExtendForShelfCube = 0;
+
+
+        public static final double armExtendRevHighCone = 0;
+        public static final double armExtendRevHighCube = 0;
+
+        public static final double armExtendRevMidCone = 0;
+        public static final double armExtendRevMidCube = 0;
+
+        public static final double armExtendRevLowCone = 0;
+        public static final double armExtendRevLowCube = 0;
+
+        public static final double armExtendRevShelfCone = 0;
+        public static final double armExtendRevShelfCube = 0;
+    }
+
+    public static final class JointRotationValues {
+        public static final double JointRotStow = 0;
+
+        public static final double JointRotConePickup = 0;
+        public static final double JointRotCubePickup = 0;
+        
+
+        public static final double JointRotForHighCone = 0;
+        public static final double JointRotForHighCube = 0;
+
+        public static final double JointRotForMidCone = 0;
+        public static final double JointRotForMidCube = 0;
+
+        public static final double JointRotForLowCone = 0;
+        public static final double JointRotForLowCube = 0;
+
+        public static final double JointRotForConePickup = 0;
+        public static final double JointRotForCubePickup = 0;
+
+        public static final double JointRotForShelfCone = 0;
+        public static final double JointRotForShelfCube = 0;
+
+
+        public static final double JointRotRevHighCone = 0;
+        public static final double JointRotRevHighCube = 0;
+
+        public static final double JointRotRevMidCone = 0;
+        public static final double JointRotRevMidCube = 0;
+
+        public static final double JointRotRevLowCone = 0;
+        public static final double JointRotRevLowCube = 0;
+
+        public static final double JointRotRevShelfCone = 0;
+        public static final double JointRotRevShelfCube = 0;
+    }
+
+
+
 
     public static final class Swerve {
         public static final int pigeonID = 1;

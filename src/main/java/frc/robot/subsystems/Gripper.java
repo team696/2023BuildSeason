@@ -28,6 +28,7 @@ public class Gripper extends SubsystemBase {
   DoubleSolenoid cubeSolenoid;
   Solenoid coneSolenoid;
   SparkMaxPIDController gripperPID;
+  
   public PneumaticsControlModule module;
   Compressor compressor;
   public final  I2C.Port i2cPort = I2C.Port.kMXP;
@@ -40,6 +41,8 @@ public class Gripper extends SubsystemBase {
     OPEN, CONE, CUBE
   }
   public GripperState gripperState = GripperState.OPEN;
+
+  
   /** Creates a new Gripper. */
   public Gripper() {
     gripperMotor = new CANSparkMax(42, MotorType.kBrushless);

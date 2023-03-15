@@ -22,6 +22,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -149,6 +151,25 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
         // m_fieldSim.getObject("Actual Pos").setPose(getPose());
         // m_fieldSim.setRobotPose(m_poseEstimator.getEstimatedPosition());
     
+    }
+
+    public void updateRobotDirection(){
+        if (DriverStation.getAlliance() == Alliance.Blue){
+            if(gyro.getYaw()>=90 || gyro.getYaw() <= -90){
+                GlobalVariables.robotDirection = true;
+            }
+            else{
+                GlobalVariables.robotDirection = false;
+            }
+        }
+        else{
+            if(gyro.getYaw()>=90 || gyro.getYaw() <= -90){
+                GlobalVariables.robotDirection = false;
+            }
+            else{
+                GlobalVariables.robotDirection = true;
+            } 
+        }
     }
 
    

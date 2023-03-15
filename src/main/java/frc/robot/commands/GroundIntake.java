@@ -32,7 +32,7 @@ public class GroundIntake extends CommandBase {
   @Override
   public void execute() {
     timer++;
-    armSub.armPresetPositions(ArmPositions.GROUND_PICKUP);
+    armSub.armRotPresetPositions(ArmPositions.GROUND_PICKUP_ADAPTIVE);
     if (timer >= 20){
       gripper.setClaw(GripperState.OPEN);
       gripper.moveGripper(1);

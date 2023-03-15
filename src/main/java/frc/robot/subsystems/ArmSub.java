@@ -8,27 +8,20 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
-import com.ctre.phoenix.motorcontrol.TalonSRXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
-import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.ColorSensorV3;
-import com.revrobotics.EncoderType;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxAbsoluteEncoder;
+import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.SparkMaxRelativeEncoder.Type;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.math.Conversions;
 import frc.robot.Constants;
@@ -42,6 +35,7 @@ public class ArmSub extends SubsystemBase {
 
   public CANSparkMax gripperJointEncoder;
   public CANSparkMax gripperJointNeo;
+  public SparkMaxPIDController gripperJointPID;
   public SparkMaxAbsoluteEncoder encoder;
   public PIDController armPID;
   public PIDController jointPID;
@@ -67,12 +61,19 @@ public class ArmSub extends SubsystemBase {
     rotMaxSpeedFor = 0.4;
     rotMaxSpeedRev = 0.65;
 
-    gripperJointEncoder = new CANSparkMax(55, MotorType.kBrushless);
-    encoder = gripperJointEncoder.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
+    // gripperJointEncoder = new CANSparkMax(55, MotorType.kBrushless);
+    // encoder = gripperJointEncoder.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
     gripperJointNeo = new CANSparkMax(56, MotorType.kBrushless);
     gripperJointNeo.clearFaults();
     gripperJointNeo.restoreFactoryDefaults();
+    gripperJointNeo.getEncoder().setPosition(0);
+    gripperJointNeo.setIdleMode(IdleMode.kBrake);
 
+    gripperJointPID = gripperJointNeo.getPIDController();
+    gripperJointPID.setP(1);
+    gripperJointPID.setI(0);
+    gripperJointPID.setD(0);
+    gripperJointPID.setFeedbackDevice(gripperJointNeo.getEncoder());
 
 
     // pidLoop = new PIDController(0.006, 0.003, 0.001);  
@@ -119,18 +120,26 @@ public class ArmSub extends SubsystemBase {
       telescopeArm.configPeakOutputReverse(-telMaxSpeedRev);
       telescopeArm.setSensorPhase(true);
       telescopeArm.setInverted(InvertType.None);
-      telescopeArm.config_kP(0, 0.05);
+      telescopeArm.config_kP(0, 0.4);
       telescopeArm.config_kI(0, 0.0);
       telescopeArm.config_kD(0, 0.0);
-      telescopeArm.config_kF(0, 0.06);
+      telescopeArm.config_kF(0, 0.0);
       telescopeArm.setNeutralMode(NeutralMode.Brake);
+      telescopeArm.configNeutralDeadband(0.00001);
+      telescopeArm.configMotionAcceleration(6000);
+      telescopeArm.configMotionCruiseVelocity(10000);
+      telescopeArm.setSelectedSensorPosition(0);
     
 
 
   }
  
 
- 
+ public void moveRotArmMotionMagic(double degrees){
+  // TODO degrees to falcon readout
+  double setpoint = degrees *3;
+  leftArm.set(TalonFXControlMode.MotionMagic, setpoint);
+ }
 /**
  * Moves the arm by percent output.
  * @param percent 0.0 - 1.0.
@@ -156,7 +165,16 @@ public void extendArmPercentOutput(double percent){
 }
 
 public void extendArmPosition(double position){
-  telescopeArm.set(TalonFXControlMode.Position, position);
+  // telescopeArm.set(TalonFXControlMode.Position, position);
+  telescopeArm.set(TalonFXControlMode.MotionMagic, position);
+}
+
+public void gripperJointPosition(double position){
+  gripperJointPID.setReference(position, ControlType.kPosition);
+}
+
+public double getTelescopePos(){
+  return telescopeArm.getSelectedSensorPosition();
 }
 
 /**
@@ -170,98 +188,228 @@ public void extendArmPosition(double position){
  * Moves the arm to a dedicated preset positions
  * @param position The dedicated position enum, current options are GROUND_PICKUP, STOWED, GROUND_SCORE, MID_SCORE, HIGH_SCORE, and SHELF_PICKUP
   */
-  public void armPresetPositions(GlobalVariables.ArmPositions position){
+  public void armRotPresetPositions(GlobalVariables.ArmPositions position){
     switch(position){
 
-      case GROUND_PICKUP:
-      leftArm.set(ControlMode.PercentOutput ,armPID.calculate(getArmPosition(), Constants.grndIntakePosValue));
-      // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.grndIntakePosValue));
+      case GROUND_PICKUP_ADAPTIVE:
+      if(GlobalVariables.gamePiece == 0){
+        moveRotArmMotionMagic(Constants.ArmRotationValues.armRotForConePickup);
+      }
+      else{
+        moveRotArmMotionMagic(Constants.ArmRotationValues.armRotForCubePickup);
+      }
       break;
 
-      case STOWED:
-      leftArm.set(ControlMode.PercentOutput ,armPID.calculate(getArmPosition(), Constants.stowedPosValue));
-      // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.stowedPosValue));
-
+      case STOWED_ADAPTIVE:
+      moveRotArmMotionMagic(Constants.ArmRotationValues.armRotStow);
       break;
 
-      case GROUND_SCORE: 
-      leftArm.set(ControlMode.PercentOutput ,armPID.calculate(getArmPosition(), Constants.grndScorePosValueCone));
-      // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.grndScorePosValue));
-
+      case GROUND_SCORE_ADAPTIVE: 
+      if(GlobalVariables.robotDirection){
+        if(GlobalVariables.gamePiece == 0){
+          moveRotArmMotionMagic(Constants.ArmRotationValues.armRotForLowCone);
+        }
+        else{
+          moveRotArmMotionMagic(Constants.ArmRotationValues.armRotForLowCube);
+        }
+      }
+      else{
+        if(GlobalVariables.gamePiece == 0){
+          moveRotArmMotionMagic(Constants.ArmRotationValues.armRotRevLowCone);
+        }
+        else{
+          moveRotArmMotionMagic(Constants.ArmRotationValues.armRotRevLowCube);
+        }
+      }
       break;
 
-      case MID_SCORE_CONE:
-      leftArm.set(ControlMode.PercentOutput ,armPID.calculate(getArmPosition(), Constants.midScorePosValueCone));
-      // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.midScorePosValue));
+      case SHELF_PICKUP_ADAPTIVE:
 
-      break;
-
-      case HIGH_SCORE_CONE:
-      leftArm.set(ControlMode.PercentOutput ,armPID.calculate(getArmPosition(), Constants.highScorePosValueCone));
-      // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.highScorePosValue));
-
-      break;
-      case MID_SCORE_CUBE:
-      leftArm.set(ControlMode.PercentOutput ,armPID.calculate(getArmPosition(), Constants.midScorePosValueCube));
-      // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.midScorePosValue));
-
-      break;
-
-      case HIGH_SCORE_CUBE:
-      leftArm.set(ControlMode.PercentOutput ,armPID.calculate(getArmPosition(), Constants.highScorePosValueCube));
-      // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.highScorePosValue));
-
-      break;
-
-      case SHELF_PICKUP:
-      leftArm.set(ControlMode.PercentOutput ,armPID.calculate(getArmPosition(), Constants.shelfIntakePosValue));
-      // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.shelfIntakePosValue));
-
+      if(GlobalVariables.robotDirection){
+        if(GlobalVariables.gamePiece == 0){
+          moveRotArmMotionMagic(Constants.ArmRotationValues.armRotForShelfCone);
+        }
+        else{
+          moveRotArmMotionMagic(Constants.ArmRotationValues.armRotForShelfCube);
+        }
+      }
+      else{
+        if(GlobalVariables.gamePiece == 0){
+          moveRotArmMotionMagic(Constants.ArmRotationValues.armRotRevShelfCone);
+        }
+        else{
+          moveRotArmMotionMagic(Constants.ArmRotationValues.armRotRevShelfCube);
+        }
+      }
       break;
 
       case MID_SCORE_ADAPTIVE:
-      if(GlobalVariables.gamePiece == 0){
-        leftArm.set(ControlMode.PercentOutput ,armPID.calculate(getArmPosition(), Constants.midScorePosValueCone));
-      }
-      else{
-        leftArm.set(ControlMode.PercentOutput ,armPID.calculate(getArmPosition(), Constants.midScorePosValueCube));
-
-      }
-      // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.shelfIntakePosValue));
-
+        if(GlobalVariables.robotDirection){
+          if(GlobalVariables.gamePiece == 0){
+            moveRotArmMotionMagic(Constants.ArmRotationValues.armRotForMidCone);
+          }
+          else{
+            moveRotArmMotionMagic(Constants.ArmRotationValues.armRotForMidCube);
+          }
+        }
+        else{
+          if(GlobalVariables.gamePiece == 0){
+            moveRotArmMotionMagic(Constants.ArmRotationValues.armRotRevMidCone);
+          }
+          else{
+            moveRotArmMotionMagic(Constants.ArmRotationValues.armRotRevMidCube);
+          }
+        }
       break;
+
       case HIGH_SCORE_ADAPTIVE:
-      if(GlobalVariables.gamePiece == 0){
-        leftArm.set(ControlMode.PercentOutput ,armPID.calculate(getArmPosition(), Constants.highScorePosValueCone));
+      if(GlobalVariables.robotDirection){
+        if(GlobalVariables.gamePiece == 0){
+          moveRotArmMotionMagic(Constants.ArmRotationValues.armRotForHighCone);
+        }
+        else{
+          moveRotArmMotionMagic(Constants.ArmRotationValues.armRotForHighCube);
+        }
       }
       else{
-        leftArm.set(ControlMode.PercentOutput ,armPID.calculate(getArmPosition(), Constants.highScorePosValueCube));
-
+        if(GlobalVariables.gamePiece == 0){
+          moveRotArmMotionMagic( Constants.ArmRotationValues.armRotRevHighCone);
+        }
+        else{
+          moveRotArmMotionMagic(Constants.ArmRotationValues.armRotRevHighCube);
+        }
       }
-      // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.shelfIntakePosValue));
-
       break;
 
-      case CONE_UPRIGHT:
-      leftArm.set(ControlMode.PercentOutput ,armPID.calculate(getArmPosition(), Constants.coneUprightPosValue));
-      // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.highScorePosValue));
-
-      break;
-
+    
 
       default:
-      leftArm.set(ControlMode.PercentOutput ,armPID.calculate(getArmPosition(), Constants.shelfIntakePosValue));
-      // System.out.println("CancoderPos" + getArmPosition() + "PID Loop Output"+pidLoop.calculate(testCanCoder.getAbsolutePosition(), Constants.shelfIntakePosValue));
+      moveRotArmMotionMagic(Constants.ArmRotationValues.armRotStow);
+      break;
+    }
+  }
+
+  public void armExtendPresetPositions(GlobalVariables.ArmPositions position){
+    switch(position){
+
+      case GROUND_PICKUP_ADAPTIVE:
+      if(GlobalVariables.gamePiece == 0){
+        extendArmPosition(Constants.ArmExtendValues.armExtendConePickup);
+      }
+      else{
+        extendArmPosition(Constants.ArmExtendValues.armExtendCubePickup);
+
+      }
+      break;
+
+      case STOWED_ADAPTIVE:
+      extendArmPosition(Constants.ArmExtendValues.armExtendStow);
+
+      break;
+
+      case GROUND_SCORE_ADAPTIVE: 
+      if(GlobalVariables.robotDirection){
+        if(GlobalVariables.gamePiece == 0){
+          extendArmPosition(Constants.ArmExtendValues.armExtendForLowCone);
+        }
+        else{
+          extendArmPosition(Constants.ArmExtendValues.armExtendForLowCube);
+        }
+      }
+      else{
+        if(GlobalVariables.gamePiece == 0){
+          extendArmPosition(Constants.ArmExtendValues.armExtendRevLowCone);
+        }
+        else{
+          extendArmPosition(Constants.ArmExtendValues.armExtendRevLowCube);
+
+        }
+      }
+     
+      break;
+
+      case SHELF_PICKUP_ADAPTIVE:
+      if(GlobalVariables.robotDirection){
+        if(GlobalVariables.gamePiece == 0){
+          extendArmPosition(Constants.ArmExtendValues.armExtendForShelfCone);
+        }
+        else{
+          extendArmPosition(Constants.ArmExtendValues.armExtendForShelfCube);
+        }
+      }
+      else{
+        if(GlobalVariables.gamePiece == 0){
+          extendArmPosition(Constants.ArmExtendValues.armExtendRevShelfCone);
+        }
+        else{
+          extendArmPosition(Constants.ArmExtendValues.armExtendRevShelfCube);
+
+        }
+      }
+      break;
+
+      case MID_SCORE_ADAPTIVE:
+      if(GlobalVariables.robotDirection){
+        if(GlobalVariables.gamePiece == 0){
+          extendArmPosition(Constants.ArmExtendValues.armExtendForMidCone);
+        }
+        else{
+          extendArmPosition(Constants.ArmExtendValues.armExtendForMidCube);
+        }
+      }
+      else{
+        if(GlobalVariables.gamePiece == 0){
+          extendArmPosition(Constants.ArmExtendValues.armExtendRevMidCone);
+        }
+        else{
+          extendArmPosition(Constants.ArmExtendValues.armExtendRevMidCube);
+
+        }
+      }
+     
+      break;
+
+      case HIGH_SCORE_ADAPTIVE:
+      if(GlobalVariables.robotDirection){
+        if(GlobalVariables.gamePiece == 0){
+          extendArmPosition(Constants.ArmExtendValues.armExtendForHighCone);
+        }
+        else{
+          extendArmPosition(Constants.ArmExtendValues.armExtendForHighCube);
+        }
+      }
+      else{
+        if(GlobalVariables.gamePiece == 0){
+          extendArmPosition(Constants.ArmExtendValues.armExtendRevHighCone);
+        }
+        else{
+          extendArmPosition(Constants.ArmExtendValues.armExtendRevHighCube);
+
+        }
+      }
+     
+      break;
+
+    
+
+      default:
+      extendArmPosition(Constants.ArmExtendValues.armExtendStow);
 
       break;
     }
   }
+  
 /**
  * Returns current arm position
  * @return CANcoder arm position in degrees.
   */
   public double getArmPosition(){
     return testCanCoder.getAbsolutePosition();
+  }
+
+  public double getRotArmPos(){
+    // TODO make this gearbox to degrees
+    return leftArm.getSelectedSensorPosition() /3;
   }
 /**
  * Returns current arm motor position.
@@ -289,5 +437,7 @@ public void extendArmPosition(double position){
     SmartDashboard.putNumber("Arm Motor Position", getArmMotorPos());
     SmartDashboard.putNumber("Arm Motor 1 Current", leftArm.getStatorCurrent());
     SmartDashboard.putNumber("Arm Motor 2 Current", rightArm.getStatorCurrent());
+    SmartDashboard.putNumber("Telescope Position", telescopeArm.getSelectedSensorPosition());
+    SmartDashboard.putNumber("Telescope Speed?", telescopeArm.getSupplyCurrent());
   }
 } 
