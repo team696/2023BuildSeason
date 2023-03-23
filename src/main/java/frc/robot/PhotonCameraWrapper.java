@@ -17,9 +17,8 @@ import frc.robot.Constants.VisionConstants;
 /** Add your docs here. */
 public class PhotonCameraWrapper 
 {
-    public PhotonCamera camera1;
-    public PhotonCamera camera2;
     public PhotonCamera frontCam;
+    public PhotonCamera rearCam;
     public PhotonPoseEstimator photonPoseEstimator;
     public PhotonPoseEstimator photonPoseEstimator2;
     
@@ -28,52 +27,107 @@ public class PhotonCameraWrapper
         AprilTagFieldLayout aprilTagFieldLayout;
         try {
          aprilTagFieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
-         camera1 = new PhotonCamera(VisionConstants.camera1Name);
-         camera2 = new PhotonCamera(VisionConstants.camera2Name);
+         frontCam = new PhotonCamera(VisionConstants.camera1Name);
+         rearCam = new PhotonCamera(VisionConstants.camera2Name);
 
-         frontCam = new PhotonCamera(VisionConstants.frontCamName);
-         photonPoseEstimator2 = new PhotonPoseEstimator(aprilTagFieldLayout, org.photonvision.PhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE, camera2, VisionConstants.robotToCam1);
-         photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, org.photonvision.PhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE, camera1, VisionConstants.robotToCam2);
+         photonPoseEstimator2 = new PhotonPoseEstimator(aprilTagFieldLayout, org.photonvision.PhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE, frontCam, VisionConstants.robotToCam1);
+         photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, org.photonvision.PhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE, rearCam, VisionConstants.robotToCam2);
             
         } catch (Exception e) {
             System.out.println(e);
         }
     }
- public void frontCamPipeline(int pipelineIndex){
-        frontCam.setPipelineIndex(pipelineIndex);;
-    }
-    public double getYOffset(){
-        var result = frontCam.getLatestResult();
+//  public void frontCamPipeline(int pipelineIndex){
+//         frontCam.setPipelineIndex(pipelineIndex);;
+//     }
 
-        if (!result.hasTargets())
-            return 0;
-      
-      
-            return  result.getBestTarget().getYaw();
-        
-    }
+public void cameraPipelines(int pipeline){
+    frontCam.setPipelineIndex(pipeline);
+    rearCam.setPipelineIndex(pipeline);
+}
 
-    public double AutoGetYOffset(){
-        var result = frontCam.getLatestResult();
+public double getFrontCamOffset(){
+    var result = frontCam.getLatestResult();
 
-        if (!result.hasTargets())
-            return 0.5;
-      
-      
-            return  result.getBestTarget().getYaw();
-        
-    }
+    if (!result.hasTargets())
+        return 0;
+  
+  
+        return  result.getBestTarget().getYaw();
     
-    public double AutoTurnTOCOne(){
-        var result = frontCam.getLatestResult();
+}
 
-        if (!result.hasTargets())
-            return 0.5;
+public double getRearCamOffset(){
+    var result = frontCam.getLatestResult();
+
+    if (!result.hasTargets())
+        return 0;
+  
+  
+        return  result.getBestTarget().getYaw();
+    
+}
+
+public double getFrontCamDistance(){
+    var result = frontCam.getLatestResult();
+
+    if (!result.hasTargets())
+        return 0;
+  
+  
+        return  result.getBestTarget().getBestCameraToTarget().getX();
+    
+}
+
+public double getRearCamDistance(){
+    var result = frontCam.getLatestResult();
+
+    if (!result.hasTargets())
+        return 0;
+  
+  
+        return  result.getBestTarget().getBestCameraToTarget().getX();
+    
+}
+
+
+
+
+
+
+
+    // public double getYOffset(){
+    //     var result = frontCam.getLatestResult();
+
+    //     if (!result.hasTargets())
+    //         return 0;
       
       
-            return  result.getBestTarget().getYaw();
+    //         return  result.getBestTarget().getYaw();
         
-    }
+    // }
+
+    // public double AutoGetYOffset(){
+    //     var result = frontCam.getLatestResult();
+
+    //     if (!result.hasTargets())
+    //         return 0.5;
+      
+      
+    //         return  result.getBestTarget().getYaw();
+        
+    // }
+    
+    // public double AutoTurnTOCOne(){
+    //     var result = frontCam.getLatestResult();
+
+    //     if (!result.hasTargets())
+    //         return 0.5;
+      
+      
+    //         return  result.getBestTarget().getYaw();
+        
+    // }
 
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
             if (photonPoseEstimator == null || photonPoseEstimator2 == null) 

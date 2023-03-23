@@ -177,6 +177,11 @@ public double getTelescopePos(){
   return telescopeArm.getSelectedSensorPosition();
 }
 
+public void homeRotArmPos(){
+  // TODO THING
+  leftArm.setSelectedSensorPosition(testCanCoder.getPosition() /30);
+}
+
 /**
  * Moves the arm to a dedicated degree.
  * @param position Desired arm position in degrees
@@ -395,6 +400,126 @@ public double getTelescopePos(){
       default:
       extendArmPosition(Constants.ArmExtendValues.armExtendStow);
 
+      break;
+    }
+  }
+
+  public void jointRotPresetPositions(GlobalVariables.ArmPositions position){
+    switch(position){
+
+      case GROUND_PICKUP_ADAPTIVE:
+      if(GlobalVariables.gamePiece == 0){
+        extendArmPosition(Constants.JointRotationValues.JointRotConePickup);
+      }
+      else{
+        extendArmPosition(Constants.JointRotationValues.JointRotCubePickup);
+
+      }
+      break;
+
+      case STOWED_ADAPTIVE:
+      if(GlobalVariables.gamePiece == 0){
+        extendArmPosition(Constants.JointRotationValues.JointRotStowCone);
+      }
+      else{
+        extendArmPosition(Constants.JointRotationValues.JointRotStowCube);
+
+      }
+      break;
+
+      case GROUND_SCORE_ADAPTIVE: 
+      if(GlobalVariables.robotDirection){
+        if(GlobalVariables.gamePiece == 0){
+          extendArmPosition(Constants.JointRotationValues.JointRotForLowCone);
+        }
+        else{
+          extendArmPosition(Constants.JointRotationValues.JointRotForLowCube);
+        }
+      }
+      else{
+        if(GlobalVariables.gamePiece == 0){
+          extendArmPosition(Constants.JointRotationValues.JointRotRevLowCone);
+        }
+        else{
+          extendArmPosition(Constants.JointRotationValues.JointRotRevLowCube);
+
+        }
+      }
+     
+      break;
+
+      case SHELF_PICKUP_ADAPTIVE:
+      if(GlobalVariables.robotDirection){
+        if(GlobalVariables.gamePiece == 0){
+          extendArmPosition(Constants.JointRotationValues.JointRotForShelfCone);
+        }
+        else{
+          extendArmPosition(Constants.JointRotationValues.JointRotForShelfCube);
+        }
+      }
+      else{
+        if(GlobalVariables.gamePiece == 0){
+          extendArmPosition(Constants.JointRotationValues.JointRotRevShelfCone);
+        }
+        else{
+          extendArmPosition(Constants.JointRotationValues.JointRotRevShelfCube);
+
+        }
+      }
+      break;
+
+      case MID_SCORE_ADAPTIVE:
+      if(GlobalVariables.robotDirection){
+        if(GlobalVariables.gamePiece == 0){
+          extendArmPosition(Constants.JointRotationValues.JointRotForMidCone);
+        }
+        else{
+          extendArmPosition(Constants.JointRotationValues.JointRotForMidCube);
+        }
+      }
+      else{
+        if(GlobalVariables.gamePiece == 0){
+          extendArmPosition(Constants.JointRotationValues.JointRotRevMidCone);
+        }
+        else{
+          extendArmPosition(Constants.JointRotationValues.JointRotRevMidCube);
+
+        }
+      }
+     
+      break;
+
+      case HIGH_SCORE_ADAPTIVE:
+      if(GlobalVariables.robotDirection){
+        if(GlobalVariables.gamePiece == 0){
+          extendArmPosition(Constants.JointRotationValues.JointRotForHighCone);
+        }
+        else{
+          extendArmPosition(Constants.JointRotationValues.JointRotForHighCube);
+        }
+      }
+      else{
+        if(GlobalVariables.gamePiece == 0){
+          extendArmPosition(Constants.JointRotationValues.JointRotRevHighCone);
+        }
+        else{
+          extendArmPosition(Constants.JointRotationValues.JointRotRevHighCube);
+
+        }
+      }
+     
+      break;
+
+    
+
+      default:
+      if(GlobalVariables.gamePiece == 0){
+        extendArmPosition(Constants.JointRotationValues.JointRotStowCone);
+      }
+      else{
+        extendArmPosition(Constants.JointRotationValues.JointRotStowCube);
+
+      }
       break;
     }
   }

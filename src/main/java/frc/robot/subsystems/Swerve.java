@@ -36,6 +36,7 @@ public class Swerve extends SubsystemBase {
     public PhotonCameraWrapper pcw;
     public AHRS gyro;
     public ProfiledPIDController rotatePID;
+    public PIDController aimPID;
 
     private  SwerveModule m_frontLeft = new SwerveModule(0, Constants.Swerve.Mod0.constants);
     private  SwerveModule m_frontRight = new SwerveModule(1, Constants.Swerve.Mod1.constants);
@@ -79,6 +80,8 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
         
         // zeroGyro();
         SmartDashboard.putData("Field", m_fieldSim);
+        aimPID = new PIDController(1, 0, 0);
+        aimPID.setTolerance(0.001);
 
         rotatePID = new ProfiledPIDController(
             0.010,
@@ -96,7 +99,7 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
 
 
         swerveOdometry = new SwerveDriveOdometry(Constants.Swerve.swerveKinematics, getYaw(), mSwerveModulePositions);
-
+ 
         m_poseEstimator = new SwerveDrivePoseEstimator( Constants.Swerve.swerveKinematics, getYaw(), new SwerveModulePosition[] {
             m_frontRight.getPosition(),
             m_frontLeft.getPosition(),
@@ -273,46 +276,61 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
         return gyro.getRoll();
     }
 
-
-        
-    public double frontCamOffset(int pipeline){
-        pcw.frontCamPipeline(GlobalVariables.gamePiece);
-        
-        double headingError = pcw.getYOffset();
-       /*  double steering_adjust;
-        steering_adjust = 0;
-        if (headingError > 0.05)
-        {
-                steering_adjust =  0.09;
+    public double getCamOffset(){
+        pcw.cameraPipelines(GlobalVariables.gamePiece);
+        double headingError;
+        if(GlobalVariables.robotDirection){
+            headingError = pcw.getFrontCamOffset();
+            return aimPID.calculate(headingError, 30);
         }
-        else if (headingError < -0.05)
-        {
-                steering_adjust = -0.09;
-        } */
+        else{
+            headingError = pcw.getRearCamOffset();
+            return aimPID.calculate(headingError, -30);
+
+        }
 
 
-        return (rotatePID.calculate(headingError, 0)/* +steering_adjust */);
-    }    
+    }
+
+        
+    // public double frontCamOffset(int pipeline){
+    //     pcw.frontCamPipeline(GlobalVariables.gamePiece);
+        
+    //     double headingError = pcw.getYOffset();
+    //    /*  double steering_adjust;
+    //     steering_adjust = 0;
+    //     if (headingError > 0.05)
+    //     {
+    //             steering_adjust =  0.09;
+    //     }
+    //     else if (headingError < -0.05)
+    //     {
+    //             steering_adjust = -0.09;
+    //     } */
+
+
+    //     return (rotatePID.calculate(headingError, 0)/* +steering_adjust */);
+    // }    
 
            
-    public double AutoFrontCamOffset(int pipeline){
-        pcw.frontCamPipeline(GlobalVariables.gamePiece);
+    // public double AutoFrontCamOffset(int pipeline){
+    //     pcw.frontCamPipeline(GlobalVariables.gamePiece);
         
-        double headingError = pcw.AutoGetYOffset();
-       /*  double steering_adjust;
-        steering_adjust = 0;
-        if (headingError > 0.05)
-        {
-                steering_adjust =  0.09;
-        }
-        else if (headingError < -0.05)
-        {
-                steering_adjust = -0.09;
-        } */
+    //     double headingError = pcw.AutoGetYOffset();
+    //    /*  double steering_adjust;
+    //     steering_adjust = 0;
+    //     if (headingError > 0.05)
+    //     {
+    //             steering_adjust =  0.09;
+    //     }
+    //     else if (headingError < -0.05)
+    //     {
+    //             steering_adjust = -0.09;
+    //     } */
 
 
-        return (rotatePID.calculate(headingError, 0)/* +steering_adjust */);
-    }    
+    //     return (rotatePID.calculate(headingError, 0)/* +steering_adjust */);
+    // }    
 
     
 
@@ -343,7 +361,7 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
 
         SmartDashboard.putNumber("Odometry X", getPose().getX());
         SmartDashboard.putNumber("Odometry Y", getPose().getY());
-        SmartDashboard.putNumber("CONE OFFSET ", frontCamOffset(1));
+        // SmartDashboard.putNumber("CONE OFFSET ", frontCamOffset(1));
 
 
 

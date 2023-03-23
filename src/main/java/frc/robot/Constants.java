@@ -112,7 +112,8 @@ public final class Constants {
     }
 
     public static final class JointRotationValues {
-        public static final double JointRotStow = 0;
+        public static final double JointRotStowCone = 0;
+        public static final double JointRotStowCube = 0;
 
         public static final double JointRotConePickup = 0;
         public static final double JointRotCubePickup = 0;

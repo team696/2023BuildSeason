@@ -27,7 +27,6 @@ import frc.robot.GlobalVariables.ArmPositions;
 import frc.robot.autos.*;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
-import frc.robot.subsystems.Gripper.GripperState;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -69,6 +68,12 @@ public class RobotContainer {
   private final Trigger operatorExtraRight = new JoystickButton(operatorPanel, 15);
   private final Trigger xboxRightJoyButton = new JoystickButton(driver, 10);
 
+  private final Trigger panelRollers = new JoystickButton(operatorPanel, 10);
+  private final Trigger panelShelf = new JoystickButton(operatorPanel, 9);
+
+
+
+  // private final Trigger TopLeftSwitch = new JoystickButton(operatorPanel)
  
   public final Swerve s_Swerve = new Swerve();
   public final ArmSub armSub = new ArmSub();
@@ -105,7 +110,7 @@ public class RobotContainer {
     
     s_Swerve.setDefaultCommand(new TeleopSwerve(s_Swerve, joystickPanel, translationAxis, strafeAxis, rotationAxis, fieldRelative, openLoop).
     withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-    armSub.setDefaultCommand(new HoldArmPos(armSub, ArmPositions.STOWED_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+    // armSub.setDefaultCommand(new HoldArmPos(armSub, ArmPositions.STOWED_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     //candle.setDefaultCommand(new InstantCommand(() -> candle.setColor(operatorExtraRight.getAsBoolean())));
     candle.setDefaultCommand(new SetLedCommand(candle));
     configureButtonBindings();
@@ -118,36 +123,38 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    operatorExtraRight.whileTrue(new ConeVCube(0));
-    operatorExtraRight.whileFalse(new ConeVCube(1));
+    panelRollers.whileTrue(new GripperCommand(gripper, 0.5)); //Push OUT
+    panelShelf.whileTrue(new GripperCommand(gripper, -0.5)); // Take IN
+
+    // operatorExtraRight.whileTrue(new ConeVCube(0));
+    // operatorExtraRight.whileFalse(new ConeVCube(1));
 
     // operatorIntakeUp.whileTrue(new HoldArmPos(armSub, ArmPositions.STOWED).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     // operatorIntakeUp.whileFalse(new HoldArmPos(armSub, ArmPositions.GROUND_PICKUP).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     // operatorIntakeDown.whileTrue(new HoldArmPos(armSub, ArmPositions.MID_SCORE_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     // operatorIntakeDown.whileFalse(new HoldArmPos(armSub, ArmPositions.GROUND_PICKUP).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-    operatorLatch.toggleOnTrue(new InstantCommand(() -> gripper.setClaw(GripperState.CONE)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     // operatorHook.toggleOnTrue(new InstantCommand(() -> gripper.setClaw(GripperState.OPEN)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-    operatorSpinup.whileTrue(new LockToGamePiece(s_Swerve, joystickPanel, translationAxis, strafeAxis, true, false, GlobalVariables.gamePiece).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-    operatorLeftEmpty.toggleOnTrue(new GroundIntake(armSub, gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    // operatorSpinup.whileTrue(new LockToGamePiece(s_Swerve, joystickPanel, translationAxis, strafeAxis, true, false, GlobalVariables.gamePiece).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+    // operatorLeftEmpty.toggleOnTrue(new GroundIntake(armSub, gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
 
-    operatorHook.whileTrue(new ArmExtendTest(armSub));
-    rightJoy.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
-    leftJoy.whileTrue(new LockToGamePiece(s_Swerve, joystickPanel, translationAxis, strafeAxis, true, true, GlobalVariables.gamePiece).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+    // operatorHook.whileTrue(new ArmExtendTest(armSub));
+    // rightJoy.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
+    // leftJoy.whileTrue(new LockToGamePiece(s_Swerve, joystickPanel, translationAxis, strafeAxis, true, true, GlobalVariables.gamePiece).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
     // buttonX.toggleOnTrue(new HoldArmPos(armSub, ArmPositions.STOWED).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     // buttonY.whileTrue(new HoldArmPos(armSub, ArmPositions.GROUND_PICKUP).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     // buttonB.whileTrue(new HoldArmPos(armSub, ArmPositions.MID_SCORE_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-    buttonA.whileTrue(new HoldArmPos(armSub, ArmPositions.HIGH_SCORE_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-    xboxRightJoyButton.whileTrue(new HoldArmPos(armSub, ArmPositions.CONE_UPRIGHT).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    // buttonA.whileTrue(new HoldArmPos(armSub, ArmPositions.HIGH_SCORE_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    // xboxRightJoyButton.whileTrue(new HoldArmPos(armSub, ArmPositions.CONE_UPRIGHT).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
 
 
 
     // leftBumper.toggleOnTrue(new GroundIntake(armSub, gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     // leftBumper.whileTrue(new HoldArmPos(armSub, ArmPositions.SHELF_PICKUP).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-    rightBumper.toggleOnTrue(new ShelfIntake(gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    // rightBumper.toggleOnTrue(new ShelfIntake(gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
 
     // operatorDeploy.onTrue(new TurnInPlace(s_Swerve, true, false, 0));
-    operatorDeploy.onTrue(new CustomSwerveTrajectory(s_Swerve, 10, 4, 0, 3, 10));
+    // operatorDeploy.onTrue(new CustomSwerveTrajectory(s_Swerve, 10, 4, 0, 3, 10));
     // operatorRightEmpty.onTrue(new BalanceAuto(s_Swerve));
     // TODO RED SIDE 
     // LeftLittleButton.onTrue(new AutoPlaceRed(s_Swerve, armSub, gripper)) ;

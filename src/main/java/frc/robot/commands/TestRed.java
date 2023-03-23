@@ -19,7 +19,6 @@ import frc.robot.Constants;
 
 import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.Swerve;
-import frc.robot.subsystems.Gripper.GripperState;
 
 public class TestRed extends CommandBase {
   Swerve swerve;

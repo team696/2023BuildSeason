@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.GlobalVariables.ArmPositions;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.Gripper;
-import frc.robot.subsystems.Gripper.GripperState;
 
 public class GroundIntake extends CommandBase {
   
@@ -34,7 +33,6 @@ public class GroundIntake extends CommandBase {
     timer++;
     armSub.armRotPresetPositions(ArmPositions.GROUND_PICKUP_ADAPTIVE);
     if (timer >= 20){
-      gripper.setClaw(GripperState.OPEN);
       gripper.moveGripper(1);
 
     }
@@ -44,14 +42,13 @@ public class GroundIntake extends CommandBase {
 
   @Override
   public void end(boolean interrupted) {
-    gripper.setClaw(GripperState.CONE);
     gripper.moveGripper(0);
     System.out.println("END");
   }
 
   @Override
   public boolean isFinished() {
-    if(gripper.colorSensorDistance() > 150){
+    if(gripper.getDistanceSensorDist() > 150){
       return true;
 
     }

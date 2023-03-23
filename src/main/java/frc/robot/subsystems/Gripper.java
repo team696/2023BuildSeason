@@ -4,128 +4,58 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.ColorSensorV3;
-import com.revrobotics.SparkMaxPIDController;
-import com.revrobotics.CANSparkMax.ControlType;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
-import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.PneumaticsControlModule;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import com.revrobotics.Rev2mDistanceSensor;
+
+import com.revrobotics.Rev2mDistanceSensor.Port;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Gripper extends SubsystemBase {
 
-  CANSparkMax gripperMotor;
-  DoubleSolenoid cubeSolenoid;
-  Solenoid coneSolenoid;
-  SparkMaxPIDController gripperPID;
-  
-  public PneumaticsControlModule module;
-  Compressor compressor;
-  public final  I2C.Port i2cPort = I2C.Port.kMXP;
+  public TalonFX gripperFalcon;
 
-  public final ColorSensorV3 colorSensor = new ColorSensorV3(i2cPort);
+ 
+
+  private Rev2mDistanceSensor distanceSensor;
 ;
-  public Color detectedColor;
 
-  public enum GripperState{
-    OPEN, CONE, CUBE
-  }
-  public GripperState gripperState = GripperState.OPEN;
-
+ 
   
   /** Creates a new Gripper. */
   public Gripper() {
-    gripperMotor = new CANSparkMax(42, MotorType.kBrushless);
-    gripperMotor.restoreFactoryDefaults();
-    gripperMotor.setIdleMode(IdleMode.kBrake);
-    gripperMotor.getEncoder().setPosition(0);
-    
-    gripperPID = gripperMotor.getPIDController();
-    gripperPID.setP(1);
-    gripperPID.setI(0);
-    gripperPID.setD(0);
-    gripperPID.setFeedbackDevice(gripperMotor.getEncoder());
-    compressor = new Compressor(PneumaticsModuleType.REVPH);
-    compressor.enableDigital();
+    gripperFalcon = new TalonFX(35, "Karen");
+    gripperFalcon.configFactoryDefault();
+    gripperFalcon.setNeutralMode(NeutralMode.Brake);
 
-    cubeSolenoid = new DoubleSolenoid(PneumaticsModuleType.REVPH, 15, 14);
-    // coneSolenoid = new DoubleS/olenoid(PneumaticsModuleType.REVPH, 1, 3);
-    coneSolenoid = new Solenoid(PneumaticsModuleType.REVPH, 1);
 
-    module = new PneumaticsControlModule(1);
-    module.clearAllStickyFaults();
-    
-    detectedColor = colorSensor.getColor();
+    distanceSensor = new Rev2mDistanceSensor(Port.kMXP);
+    distanceSensor.setAutomaticMode(true);
 
   }
 
-  public void getColorSensor(){
-    detectedColor = colorSensor.getColor();
- }
-  public double getRed(){
-    getColorSensor();
-    return detectedColor.red;
+  public double getDistanceSensorDist(){
+   return distanceSensor.getRange();
   }
 
-  public double getBlue(){
-    getColorSensor();
-    return detectedColor.blue;
-  }
-
-  public double getGreen(){
-    getColorSensor();
-    return detectedColor.green;
-  }
-
-  public double colorSensorDistance(){
-    return colorSensor.getProximity();
-  }
+ 
 
 
   public void moveGripper(double percent ){
-    gripperMotor.set(percent);
+    gripperFalcon.set(TalonFXControlMode.PercentOutput, percent);
   }
 
-  public void moveGripperPos(double position){
-    gripperPID.setReference(position, ControlType.kPosition);
-  }
 
-  public void setClaw(GripperState state){
-    switch(state){
-      case OPEN:
-      cubeSolenoid.set(Value.kReverse);
-      // coneSolenoid.set(false);
-      break;
 
-      case CONE:
-      cubeSolenoid.set(Value.kForward);
-      // coneSolenoid.set(false);
-      break;
-
-      case CUBE:
-      // cubeSolenoid.set(Value.kOff);
-      // coneSolenoid.set(true);
-      break;
-  }
-}
 
 
   @Override
   public void periodic() { 
-    SmartDashboard.putNumber("RED", colorSensor.getRed());
-    SmartDashboard.putNumber("BLUE", colorSensor.getBlue());
-    SmartDashboard.putNumber("GREEN", colorSensor.getGreen());
-    SmartDashboard.putNumber("Distance", colorSensor.getProximity());
-    SmartDashboard.putNumber("SPARKMAX POS", gripperMotor.getEncoder().getPosition());
+    SmartDashboard.putNumber("Distance Sensor", getDistanceSensorDist());
+   
   }
 }
