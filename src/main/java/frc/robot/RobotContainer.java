@@ -112,6 +112,7 @@ public class RobotContainer {
     withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     // armSub.setDefaultCommand(new HoldArmPos(armSub, ArmPositions.STOWED_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     //candle.setDefaultCommand(new InstantCommand(() -> candle.setColor(operatorExtraRight.getAsBoolean())));
+    armSub.setDefaultCommand(new MoveJointTemp(armSub, operatorPanel));
     candle.setDefaultCommand(new SetLedCommand(candle));
     configureButtonBindings();
   }

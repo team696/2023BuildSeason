@@ -14,6 +14,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxAbsoluteEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
@@ -33,10 +34,10 @@ public class ArmSub extends SubsystemBase {
 
   public TalonFX telescopeArm;
 
-  public CANSparkMax gripperJointEncoder;
   public CANSparkMax gripperJointNeo;
   public SparkMaxPIDController gripperJointPID;
-  public SparkMaxAbsoluteEncoder encoder;
+  // public SparkMaxAbsoluteEncoder encoder;
+  public RelativeEncoder jointEncoder;
   public PIDController armPID;
   public PIDController jointPID;
   public PIDController telescopePID;
@@ -63,11 +64,14 @@ public class ArmSub extends SubsystemBase {
 
     // gripperJointEncoder = new CANSparkMax(55, MotorType.kBrushless);
     // encoder = gripperJointEncoder.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
-    gripperJointNeo = new CANSparkMax(56, MotorType.kBrushless);
+    gripperJointNeo = new CANSparkMax(45, MotorType.kBrushless);
     gripperJointNeo.clearFaults();
     gripperJointNeo.restoreFactoryDefaults();
     gripperJointNeo.getEncoder().setPosition(0);
     gripperJointNeo.setIdleMode(IdleMode.kBrake);
+    gripperJointNeo.setSmartCurrentLimit(30);
+
+    jointEncoder = gripperJointNeo.getEncoder();
 
     gripperJointPID = gripperJointNeo.getPIDController();
     gripperJointPID.setP(1);
@@ -171,6 +175,11 @@ public void extendArmPosition(double position){
 
 public void gripperJointPosition(double position){
   gripperJointPID.setReference(position, ControlType.kPosition);
+}
+
+public void manualJointControl(double percent ){
+  gripperJointNeo.set(percent);
+
 }
 
 public double getTelescopePos(){
@@ -553,6 +562,10 @@ public void homeRotArmPos(){
     return test;
   }
 
+  public double getJointPos(){
+    return jointEncoder.getPosition();
+  }
+
 
   @Override
   public void periodic() {
@@ -564,5 +577,7 @@ public void homeRotArmPos(){
     SmartDashboard.putNumber("Arm Motor 2 Current", rightArm.getStatorCurrent());
     SmartDashboard.putNumber("Telescope Position", telescopeArm.getSelectedSensorPosition());
     SmartDashboard.putNumber("Telescope Speed?", telescopeArm.getSupplyCurrent());
+    SmartDashboard.putNumber("Joint Position ", getJointPos() );
+    SmartDashboard.putNumber("Joint Motor Current ", gripperJointNeo.getOutputCurrent());
   }
 } 
