@@ -14,7 +14,7 @@ import frc.robot.Constants;
 public class CANdleSub extends SubsystemBase {
   
   private final CANdle m_candle = new CANdle(Constants.CANdle.id, "rio");
-  private final int numLed = 48 + 32 + 32 + 48;
+  private final int numLed = /* 48 + 32 + 32 + 48 */200;
   private final int ledOffset = 8;
 
   public CANdleSub() {

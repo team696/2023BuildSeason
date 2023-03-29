@@ -4,19 +4,17 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ArmSub;
 
-public class ArmExtendTest extends CommandBase {
-  ArmSub armsub;
-  Joystick controller;
-  /** Creates a new ArmExtendTest. */
-  public ArmExtendTest(ArmSub armsub, Joystick controller) {
-    this.armsub = armsub;
-    this.controller = controller;
-    addRequirements(armsub);
-
+public class ArmRotationTest extends CommandBase {
+  ArmSub armSub;
+  double position;
+  /** Creates a new ArmRotationTest. */
+  public ArmRotationTest(ArmSub armSub, double position) {
+    this.position = position;
+    this.armSub = armSub;
+    // addRequirements(armSub);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -27,23 +25,12 @@ public class ArmExtendTest extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(controller.getRawButton(17)){
-    armsub.moveArmPercentOutput(controller.getRawAxis(0));
-    }
-    else{
-      armsub.extendArmPercentOutput(controller.getRawAxis(0));
-    }
-    // armsub.extendArmPosition(1000);
+    armSub.moveArmPosition(position);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    armsub.moveArmPercentOutput(0);
-    armsub.extendArmPercentOutput(0);
-    // armsub.extendArmPosition(0);
-
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override

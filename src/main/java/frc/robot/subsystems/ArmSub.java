@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -43,6 +44,8 @@ public class ArmSub extends SubsystemBase {
   public PIDController telescopePID;
   public CANCoder testCanCoder;
 
+  private SupplyCurrentLimitConfiguration limit;
+
   public double rotMaxSpeedFor;
   public double rotMaxSpeedRev;
 
@@ -59,8 +62,10 @@ public class ArmSub extends SubsystemBase {
     testCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
     
 
-    rotMaxSpeedFor = 0.4;
-    rotMaxSpeedRev = 0.65;
+    rotMaxSpeedFor = 0.7;
+    rotMaxSpeedRev = 1;
+
+    limit = new SupplyCurrentLimitConfiguration(true, 20, 20, 0);
 
     // gripperJointEncoder = new CANSparkMax(55, MotorType.kBrushless);
     // encoder = gripperJointEncoder.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
@@ -68,7 +73,7 @@ public class ArmSub extends SubsystemBase {
     gripperJointNeo.clearFaults();
     gripperJointNeo.restoreFactoryDefaults();
     gripperJointNeo.getEncoder().setPosition(0);
-    gripperJointNeo.setIdleMode(IdleMode.kBrake);
+    gripperJointNeo.setIdleMode(IdleMode.kBrake); 
     gripperJointNeo.setSmartCurrentLimit(30);
 
     jointEncoder = gripperJointNeo.getEncoder();
@@ -81,8 +86,9 @@ public class ArmSub extends SubsystemBase {
 
 
     // pidLoop = new PIDController(0.006, 0.003, 0.001);  
-    armPID = new PIDController(0.014, 0.002, 0.00);
+    armPID = new PIDController(0.015, 0.00, 0.00);
     armPID.setTolerance(0.5);
+    armPID.enableContinuousInput(0, 360);
     // pidLoop.
 
     leftArm = new WPI_TalonFX(20, "Karen");
@@ -116,33 +122,43 @@ public class ArmSub extends SubsystemBase {
       rightArm.setNeutralMode(NeutralMode.Brake);
       rightArm.follow(leftArm);
 
-      telMaxSpeedFor = 0.5;
-      telMaxSpeedRev = 0.5;
+      telMaxSpeedFor = 1;
+      telMaxSpeedRev = 1;
     
       telescopeArm.configFactoryDefault();
       telescopeArm.configPeakOutputForward(telMaxSpeedFor);
       telescopeArm.configPeakOutputReverse(-telMaxSpeedRev);
       telescopeArm.setSensorPhase(true);
       telescopeArm.setInverted(InvertType.None);
-      telescopeArm.config_kP(0, 0.4);
+      telescopeArm.config_kP(0, 0.5);
       telescopeArm.config_kI(0, 0.0);
       telescopeArm.config_kD(0, 0.0);
       telescopeArm.config_kF(0, 0.0);
       telescopeArm.setNeutralMode(NeutralMode.Brake);
-      telescopeArm.configNeutralDeadband(0.00001);
-      telescopeArm.configMotionAcceleration(6000);
+      telescopeArm.configNeutralDeadband(0.1);
+      telescopeArm.configMotionAcceleration(100000);
       telescopeArm.configMotionCruiseVelocity(10000);
       telescopeArm.setSelectedSensorPosition(0);
+      telescopeArm.configSupplyCurrentLimit(limit);
+      
     
 
 
+  }
+
+  public void ArmBrakeMode(NeutralMode mode){
+    telescopeArm.setNeutralMode(mode);
+    rightArm.setNeutralMode(mode);
+    leftArm.setNeutralMode(mode);
   }
  
 
  public void moveRotArmMotionMagic(double degrees){
   // TODO degrees to falcon readout
-  double setpoint = degrees *3;
-  leftArm.set(TalonFXControlMode.MotionMagic, setpoint);
+  // double setpoint = degrees *3;
+  // leftArm.set(TalonFXControlMode.MotionMagic, setpoint);
+  leftArm.set(ControlMode.PercentOutput ,armPID.calculate(testCanCoder.getAbsolutePosition(), degrees));
+
  }
 /**
  * Moves the arm by percent output.
@@ -185,6 +201,9 @@ public void manualJointControl(double percent ){
 public double getTelescopePos(){
   return telescopeArm.getSelectedSensorPosition();
 }
+public void homeTelescopePosition(){
+  telescopeArm.setSelectedSensorPosition(0);
+}
 
 public void homeRotArmPos(){
   // TODO THING
@@ -208,31 +227,44 @@ public void homeRotArmPos(){
       case GROUND_PICKUP_ADAPTIVE:
       if(GlobalVariables.gamePiece == 0){
         moveRotArmMotionMagic(Constants.ArmRotationValues.armRotForConePickup);
+        GlobalVariables.armRotGoal = Constants.ArmRotationValues.armRotForConePickup;
       }
       else{
         moveRotArmMotionMagic(Constants.ArmRotationValues.armRotForCubePickup);
+        GlobalVariables.armRotGoal = Constants.ArmRotationValues.armRotForCubePickup;
+
       }
       break;
 
       case STOWED_ADAPTIVE:
       moveRotArmMotionMagic(Constants.ArmRotationValues.armRotStow);
+      GlobalVariables.armRotGoal = Constants.ArmRotationValues.armRotStow;
+
       break;
 
       case GROUND_SCORE_ADAPTIVE: 
       if(GlobalVariables.robotDirection){
         if(GlobalVariables.gamePiece == 0){
           moveRotArmMotionMagic(Constants.ArmRotationValues.armRotForLowCone);
+          GlobalVariables.armRotGoal = Constants.ArmRotationValues.armRotForLowCone;
+
         }
         else{
           moveRotArmMotionMagic(Constants.ArmRotationValues.armRotForLowCube);
+          GlobalVariables.armRotGoal = Constants.ArmRotationValues.armRotForLowCube;
+
         }
       }
       else{
         if(GlobalVariables.gamePiece == 0){
           moveRotArmMotionMagic(Constants.ArmRotationValues.armRotRevLowCone);
+          GlobalVariables.armRotGoal = Constants.ArmRotationValues.armRotRevLowCone;
+
         }
         else{
           moveRotArmMotionMagic(Constants.ArmRotationValues.armRotRevLowCube);
+          GlobalVariables.armRotGoal = Constants.ArmRotationValues.armRotRevLowCube;
+
         }
       }
       break;
@@ -242,17 +274,25 @@ public void homeRotArmPos(){
       if(GlobalVariables.robotDirection){
         if(GlobalVariables.gamePiece == 0){
           moveRotArmMotionMagic(Constants.ArmRotationValues.armRotForShelfCone);
+          GlobalVariables.armRotGoal = Constants.ArmRotationValues.armRotForShelfCone;
+
         }
         else{
           moveRotArmMotionMagic(Constants.ArmRotationValues.armRotForShelfCube);
+          GlobalVariables.armRotGoal = Constants.ArmRotationValues.armRotForShelfCube;
+
         }
       }
       else{
         if(GlobalVariables.gamePiece == 0){
           moveRotArmMotionMagic(Constants.ArmRotationValues.armRotRevShelfCone);
+          GlobalVariables.armRotGoal = Constants.ArmRotationValues.armRotRevShelfCone;
+
         }
         else{
           moveRotArmMotionMagic(Constants.ArmRotationValues.armRotRevShelfCube);
+          GlobalVariables.armRotGoal = Constants.ArmRotationValues.armRotRevShelfCube;
+
         }
       }
       break;
@@ -261,17 +301,25 @@ public void homeRotArmPos(){
         if(GlobalVariables.robotDirection){
           if(GlobalVariables.gamePiece == 0){
             moveRotArmMotionMagic(Constants.ArmRotationValues.armRotForMidCone);
+            GlobalVariables.armRotGoal = Constants.ArmRotationValues.armRotForMidCone;
+
           }
           else{
             moveRotArmMotionMagic(Constants.ArmRotationValues.armRotForMidCube);
+            GlobalVariables.armRotGoal = Constants.ArmRotationValues.armRotForMidCube;
+
           }
         }
         else{
           if(GlobalVariables.gamePiece == 0){
             moveRotArmMotionMagic(Constants.ArmRotationValues.armRotRevMidCone);
+            GlobalVariables.armRotGoal = Constants.ArmRotationValues.armRotRevMidCone;
+
           }
           else{
             moveRotArmMotionMagic(Constants.ArmRotationValues.armRotRevMidCube);
+            GlobalVariables.armRotGoal = Constants.ArmRotationValues.armRotRevMidCube;
+
           }
         }
       break;
@@ -280,17 +328,25 @@ public void homeRotArmPos(){
       if(GlobalVariables.robotDirection){
         if(GlobalVariables.gamePiece == 0){
           moveRotArmMotionMagic(Constants.ArmRotationValues.armRotForHighCone);
+          GlobalVariables.armRotGoal = Constants.ArmRotationValues.armRotForHighCone;
+
         }
         else{
           moveRotArmMotionMagic(Constants.ArmRotationValues.armRotForHighCube);
+          GlobalVariables.armRotGoal = Constants.ArmRotationValues.armRotForHighCube;
+
         }
       }
       else{
         if(GlobalVariables.gamePiece == 0){
           moveRotArmMotionMagic( Constants.ArmRotationValues.armRotRevHighCone);
+          GlobalVariables.armRotGoal = Constants.ArmRotationValues.armRotRevHighCone;
+
         }
         else{
           moveRotArmMotionMagic(Constants.ArmRotationValues.armRotRevHighCube);
+          GlobalVariables.armRotGoal = Constants.ArmRotationValues.armRotRevHighCube;
+
         }
       }
       break;
@@ -299,6 +355,8 @@ public void homeRotArmPos(){
 
       default:
       moveRotArmMotionMagic(Constants.ArmRotationValues.armRotStow);
+      GlobalVariables.armRotGoal = Constants.ArmRotationValues.armRotStow;
+
       break;
     }
   }
@@ -309,15 +367,19 @@ public void homeRotArmPos(){
       case GROUND_PICKUP_ADAPTIVE:
       if(GlobalVariables.gamePiece == 0){
         extendArmPosition(Constants.ArmExtendValues.armExtendConePickup);
+        GlobalVariables.armExtendGoal = Constants.ArmExtendValues.armExtendConePickup;
       }
       else{
         extendArmPosition(Constants.ArmExtendValues.armExtendCubePickup);
+        GlobalVariables.armExtendGoal = Constants.ArmExtendValues.armExtendCubePickup;
+
 
       }
       break;
 
       case STOWED_ADAPTIVE:
       extendArmPosition(Constants.ArmExtendValues.armExtendStow);
+      GlobalVariables.armExtendGoal = Constants.ArmExtendValues.armExtendStow;
 
       break;
 
@@ -325,17 +387,25 @@ public void homeRotArmPos(){
       if(GlobalVariables.robotDirection){
         if(GlobalVariables.gamePiece == 0){
           extendArmPosition(Constants.ArmExtendValues.armExtendForLowCone);
+          GlobalVariables.armExtendGoal = Constants.ArmExtendValues.armExtendForLowCone;
+
         }
         else{
           extendArmPosition(Constants.ArmExtendValues.armExtendForLowCube);
+          GlobalVariables.armExtendGoal = Constants.ArmExtendValues.armExtendForLowCube;
+
         }
       }
       else{
         if(GlobalVariables.gamePiece == 0){
           extendArmPosition(Constants.ArmExtendValues.armExtendRevLowCone);
+          GlobalVariables.armExtendGoal = Constants.ArmExtendValues.armExtendRevLowCone;
+
         }
         else{
           extendArmPosition(Constants.ArmExtendValues.armExtendRevLowCube);
+          GlobalVariables.armExtendGoal = Constants.ArmExtendValues.armExtendRevLowCube;
+
 
         }
       }
@@ -346,17 +416,25 @@ public void homeRotArmPos(){
       if(GlobalVariables.robotDirection){
         if(GlobalVariables.gamePiece == 0){
           extendArmPosition(Constants.ArmExtendValues.armExtendForShelfCone);
+          GlobalVariables.armExtendGoal = Constants.ArmExtendValues.armExtendForShelfCone;
+
         }
         else{
           extendArmPosition(Constants.ArmExtendValues.armExtendForShelfCube);
+          GlobalVariables.armExtendGoal = Constants.ArmExtendValues.armExtendForShelfCube;
+
         }
       }
       else{
         if(GlobalVariables.gamePiece == 0){
           extendArmPosition(Constants.ArmExtendValues.armExtendRevShelfCone);
+          GlobalVariables.armExtendGoal = Constants.ArmExtendValues.armExtendRevShelfCone;
+
         }
         else{
           extendArmPosition(Constants.ArmExtendValues.armExtendRevShelfCube);
+          GlobalVariables.armExtendGoal = Constants.ArmExtendValues.armExtendRevShelfCube;
+
 
         }
       }
@@ -366,17 +444,25 @@ public void homeRotArmPos(){
       if(GlobalVariables.robotDirection){
         if(GlobalVariables.gamePiece == 0){
           extendArmPosition(Constants.ArmExtendValues.armExtendForMidCone);
+          GlobalVariables.armExtendGoal = Constants.ArmExtendValues.armExtendForMidCone;
+
         }
         else{
           extendArmPosition(Constants.ArmExtendValues.armExtendForMidCube);
+          GlobalVariables.armExtendGoal = Constants.ArmExtendValues.armExtendForMidCube;
+
         }
       }
       else{
         if(GlobalVariables.gamePiece == 0){
           extendArmPosition(Constants.ArmExtendValues.armExtendRevMidCone);
+          GlobalVariables.armExtendGoal = Constants.ArmExtendValues.armExtendRevMidCone;
+
         }
         else{
           extendArmPosition(Constants.ArmExtendValues.armExtendRevMidCube);
+          GlobalVariables.armExtendGoal = Constants.ArmExtendValues.armExtendRevMidCube;
+
 
         }
       }
@@ -408,6 +494,8 @@ public void homeRotArmPos(){
 
       default:
       extendArmPosition(Constants.ArmExtendValues.armExtendStow);
+      GlobalVariables.armExtendGoal = Constants.ArmExtendValues.armExtendStow;
+
 
       break;
     }

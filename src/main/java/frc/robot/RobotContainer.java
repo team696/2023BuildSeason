@@ -70,6 +70,9 @@ public class RobotContainer {
 
   private final Trigger panelRollers = new JoystickButton(operatorPanel, 10);
   private final Trigger panelShelf = new JoystickButton(operatorPanel, 9);
+  private final Trigger panelHigh = new JoystickButton(operatorPanel, 13);
+  private final Trigger panelMid = new JoystickButton(operatorPanel, 11);
+  private final Trigger panelLow = new JoystickButton(operatorPanel, 3);  
 
 
 
@@ -112,7 +115,8 @@ public class RobotContainer {
     withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     // armSub.setDefaultCommand(new HoldArmPos(armSub, ArmPositions.STOWED_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     //candle.setDefaultCommand(new InstantCommand(() -> candle.setColor(operatorExtraRight.getAsBoolean())));
-    armSub.setDefaultCommand(new MoveJointTemp(armSub, operatorPanel));
+    // armSub.setDefaultCommand(new MoveJointTemp(armSub, operatorPanel));
+    armSub.setDefaultCommand(new ArmExtendTest(armSub, operatorPanel));
     candle.setDefaultCommand(new SetLedCommand(candle));
     configureButtonBindings();
   }
@@ -126,6 +130,12 @@ public class RobotContainer {
   private void configureButtonBindings() {
     panelRollers.whileTrue(new GripperCommand(gripper, 0.5)); //Push OUT
     panelShelf.whileTrue(new GripperCommand(gripper, -0.5)); // Take IN
+    panelHigh.onTrue(new InstantCommand(() -> armSub.homeTelescopePosition()));
+    panelMid.whileTrue(new ArmExtendPositionTest(armSub, 35000));
+    panelMid.whileFalse(new ArmExtendPositionTest(armSub, 0));
+
+    panelLow.whileTrue(new ArmRotationTest(armSub, 220));
+    panelLow.whileFalse(new ArmRotationTest(armSub, 10));
 
     // operatorExtraRight.whileTrue(new ConeVCube(0));
     // operatorExtraRight.whileFalse(new ConeVCube(1));
@@ -139,7 +149,7 @@ public class RobotContainer {
     // operatorLeftEmpty.toggleOnTrue(new GroundIntake(armSub, gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
 
     // operatorHook.whileTrue(new ArmExtendTest(armSub));
-    // rightJoy.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
+    rightJoy.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));
     // leftJoy.whileTrue(new LockToGamePiece(s_Swerve, joystickPanel, translationAxis, strafeAxis, true, true, GlobalVariables.gamePiece).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
     // buttonX.toggleOnTrue(new HoldArmPos(armSub, ArmPositions.STOWED).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
