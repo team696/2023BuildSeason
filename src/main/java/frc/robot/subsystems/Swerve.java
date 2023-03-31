@@ -339,6 +339,7 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
 
     @Override
     public void periodic(){
+        updateRobotDirection();
         // pcw.frontCamPipeline(2);
 
         AprilTagGrid.setDefaultOption("Left Tag", gridTag1);
@@ -367,6 +368,7 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
 
     SmartDashboard.putNumber("Gyro Yaw ", gyro.getYaw());
     SmartDashboard.putNumber("AprilTag Yaw ",  getAprilTagEstPosition().getRotation().getDegrees());
+    SmartDashboard.putBoolean("robot direction ", GlobalVariables.robotDirection);
 
         kyslol();
 

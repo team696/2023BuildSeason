@@ -35,6 +35,8 @@ public class ArmSub extends SubsystemBase {
 
   public TalonFX telescopeArm;
 
+  public TalonFX gripperJointFalcon;
+
   public CANSparkMax gripperJointNeo;
   public SparkMaxPIDController gripperJointPID;
   // public SparkMaxAbsoluteEncoder encoder;
@@ -60,14 +62,17 @@ public class ArmSub extends SubsystemBase {
   
     testCanCoder = new CANCoder(14, "Karen");
     testCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
+    testCanCoder.configSensorDirection(true);
+    // testCanCoder.setPosition(0);
+    testCanCoder.configMagnetOffset(-12);
     
 
-    rotMaxSpeedFor = 0.7;
-    rotMaxSpeedRev = 1;
+    rotMaxSpeedFor = 1;
+    rotMaxSpeedRev = 0.7;
 
     limit = new SupplyCurrentLimitConfiguration(true, 20, 20, 0);
 
-    // gripperJointEncoder = new CANSparkMax(55, MotorType.kBrushless);
+    // gripperJointEncoder = new CANSparkMax(55, MotorType  .kBrushless);
     // encoder = gripperJointEncoder.getAbsoluteEncoder(SparkMaxAbsoluteEncoder.Type.kDutyCycle);
     gripperJointNeo = new CANSparkMax(45, MotorType.kBrushless);
     gripperJointNeo.clearFaults();
@@ -75,25 +80,33 @@ public class ArmSub extends SubsystemBase {
     gripperJointNeo.getEncoder().setPosition(0);
     gripperJointNeo.setIdleMode(IdleMode.kBrake); 
     gripperJointNeo.setSmartCurrentLimit(30);
+    gripperJointNeo.setInverted(true);
+    // gripperJointNeo.getEncoder().setInverted(true);
 
     jointEncoder = gripperJointNeo.getEncoder();
 
     gripperJointPID = gripperJointNeo.getPIDController();
-    gripperJointPID.setP(1);
+    gripperJointPID.setP(0.03);
     gripperJointPID.setI(0);
     gripperJointPID.setD(0);
     gripperJointPID.setFeedbackDevice(gripperJointNeo.getEncoder());
+    gripperJointPID.setSmartMotionMaxAccel(5, 1);
 
 
-    // pidLoop = new PIDController(0.006, 0.003, 0.001);  
-    armPID = new PIDController(0.015, 0.00, 0.00);
+    armPID = new PIDController(0.012, 0.0001, 0.0007);
+    // armPID = new PIDController(0.012, 0.000, 0.000);
+
     armPID.setTolerance(0.5);
     armPID.enableContinuousInput(0, 360);
+    
+    // armPID.setIntegratorRange(1, 0.1);
+    
     // pidLoop.
 
     leftArm = new WPI_TalonFX(20, "Karen");
     rightArm = new WPI_TalonFX(21, "Karen");
     telescopeArm = new WPI_TalonFX(22, "Karen");
+    gripperJointFalcon = new WPI_TalonFX(40, "Karen");
 
     leftArm.configFactoryDefault();
       leftArm.setNeutralMode(NeutralMode.Brake);
@@ -104,7 +117,7 @@ public class ArmSub extends SubsystemBase {
       leftArm.config_kD(0, 0.0);
       leftArm.config_kF(0, 0.06);
       leftArm.setSensorPhase(true);
-      leftArm.setInverted(InvertType.None);
+      leftArm.setInverted(InvertType.InvertMotorOutput);
       leftArm.configRemoteFeedbackFilter(testCanCoder, 0);
       leftArm.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
  
@@ -140,6 +153,22 @@ public class ArmSub extends SubsystemBase {
       telescopeArm.configMotionCruiseVelocity(10000);
       telescopeArm.setSelectedSensorPosition(0);
       telescopeArm.configSupplyCurrentLimit(limit);
+
+      gripperJointFalcon.configFactoryDefault();
+      gripperJointFalcon.configPeakOutputForward(telMaxSpeedFor);
+      gripperJointFalcon.configPeakOutputReverse(-telMaxSpeedRev);
+      gripperJointFalcon.setSensorPhase(true);
+      gripperJointFalcon.setInverted(InvertType.None);
+      gripperJointFalcon.config_kP(0, 0.01);
+      gripperJointFalcon.config_kI(0, 0.0);
+      gripperJointFalcon.config_kD(0, 0.0);
+      gripperJointFalcon.config_kF(0, 0.0);
+      gripperJointFalcon.setNeutralMode(NeutralMode.Brake);
+      gripperJointFalcon.configNeutralDeadband(0.1);
+      gripperJointFalcon.configMotionAcceleration(100000);
+      gripperJointFalcon.configMotionCruiseVelocity(10000);
+      gripperJointFalcon.setSelectedSensorPosition(0);
+      gripperJointFalcon.configSupplyCurrentLimit(limit);
       
     
 
@@ -160,6 +189,11 @@ public class ArmSub extends SubsystemBase {
   leftArm.set(ControlMode.PercentOutput ,armPID.calculate(testCanCoder.getAbsolutePosition(), degrees));
 
  }
+
+//  public void homeArmRotPos(){
+//   testCanCoder.setPosition(0);
+  
+//  }
 /**
  * Moves the arm by percent output.
  * @param percent 0.0 - 1.0.
@@ -190,11 +224,12 @@ public void extendArmPosition(double position){
 }
 
 public void gripperJointPosition(double position){
-  gripperJointPID.setReference(position, ControlType.kPosition);
+  gripperJointFalcon.set(TalonFXControlMode.MotionMagic, position);
 }
 
 public void manualJointControl(double percent ){
-  gripperJointNeo.set(percent);
+  // gripperJointNeo.set(percent);
+  gripperJointFalcon.set(TalonFXControlMode.PercentOutput, percent);
 
 }
 
@@ -208,6 +243,11 @@ public void homeTelescopePosition(){
 public void homeRotArmPos(){
   // TODO THING
   leftArm.setSelectedSensorPosition(testCanCoder.getPosition() /30);
+}
+
+public void homeJointPos(){
+  // gripperJointNeo.getEncoder().setPosition(0);
+  gripperJointFalcon.setSelectedSensorPosition(0);
 }
 
 /**
@@ -651,7 +691,8 @@ public void homeRotArmPos(){
   }
 
   public double getJointPos(){
-    return jointEncoder.getPosition();
+    // return jointEncoder.getPosition();
+    return gripperJointFalcon.getSelectedSensorPosition();
   }
 
 

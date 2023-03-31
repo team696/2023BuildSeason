@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -40,6 +41,8 @@ public class Robot extends TimedRobot {
 
   private PowerDistribution pdh;
   DigitalInput input = new DigitalInput(0);
+
+  private Joystick panel = new Joystick(2);
 
 
 
@@ -85,6 +88,8 @@ public class Robot extends TimedRobot {
       m_robotContainer.armSub.ArmBrakeMode(NeutralMode.Brake);
 
     }
+
+    
     candlesub.disabledLed();
     pdh.setSwitchableChannel(false);
   }
@@ -128,6 +133,12 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+    if(panel.getRawButton(17)){
+      GlobalVariables.gamePiece = 0;
+    }
+    else{
+      GlobalVariables.gamePiece = 1;
+    }
     Alliance alliance;
 alliance = DriverStation.getAlliance();
 m_robotContainer.s_Swerve.updateOdometry();

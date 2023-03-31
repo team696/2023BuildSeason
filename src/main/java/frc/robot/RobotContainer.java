@@ -73,6 +73,10 @@ public class RobotContainer {
   private final Trigger panelHigh = new JoystickButton(operatorPanel, 13);
   private final Trigger panelMid = new JoystickButton(operatorPanel, 11);
   private final Trigger panelLow = new JoystickButton(operatorPanel, 3);  
+  private final Trigger panelStow = new JoystickButton(operatorPanel, 5);
+  private final Trigger panelGround = new JoystickButton(operatorPanel, 16);
+  private final Trigger panelGPSwitch = new JoystickButton(joystickPanel, 17);
+  
 
 
 
@@ -115,10 +119,11 @@ public class RobotContainer {
     withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     // armSub.setDefaultCommand(new HoldArmPos(armSub, ArmPositions.STOWED_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     //candle.setDefaultCommand(new InstantCommand(() -> candle.setColor(operatorExtraRight.getAsBoolean())));
-    // armSub.setDefaultCommand(new MoveJointTemp(armSub, operatorPanel));
-    armSub.setDefaultCommand(new ArmExtendTest(armSub, operatorPanel));
+    armSub.setDefaultCommand(new MoveJointTemp(armSub, operatorPanel));
+    // armSub.setDefaultCommand(new ArmExtendTest(armSub, operatorPanel));
     candle.setDefaultCommand(new SetLedCommand(candle));
     configureButtonBindings();
+
   }
   
   /**
@@ -128,17 +133,44 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    panelRollers.whileTrue(new GripperCommand(gripper, 0.5)); //Push OUT
-    panelShelf.whileTrue(new GripperCommand(gripper, -0.5)); // Take IN
-    panelHigh.onTrue(new InstantCommand(() -> armSub.homeTelescopePosition()));
-    panelMid.whileTrue(new ArmExtendPositionTest(armSub, 35000));
+    panelRollers.whileTrue(new GripperCommand(gripper, 0.7)); //Push OUT
+    panelShelf.whileTrue(new GripperCommand(gripper, -1)); // Take IN
+    panelHigh.onTrue(new InstantCommand(() -> armSub.homeJointPos()));
+
+    // panelStow.whileTrue(new FullArmPosition(armSub, 150, 50000, true));
+    // panelStow.whileFalse(new FullArmPosition(armSub, 0, 0, false));
+
+    panelMid.whileTrue(new ArmExtendPositionTest(armSub, 50000));
     panelMid.whileFalse(new ArmExtendPositionTest(armSub, 0));
 
-    panelLow.whileTrue(new ArmRotationTest(armSub, 220));
-    panelLow.whileFalse(new ArmRotationTest(armSub, 10));
+    panelLow.whileTrue(new ArmRotationTest(armSub, 130));
+    panelLow.whileFalse(new ArmRotationTest(armSub, 0));
 
-    // operatorExtraRight.whileTrue(new ConeVCube(0));
-    // operatorExtraRight.whileFalse(new ConeVCube(1));
+    // panelLow.onTrue(new InstantCommand(() -> armSub.homeArmRotPos()));
+
+    // panelStow.whileTrue(new HoldJointPos(armSub, 19).alongWith(new ArmExtendPositionTest(armSub, 5000)).alongWith(new ArmRotationTest(armSub, 0)));
+    // panelStow.whileFalse(new HoldJointPos(armSub, 0).alongWith(new ArmExtendPositionTest(armSub, 0)).alongWith(new ArmRotationTest(armSub, 5)));
+
+
+    
+    // panelGround.whileTrue(new HoldJointPos(armSub, 19).alongWith(new ArmExtendPositionTest(armSub, 7000)).alongWith(new ArmRotationTest(armSub, 1)));
+    // panelGround.whileFalse(new HoldJointPos(armSub, 0).alongWith(new ArmExtendPositionTest(armSub, 0)).alongWith(new ArmRotationTest(armSub, 5)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+
+
+    // panelStow.whileTrue(new HoldJointPos(armSub, 15).alongWith(new ArmExtendPositionTest(armSub, 7000)).alongWith(new ArmRotationTest(armSub, 0)));
+    // panelStow.whileFalse(new HoldJointPos(armSub, 0).alongWith(new ArmExtendPositionTest(armSub, 0)).alongWith(new ArmRotationTest(armSub, 5)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+
+    // panelGround.whileTrue(new GroundIntake(armSub, gripper));
+    // panelGround.whileFalse(new HoldJointPos(armSub, 0).alongWith(new ArmExtendPositionTest(armSub, 0)).alongWith(new ArmRotationTest(armSub, 5)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+
+    // panelStow.whileTrue(new HoldJointPos(armSub, 22));
+    // panelStow.whileFalse(new HoldJointPos(armSub, 0));
+    // panelStow.whileTrue(new HoldJointPos(armSub, 30).alongWith(new ArmExtendPositionTest(armSub, 5000)).alongWith(new ArmRotationTest(armSub, 37)));
+    // panelStow.whileFalse(new HoldJointPos(armSub, 0).alongWith(new ArmExtendPositionTest(armSub, 0)).alongWith(new ArmRotationTest(armSub, 5)));
+
+
+    // panelGPSwitch.whileTrue(new ConeVCube(0));
+    // panelGPSwitch.whileFalse(new ConeVCube(1));
 
     // operatorIntakeUp.whileTrue(new HoldArmPos(armSub, ArmPositions.STOWED).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     // operatorIntakeUp.whileFalse(new HoldArmPos(armSub, ArmPositions.GROUND_PICKUP).withInterruptBehavior(InterruptionBehavior.kCancelSelf));

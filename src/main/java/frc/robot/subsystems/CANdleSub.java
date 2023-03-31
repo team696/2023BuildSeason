@@ -30,7 +30,7 @@ public class CANdleSub extends SubsystemBase {
   }
 
   public void disabledLed(){
-    m_candle.animate(new SingleFadeAnimation(252, 40, 101, 0, 0.6, numLed, ledOffset));
+    m_candle.animate(new SingleFadeAnimation(255, 0, 0, 0, 0.6, numLed, ledOffset));
   }
 
   public void enabledLed(){

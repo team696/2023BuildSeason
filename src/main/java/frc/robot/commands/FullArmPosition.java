@@ -5,17 +5,22 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.GlobalVariables;
 import frc.robot.subsystems.ArmSub;
-import frc.robot.subsystems.Gripper;
 
-public class GroundIntake extends CommandBase {
-  /** Creates a new GroundIntake. */
+public class FullArmPosition extends CommandBase {
   ArmSub armSub;
-  Gripper gripper;
-  public GroundIntake(ArmSub armSub, Gripper gripper) {
+  double armRotPos;
+  double armExtendPos;
+  boolean direction;
+
+
+
+  /** Creates a new FullArmPosition. */
+  public FullArmPosition(ArmSub armSub, double armRotPos, double armExtendPos, boolean direction) {
     this.armSub = armSub;
-    this.gripper = gripper;
+    this.armRotPos = armRotPos;
+    this.armExtendPos = armExtendPos;
+    this.direction = direction;
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -26,28 +31,23 @@ public class GroundIntake extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(GlobalVariables.gamePiece == 0){
-      armSub.gripperJointPosition(19);
-      armSub.extendArmPosition(7000);
-      armSub.moveRotArmMotionMagic(1);
-      gripper.moveGripper(-1);
-
+    if(direction){
+    armSub.moveRotArmMotionMagic(armRotPos);
+    if(armSub.getArmPosition() >= armRotPos*0.75){
+      armSub.extendArmPosition(armExtendPos);
+    }
     }
     else{
-      armSub.gripperJointPosition(15);
-      armSub.extendArmPosition(7000);
-      armSub.moveRotArmMotionMagic(1);
-      gripper.moveGripper(0.7);
+      armSub.extendArmPosition(armExtendPos);
+      if(armSub.getTelescopePos() <= 30000){
+      armSub.moveRotArmMotionMagic(armRotPos);
+      }
     }
-
-
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    gripper.moveGripper(0);
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
