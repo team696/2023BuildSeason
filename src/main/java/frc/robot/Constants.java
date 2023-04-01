@@ -41,110 +41,110 @@ public final class Constants {
 
     public static final class ArmRotationValues {
 
-    public static final double armRotStow = 0;
+    public static final double armRotStow = 5;
 
-    public static final double armRotForHighCone = 0;
-    public static final double armRotForHighCube = 0;
+    public static final double armRotForHighCone = 50;
+    public static final double armRotForHighCube = 50;
 
-    public static final double armRotForMidCone = 0;
-    public static final double armRotForMidCube = 0;
+    public static final double armRotForMidCone = 50;
+    public static final double armRotForMidCube = 50;
 
-    public static final double armRotForLowCone = 0;
-    public static final double armRotForLowCube = 0;
+    public static final double armRotForLowCone = 5;
+    public static final double armRotForLowCube = 5;
 
-    public static final double armRotForConePickup = 0;
-    public static final double armRotForCubePickup = 0;
+    public static final double armRotForConePickup = 3;
+    public static final double armRotForCubePickup = 3;
 
-    public static final double armRotForShelfCone = 0;
-    public static final double armRotForShelfCube = 0;
+    public static final double armRotForShelfCone = 70;
+    public static final double armRotForShelfCube = 70;
 
-    public static final double armRotRevHighCone = 0;
-    public static final double armRotRevHighCube = 0;
+    public static final double armRotRevHighCone = 138;
+    public static final double armRotRevHighCube = 130;
 
-    public static final double armRotRevMidCone = 0;
-    public static final double armRotRevMidCube = 0;
+    public static final double armRotRevMidCone = 130;
+    public static final double armRotRevMidCube = 130;
 
-    public static final double armRotRevLowCone = 0;
-    public static final double armRotRevLowCube = 0;
+    public static final double armRotRevLowCone = 5;
+    public static final double armRotRevLowCube = 90;
 
-    public static final double armRotRevConePickup = 0;
-    public static final double armRotRevCubePickup = 0;
+    public static final double armRotRevConePickup = 180;
+    public static final double armRotRevCubePickup = 170;
     
-    public static final double armRotRevShelfCone = 0;
-    public static final double armRotRevShelfCube = 0;
+    public static final double armRotRevShelfCone = 120;
+    public static final double armRotRevShelfCube = 120;
 
     }
 
     public static final class ArmExtendValues {
         public static final double armExtendStow = 0;
 
-        public static final double armExtendConePickup = 0;
-        public static final double armExtendCubePickup = 0;
+        public static final double armExtendConePickup = 7000;
+        public static final double armExtendCubePickup = 7000;
 
 
-        public static final double armExtendForHighCone = 0;
-        public static final double armExtendForHighCube = 0;
+        public static final double armExtendForHighCone = 50000;
+        public static final double armExtendForHighCube = 50000;
 
-        public static final double armExtendForMidCone = 0;
-        public static final double armExtendForMidCube = 0;
+        public static final double armExtendForMidCone = 30000;
+        public static final double armExtendForMidCube = 30000;
 
         public static final double armExtendForLowCone = 0;
         public static final double armExtendForLowCube = 0;
 
-        public static final double armExtendForConePickup = 0;
-        public static final double armExtendForCubePickup = 0;
+        public static final double armExtendForConePickup = 7000;
+        public static final double armExtendForCubePickup = 7000;
 
-        public static final double armExtendForShelfCone = 0;
-        public static final double armExtendForShelfCube = 0;
+        public static final double armExtendForShelfCone = 50000;
+        public static final double armExtendForShelfCube = 50000;
 
 
-        public static final double armExtendRevHighCone = 0;
-        public static final double armExtendRevHighCube = 0;
+        public static final double armExtendRevHighCone = 50000;
+        public static final double armExtendRevHighCube = 50000;
 
-        public static final double armExtendRevMidCone = 0;
-        public static final double armExtendRevMidCube = 0;
+        public static final double armExtendRevMidCone = 30000;
+        public static final double armExtendRevMidCube = 30000;
 
         public static final double armExtendRevLowCone = 0;
         public static final double armExtendRevLowCube = 0;
 
-        public static final double armExtendRevShelfCone = 0;
-        public static final double armExtendRevShelfCube = 0;
+        public static final double armExtendRevShelfCone = 50000;
+        public static final double armExtendRevShelfCube = 50000;
     }
 
     public static final class JointRotationValues {
-        public static final double JointRotStowCone = 0;
-        public static final double JointRotStowCube = 0;
+        public static final double JointRotStowCone = 500;
+        public static final double JointRotStowCube = 1000;
 
-        public static final double JointRotConePickup = 0;
-        public static final double JointRotCubePickup = 0;
+        public static final double JointRotConePickup = 11000;
+        public static final double JointRotCubePickup = 9000;
         
 
-        public static final double JointRotForHighCone = 0;
-        public static final double JointRotForHighCube = 0;
+        public static final double JointRotForHighCone = 16000;
+        public static final double JointRotForHighCube = 9000;
 
-        public static final double JointRotForMidCone = 0;
-        public static final double JointRotForMidCube = 0;
+        public static final double JointRotForMidCone = 16000;
+        public static final double JointRotForMidCube = 9000;
 
-        public static final double JointRotForLowCone = 0;
-        public static final double JointRotForLowCube = 0;
+        public static final double JointRotForLowCone = 9000;
+        public static final double JointRotForLowCube = 4000;
 
-        public static final double JointRotForConePickup = 0;
-        public static final double JointRotForCubePickup = 0;
+        public static final double JointRotForConePickup = 11000;
+        public static final double JointRotForCubePickup = 9000;
 
-        public static final double JointRotForShelfCone = 0;
-        public static final double JointRotForShelfCube = 0;
+        public static final double JointRotForShelfCone = 16000;
+        public static final double JointRotForShelfCube = 9000;
 
 
-        public static final double JointRotRevHighCone = 0;
-        public static final double JointRotRevHighCube = 0;
+        public static final double JointRotRevHighCone = 6600;
+        public static final double JointRotRevHighCube = 4000;
 
-        public static final double JointRotRevMidCone = 0;
-        public static final double JointRotRevMidCube = 0;
+        public static final double JointRotRevMidCone = 11000;
+        public static final double JointRotRevMidCube = 4000;
 
         public static final double JointRotRevLowCone = 0;
         public static final double JointRotRevLowCube = 0;
 
-        public static final double JointRotRevShelfCone = 0;
+        public static final double JointRotRevShelfCone = 4000;
         public static final double JointRotRevShelfCube = 0;
     }
 

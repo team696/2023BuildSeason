@@ -26,7 +26,7 @@ public class MoveJointTemp extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    armsub.manualJointControl(controller.getRawAxis(0));
+    armsub.moveGripperJointPercentOutput(controller.getRawAxis(0));
   }
 
   // Called once the command ends or is interrupted.

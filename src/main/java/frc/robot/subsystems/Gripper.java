@@ -19,13 +19,8 @@ public class Gripper extends SubsystemBase {
 
   public TalonFX gripperFalcon;
 
- 
-
   private Rev2mDistanceSensor distanceSensor;
-;
 
- 
-  
   /** Creates a new Gripper. */
   public Gripper() {
     gripperFalcon = new TalonFX(35, "Karen");
@@ -42,16 +37,9 @@ public class Gripper extends SubsystemBase {
    return distanceSensor.getRange();
   }
 
- 
-
-
   public void moveGripper(double percent ){
     gripperFalcon.set(TalonFXControlMode.PercentOutput, percent);
   }
-
-
-
-
 
   @Override
   public void periodic() { 

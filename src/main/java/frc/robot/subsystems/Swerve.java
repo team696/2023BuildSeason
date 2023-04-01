@@ -121,24 +121,24 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
     
     public void updateOdometry() {
                
-        Optional<EstimatedRobotPose> result = pcw.getEstimatedGlobalPose(m_poseEstimator.getEstimatedPosition());
+        // Optional<EstimatedRobotPose> result = pcw.getEstimatedGlobalPose(m_poseEstimator.getEstimatedPosition());
       
         m_poseEstimator.update(getYaw(), new SwerveModulePosition[] {
             m_frontRight.getPosition(),
             m_frontLeft.getPosition(),
             m_backRight.getPosition(),
             m_backLeft.getPosition()});
-        if (result.isPresent()) {
+        // if (result.isPresent()) {
 
-            EstimatedRobotPose camPose = result.get();
+            // EstimatedRobotPose camPose = result.get();
 
-            m_poseEstimator.addVisionMeasurement(
-                    camPose.estimatedPose.toPose2d(), camPose.timestampSeconds); 
+            // m_poseEstimator.addVisionMeasurement(
+            //         camPose.estimatedPose.toPose2d(), camPose.timestampSeconds); 
                 
             // m_fieldSim.getObject("Cam Est Pos").setPose(  m_poseEstimator.getEstimatedPosition() );
-        } else {
-            // m_fieldSim.getObject("Cam Est Pos").setPose(m_poseEstimator.getEstimatedPosition());
-        }
+        // } else {
+        //     // m_fieldSim.getObject("Cam Est Pos").setPose(m_poseEstimator.getEstimatedPosition());
+        // }
 
          m_poseEstimator.update(getYaw(), new SwerveModulePosition[] {
             m_frontRight.getPosition(),
@@ -149,7 +149,7 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
         m_fieldSim.setRobotPose(getPose());
         SmartDashboard.putNumber("lmao X", m_poseEstimator.getEstimatedPosition().getX());
         SmartDashboard.putNumber("lmao Y",  m_poseEstimator.getEstimatedPosition().getY());
-        SmartDashboard.putBoolean("AprilTag in View", result.isPresent());
+        // SmartDashboard.putBoolean("AprilTag in View", result.isPresent());
         // m_fieldSim.setRobotPose(getPose());
         // m_fieldSim.getObject("Actual Pos").setPose(getPose());
         // m_fieldSim.setRobotPose(m_poseEstimator.getEstimatedPosition());

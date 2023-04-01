@@ -30,8 +30,8 @@ public class PhotonCameraWrapper
          frontCam = new PhotonCamera(VisionConstants.camera1Name);
          rearCam = new PhotonCamera(VisionConstants.camera2Name);
 
-         photonPoseEstimator2 = new PhotonPoseEstimator(aprilTagFieldLayout, org.photonvision.PhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE, frontCam, VisionConstants.robotToCam1);
-         photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, org.photonvision.PhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE, rearCam, VisionConstants.robotToCam2);
+        //  photonPoseEstimator2 = new PhotonPoseEstimator(aprilTagFieldLayout, org.photonvision.PhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE, frontCam, VisionConstants.robotToCam1);
+        //  photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, org.photonvision.PhotonPoseEstimator.PoseStrategy.CLOSEST_TO_REFERENCE_POSE, rearCam, VisionConstants.robotToCam2);
             
         } catch (Exception e) {
             System.out.println(e);

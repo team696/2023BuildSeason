@@ -28,10 +28,10 @@ public class ArmExtendTest extends CommandBase {
   @Override
   public void execute() {
     if(controller.getRawButton(17)){
-    armsub.moveArmPercentOutput(controller.getRawAxis(0));
+    armsub.moveRotArmPercentOutput(controller.getRawAxis(0));
     }
     else{
-      armsub.extendArmPercentOutput(controller.getRawAxis(0));
+      armsub.moveTelescopeArmPercentOutput(controller.getRawAxis(0));
     }
     // armsub.extendArmPosition(1000);
   }
@@ -39,8 +39,8 @@ public class ArmExtendTest extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    armsub.moveArmPercentOutput(0);
-    armsub.extendArmPercentOutput(0);
+    armsub.moveRotArmPercentOutput(0);
+    armsub.moveTelescopeArmPercentOutput(0);
     // armsub.extendArmPosition(0);
 
   }

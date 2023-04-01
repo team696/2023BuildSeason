@@ -40,7 +40,7 @@ public class CANdleSub extends SubsystemBase {
   public void setColor(boolean cone) {
     m_candle.clearAnimation(0);
     if (cone) {
-      m_candle.setLEDs(252, 186, 3, 0, ledOffset, numLed);
+      m_candle.setLEDs(255, 45, 0, 0, ledOffset, numLed);
       return;
     }
     m_candle.setLEDs(111, 3, 252, 0, ledOffset, numLed);

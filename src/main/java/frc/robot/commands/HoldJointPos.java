@@ -25,7 +25,7 @@ public class HoldJointPos extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    armSub.gripperJointPosition(position);
+    armSub.moveGripperJointPosition(position);
   }
 
   // Called once the command ends or is interrupted.

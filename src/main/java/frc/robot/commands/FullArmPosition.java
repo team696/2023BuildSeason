@@ -11,15 +11,17 @@ public class FullArmPosition extends CommandBase {
   ArmSub armSub;
   double armRotPos;
   double armExtendPos;
+  double armJointPos;
   boolean direction;
 
 
 
   /** Creates a new FullArmPosition. */
-  public FullArmPosition(ArmSub armSub, double armRotPos, double armExtendPos, boolean direction) {
+  public FullArmPosition(ArmSub armSub, double armRotPos, double armExtendPos, double armJointPos, boolean direction) {
     this.armSub = armSub;
     this.armRotPos = armRotPos;
     this.armExtendPos = armExtendPos;
+    this.armJointPos = armJointPos;
     this.direction = direction;
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -32,15 +34,17 @@ public class FullArmPosition extends CommandBase {
   @Override
   public void execute() {
     if(direction){
-    armSub.moveRotArmMotionMagic(armRotPos);
-    if(armSub.getArmPosition() >= armRotPos*0.75){
-      armSub.extendArmPosition(armExtendPos);
+    armSub.moveRotArmPosition(armRotPos);
+    if(armSub.getArmEncoderPosition() >= armRotPos*0.75){
+      armSub.moveTelescopeArmPosition(armExtendPos);
+      armSub.moveGripperJointPosition(armJointPos);
     }
     }
     else{
-      armSub.extendArmPosition(armExtendPos);
+      armSub.moveTelescopeArmPosition(armExtendPos);
+      armSub.moveGripperJointPosition(armJointPos);
       if(armSub.getTelescopePos() <= 30000){
-      armSub.moveRotArmMotionMagic(armRotPos);
+      armSub.moveRotArmPosition(armRotPos);
       }
     }
   }

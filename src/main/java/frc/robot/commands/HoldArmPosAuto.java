@@ -34,7 +34,7 @@ public class HoldArmPosAuto extends CommandBase {
   public void execute() {
     timer ++;
     double armpos = Constants.ArmPositions[GlobalVariables.gamePiece][GlobalVariables.height];
-    armSub.moveArmPosition(armpos);
+    armSub.moveRotArmPosition(armpos);
     System.out.println("ARM COMMAND EXEC");
 
   }

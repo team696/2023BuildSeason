@@ -31,7 +31,7 @@ public class ArmPercentageCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    armSub.moveArmPercentOutput(controller.getRawAxis(axis1) - controller.getRawAxis(axis2) );
+    armSub.moveRotArmPercentOutput(controller.getRawAxis(axis1) - controller.getRawAxis(axis2) );
   }
 
   // Called once the command ends or is interrupted.

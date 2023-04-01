@@ -4,6 +4,16 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.auto.PIDConstants;
+import com.pathplanner.lib.auto.SwerveAutoBuilder;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -18,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
@@ -46,27 +57,10 @@ public class RobotContainer {
   private final int rotationAxis =  2;
 
   /* Driver Buttons */
-  private final Trigger LeftLittleButton = new JoystickButton(driver, 7);
-  private final Trigger RightLittleButton = new JoystickButton(driver, 8);
-  private final Trigger buttonX = new JoystickButton(driver, 3);
-  private final Trigger buttonY = new JoystickButton(driver, 4);
-  private final Trigger buttonB = new JoystickButton(driver, 2);
-  private final Trigger buttonA = new JoystickButton(driver, 1);
-  private final Trigger leftBumper = new JoystickButton(driver, 5);
-  private final Trigger rightBumper = new JoystickButton(driver, 6);
-  private final Trigger leftJoy = new JoystickButton(joystickPanel, 1);
+ 
   private final Trigger rightJoy = new JoystickButton(joystickPanel, 2);
   public final Trigger operatorDeploy = new JoystickButton(operatorPanel, 11);
-  private final Trigger operatorShoot = new JoystickButton(operatorPanel, 3);
-  private final Trigger operatorLeftEmpty  = new JoystickButton(operatorPanel, 9);
-  private final Trigger operatorRightEmpty = new JoystickButton(operatorPanel, 12);
-  private final Trigger operatorLatch = new JoystickButton(operatorPanel, 7);
-  private final Trigger operatorHook = new JoystickButton(operatorPanel, 8);
-  private final Trigger operatorIntakeUp = new JoystickButton(operatorPanel, 13);
-  private final Trigger operatorIntakeDown = new JoystickButton(operatorPanel, 14);
-  private final Trigger operatorSpinup = new JoystickButton(operatorPanel, 1);
-  private final Trigger operatorExtraRight = new JoystickButton(operatorPanel, 15);
-  private final Trigger xboxRightJoyButton = new JoystickButton(driver, 10);
+  
 
   private final Trigger panelRollers = new JoystickButton(operatorPanel, 10);
   private final Trigger panelShelf = new JoystickButton(operatorPanel, 9);
@@ -119,8 +113,10 @@ public class RobotContainer {
     withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     // armSub.setDefaultCommand(new HoldArmPos(armSub, ArmPositions.STOWED_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     //candle.setDefaultCommand(new InstantCommand(() -> candle.setColor(operatorExtraRight.getAsBoolean())));
-    armSub.setDefaultCommand(new MoveJointTemp(armSub, operatorPanel));
+    // armSub.setDefaultCommand(new MoveJointTemp(armSub, operatorPanel));
     // armSub.setDefaultCommand(new ArmExtendTest(armSub, operatorPanel));
+    // armSub.setDefaultCommand(new HoldJointPos(armSub, 0).alongWith(new ArmExtendPositionTest(armSub, 0)).alongWith(new ArmRotationTest(armSub, 5)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+      armSub.setDefaultCommand(new AdaptiveArmMovement(armSub, ArmPositions.STOWED_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     candle.setDefaultCommand(new SetLedCommand(candle));
     configureButtonBindings();
 
@@ -135,16 +131,24 @@ public class RobotContainer {
   private void configureButtonBindings() {
     panelRollers.whileTrue(new GripperCommand(gripper, 0.7)); //Push OUT
     panelShelf.whileTrue(new GripperCommand(gripper, -1)); // Take IN
-    panelHigh.onTrue(new InstantCommand(() -> armSub.homeJointPos()));
+    panelStow.onTrue(new InstantCommand(() -> armSub.homeGripperJointPos()));
+    panelHigh.whileTrue(new AdaptiveArmMovement(armSub, ArmPositions.HIGH_SCORE_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    panelMid.whileTrue(new AdaptiveArmMovement(armSub, ArmPositions.MID_SCORE_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    panelLow.whileTrue(new AdaptiveArmMovement(armSub, ArmPositions.GROUND_SCORE_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
 
-    // panelStow.whileTrue(new FullArmPosition(armSub, 150, 50000, true));
-    // panelStow.whileFalse(new FullArmPosition(armSub, 0, 0, false));
+    // panelStow.whileTrue(new FullArmPosition(armSub, 150, 50000, 9000,  true));
+    // panelStow.whileFalse(new FullArmPosition(armSub, 0, 0, 0,  false));
 
-    panelMid.whileTrue(new ArmExtendPositionTest(armSub, 50000));
-    panelMid.whileFalse(new ArmExtendPositionTest(armSub, 0));
+    // panelMid.whileTrue(new ArmExtendPositionTest(armSub, 50000));
+    // panelMid.whileFalse(new ArmExtendPositionTest(armSub, 0));
 
-    panelLow.whileTrue(new ArmRotationTest(armSub, 130));
-    panelLow.whileFalse(new ArmRotationTest(armSub, 0));
+    // panelLow.whileTrue(new ArmRotationTest(armSub, 130).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    // panelLow.whileFalse(new ArmRotationTest(armSub, 5).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+
+    //  panelGround.whileTrue(new HoldJointPos(armSub, 11000).alongWith(new ArmExtendPositionTest(armSub, 7000)).alongWith(new ArmRotationTest(armSub, 0)).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    // panelGround.whileFalse(new HoldJointPos(armSub, 0).alongWith(new ArmExtendPositionTest(armSub, 0)).alongWith(new ArmRotationTest(armSub, 2)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+
+
 
     // panelLow.onTrue(new InstantCommand(() -> armSub.homeArmRotPos()));
 
@@ -153,17 +157,14 @@ public class RobotContainer {
 
 
     
-    // panelGround.whileTrue(new HoldJointPos(armSub, 19).alongWith(new ArmExtendPositionTest(armSub, 7000)).alongWith(new ArmRotationTest(armSub, 1)));
-    // panelGround.whileFalse(new HoldJointPos(armSub, 0).alongWith(new ArmExtendPositionTest(armSub, 0)).alongWith(new ArmRotationTest(armSub, 5)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-
-
+   
     // panelStow.whileTrue(new HoldJointPos(armSub, 15).alongWith(new ArmExtendPositionTest(armSub, 7000)).alongWith(new ArmRotationTest(armSub, 0)));
     // panelStow.whileFalse(new HoldJointPos(armSub, 0).alongWith(new ArmExtendPositionTest(armSub, 0)).alongWith(new ArmRotationTest(armSub, 5)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
-    // panelGround.whileTrue(new GroundIntake(armSub, gripper));
-    // panelGround.whileFalse(new HoldJointPos(armSub, 0).alongWith(new ArmExtendPositionTest(armSub, 0)).alongWith(new ArmRotationTest(armSub, 5)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+    panelGround.whileTrue(new GroundIntake(armSub, gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    panelGround.whileFalse(new HoldJointPos(armSub, 0).alongWith(new ArmExtendPositionTest(armSub, 0)).alongWith(new ArmRotationTest(armSub, 5)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
 
-    // panelStow.whileTrue(new HoldJointPos(armSub, 22));
+    // panelStow.whileTrue(new HoldJointPos(armSub, 11000));
     // panelStow.whileFalse(new HoldJointPos(armSub, 0));
     // panelStow.whileTrue(new HoldJointPos(armSub, 30).alongWith(new ArmExtendPositionTest(armSub, 5000)).alongWith(new ArmRotationTest(armSub, 37)));
     // panelStow.whileFalse(new HoldJointPos(armSub, 0).alongWith(new ArmExtendPositionTest(armSub, 0)).alongWith(new ArmRotationTest(armSub, 5)));
@@ -236,11 +237,34 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
+   
+    List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("FullAuto",  PathPlanner.getConstraintsFromPath("FullAuto"));
+
+// This is just an example event map. It would be better to have a constant, global event map
+// in your code that will be used by all path following commands.
+HashMap<String, Command> eventMap = new HashMap<>();
+eventMap.put("marker1", new PrintCommand("Passed marker 1"));
+
+// Create the AutoBuilder. This only needs to be created once when robot code starts, not every time you want to create an auto command. A good place to put this is in RobotContainer along with your subsystems.
+SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
+    s_Swerve::getPose, // Pose2d supplier
+    s_Swerve::resetOdometry, // Pose2d consumer, used to reset odometry at the beginning of auto
+    Constants.Swerve.swerveKinematics, // SwerveDriveKinematics
+    new PIDConstants(5.0, 0.0, 0.0), // PID constants to correct for translation error (used to create the X and Y PID controllers)
+    new PIDConstants(0.5, 0.0, 0.0), // PID constants to correct for rotation error (used to create the rotation controller)
+    s_Swerve::setModuleStates, // Module states consumer used to output to the drive subsystem
+    eventMap,
+    true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
+    s_Swerve // The drive subsystem. Used to properly set the requirements of path following commands
+);
+
+Command fullAuto = autoBuilder.fullAuto(pathGroup);
+
     // An ExampleCommand will run in autonomous
     // return new BalanceAuto(s_Swerve, armSub, gripper);
     // return new BalanceAutoRed(s_Swerve, armSub, gripper);
     // return m_chooser.getSelected();
-    return new ButterAutoTest(s_Swerve);
+    return fullAuto;//new ButterAutoTest(s_Swerve);
     // return new LeftSideAuto(s_Swerve, armSub, gripper);
     // return new LeftSideAutoRed(s_Swerve, armSub, gripper);
   }
