@@ -10,6 +10,7 @@ import frc.robot.GlobalVariables;
 public class ConeVCube extends CommandBase {
   /** Creates a new ConeVCube. */
   int gamePiece;
+  boolean finished;
   public ConeVCube(int gamePiece) {
     this.gamePiece = gamePiece;
 
@@ -19,6 +20,7 @@ public class ConeVCube extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    finished = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -27,6 +29,8 @@ public class ConeVCube extends CommandBase {
 
     GlobalVariables.gamePiece = gamePiece;
     System.out.print(GlobalVariables.gamePiece);
+    finished=true;
+
   }
 
   // Called once the command ends or is interrupted.
@@ -36,6 +40,6 @@ public class ConeVCube extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return finished;
   }
 }

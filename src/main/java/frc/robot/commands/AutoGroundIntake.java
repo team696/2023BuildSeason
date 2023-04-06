@@ -9,30 +9,42 @@ import frc.robot.GlobalVariables;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.Gripper;
 
-public class GroundIntake extends CommandBase {
+public class AutoGroundIntake extends CommandBase {
   /** Creates a new GroundIntake. */
   ArmSub armSub;
   Gripper gripper;
-  public GroundIntake(ArmSub armSub, Gripper gripper) {
+  int gamePiece;
+  boolean finished;
+  /**
+   * For gamepiece cone = 0, and cube = 1
+   * @param armSub
+   * @param gripper
+   * @param gamePiece
+   */
+  public AutoGroundIntake(ArmSub armSub, Gripper gripper, int gamePiece) {
     this.armSub = armSub;
     this.gripper = gripper;
+    this.gamePiece = gamePiece;
     addRequirements(armSub);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    finished = false;
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(GlobalVariables.gamePiece == 0){
+    if(gamePiece == 0){
       armSub.moveGripperJointPosition(33000);
       armSub.moveTelescopeArmPosition(8000);
       armSub.moveRotArmPosition(1);
       if((gripper.getDistanceSensorDist() <= 12)){
       gripper.moveGripper(0);
+      finished = true;
 
       }
       else{
@@ -47,6 +59,7 @@ public class GroundIntake extends CommandBase {
       armSub.moveRotArmPosition(1);
       if((gripper.getDistanceSensorDist() <= 12)){
         gripper.moveGripper(0);
+        finished = true;
 
         }
         else{
@@ -67,6 +80,6 @@ public class GroundIntake extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return finished;
   }
 }

@@ -1,8 +1,6 @@
 package frc.robot.subsystems;
 
-import java.util.Optional;
 
-import org.photonvision.EstimatedRobotPose;
 
 import com.kauailabs.navx.frc.AHRS;
 import frc.robot.SwerveModule;
@@ -13,7 +11,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -80,8 +77,8 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
         
         // zeroGyro();
         SmartDashboard.putData("Field", m_fieldSim);
-        aimPID = new PIDController(1, 0, 0);
-        aimPID.setTolerance(0.001);
+        aimPID = new PIDController(0.05, 0, 0);
+        aimPID.setTolerance(0.5);
 
         rotatePID = new ProfiledPIDController(
             0.010,
@@ -285,7 +282,7 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
         }
         else{
             headingError = pcw.getRearCamOffset();
-            return aimPID.calculate(headingError, -30);
+            return aimPID.calculate(headingError, 9);
 
         }
 
@@ -341,6 +338,7 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
     public void periodic(){
         updateRobotDirection();
         // pcw.frontCamPipeline(2);
+        pcw.cameraPipelines(GlobalVariables.gamePiece);
 
         AprilTagGrid.setDefaultOption("Left Tag", gridTag1);
         AprilTagGrid.addOption("Mid Tag", gridTag2);
@@ -369,6 +367,7 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
     SmartDashboard.putNumber("Gyro Yaw ", gyro.getYaw());
     SmartDashboard.putNumber("AprilTag Yaw ",  getAprilTagEstPosition().getRotation().getDegrees());
     SmartDashboard.putBoolean("robot direction ", GlobalVariables.robotDirection);
+    SmartDashboard.putNumber("Rear Cam offset ", pcw.getRearCamOffset());
 
         kyslol();
 

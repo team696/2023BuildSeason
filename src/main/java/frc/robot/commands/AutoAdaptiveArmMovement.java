@@ -9,11 +9,12 @@ import frc.robot.GlobalVariables;
 import frc.robot.GlobalVariables.ArmPositions;
 import frc.robot.subsystems.ArmSub;
 
-public class AdaptiveArmMovement extends CommandBase {
+public class AutoAdaptiveArmMovement extends CommandBase {
   /** Creates a new AdaptiveArmMovement. */
   ArmSub armSub;
   GlobalVariables.ArmPositions armPosition;
-  public AdaptiveArmMovement(ArmSub armSub, GlobalVariables.ArmPositions armPosition) {
+  boolean finished;
+  public AutoAdaptiveArmMovement(ArmSub armSub, GlobalVariables.ArmPositions armPosition) {
     this.armSub = armSub;
     this.armPosition = armPosition;
     addRequirements(armSub);
@@ -22,17 +23,22 @@ public class AdaptiveArmMovement extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    finished = false;
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     if(armPosition == ArmPositions.STOWED_ADAPTIVE){
        armSub.armExtendPresetPositions(armPosition);
-        armSub.jointRotPresetPositions(armPosition);
-
         if(armSub.getTelescopePos() <= 10000){
         armSub.armRotPresetPositions(armPosition);
+        armSub.jointRotPresetPositions(armPosition);
+        if(armSub.getArmEncoderPosition() >= (GlobalVariables.armRotGoal - 5) &&
+            armSub.getArmEncoderPosition() <= (GlobalVariables.armRotGoal + 5) ){
+          finished = true;
+        }
 
         }
       }
@@ -43,6 +49,10 @@ public class AdaptiveArmMovement extends CommandBase {
 
       if(armSub.getArmEncoderPosition() >= GlobalVariables.armRotGoal*0.75){
         armSub.armExtendPresetPositions(armPosition);
+        if(armSub.getTelescopePos() >= (GlobalVariables.armExtendGoal - 2000) &&
+            armSub.getTelescopePos() <= (GlobalVariables.armExtendGoal + 2000) ){
+          finished = true;
+        }
       }
 
       }
@@ -56,6 +66,6 @@ public class AdaptiveArmMovement extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return finished;
   }
 }

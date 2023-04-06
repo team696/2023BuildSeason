@@ -9,11 +9,11 @@ import frc.robot.GlobalVariables;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.Gripper;
 
-public class GroundIntake extends CommandBase {
+public class SingleSubstationIntake extends CommandBase {
   /** Creates a new GroundIntake. */
   ArmSub armSub;
   Gripper gripper;
-  public GroundIntake(ArmSub armSub, Gripper gripper) {
+  public SingleSubstationIntake(ArmSub armSub, Gripper gripper) {
     this.armSub = armSub;
     this.gripper = gripper;
     addRequirements(armSub);
@@ -28,9 +28,9 @@ public class GroundIntake extends CommandBase {
   @Override
   public void execute() {
     if(GlobalVariables.gamePiece == 0){
-      armSub.moveGripperJointPosition(33000);
-      armSub.moveTelescopeArmPosition(8000);
-      armSub.moveRotArmPosition(1);
+      armSub.moveGripperJointPosition(27000);
+      armSub.moveTelescopeArmPosition(0);
+      armSub.moveRotArmPosition(40);
       if((gripper.getDistanceSensorDist() <= 12)){
       gripper.moveGripper(0);
 
@@ -42,9 +42,9 @@ public class GroundIntake extends CommandBase {
     }
 
     else{
-      armSub.moveGripperJointPosition(24000);
-      armSub.moveTelescopeArmPosition(8000);
-      armSub.moveRotArmPosition(1);
+      armSub.moveGripperJointPosition(15000);
+      armSub.moveTelescopeArmPosition(0);
+      armSub.moveRotArmPosition(40);
       if((gripper.getDistanceSensorDist() <= 12)){
         gripper.moveGripper(0);
 

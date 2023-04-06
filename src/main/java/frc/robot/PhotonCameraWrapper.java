@@ -50,7 +50,7 @@ public double getFrontCamOffset(){
     var result = frontCam.getLatestResult();
 
     if (!result.hasTargets())
-        return 0;
+        return 9;
   
   
         return  result.getBestTarget().getYaw();
@@ -60,12 +60,14 @@ public double getFrontCamOffset(){
 public double getRearCamOffset(){
     var result = frontCam.getLatestResult();
 
-    if (!result.hasTargets())
-        return 0;
+    if (!result.hasTargets()){
+        return 9;
+    }
+    else{
   
   
         return  result.getBestTarget().getYaw();
-    
+    }
 }
 
 public double getFrontCamDistance(){

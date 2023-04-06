@@ -6,14 +6,15 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.GlobalVariables;
+import frc.robot.GlobalVariables.ArmPositions;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.Gripper;
 
-public class GroundIntake extends CommandBase {
-  /** Creates a new GroundIntake. */
+public class ShelfIntake extends CommandBase {
+  /** Creates a new AdaptiveArmMovement. */
   ArmSub armSub;
   Gripper gripper;
-  public GroundIntake(ArmSub armSub, Gripper gripper) {
+  public ShelfIntake(ArmSub armSub, Gripper gripper) {
     this.armSub = armSub;
     this.gripper = gripper;
     addRequirements(armSub);
@@ -27,34 +28,37 @@ public class GroundIntake extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(GlobalVariables.gamePiece == 0){
-      armSub.moveGripperJointPosition(33000);
-      armSub.moveTelescopeArmPosition(8000);
-      armSub.moveRotArmPosition(1);
-      if((gripper.getDistanceSensorDist() <= 12)){
-      gripper.moveGripper(0);
+   
+       
+      armSub.armRotPresetPositions(ArmPositions.SHELF_PICKUP_ADAPTIVE);
+      armSub.jointRotPresetPositions(ArmPositions.SHELF_PICKUP_ADAPTIVE);
 
+      if(armSub.getArmEncoderPosition() >= GlobalVariables.armRotGoal*0.75){
+        armSub.armExtendPresetPositions(ArmPositions.SHELF_PICKUP_ADAPTIVE);
+      }
+
+      if(GlobalVariables.gamePiece == 0){
+        if((gripper.getDistanceSensorDist() <= 12)){
+          gripper.moveGripper(0);
+    
+          }
+          else{
+            gripper.moveGripper(-1);
+    
+          }
       }
       else{
-        gripper.moveGripper(-1);
-
+        if((gripper.getDistanceSensorDist() <= 12)){
+          gripper.moveGripper(0);
+  
+          }
+          else{
+            gripper.moveGripper(0.8);
+  
+          }
       }
-    }
 
-    else{
-      armSub.moveGripperJointPosition(24000);
-      armSub.moveTelescopeArmPosition(8000);
-      armSub.moveRotArmPosition(1);
-      if((gripper.getDistanceSensorDist() <= 12)){
-        gripper.moveGripper(0);
-
-        }
-        else{
-          gripper.moveGripper(0.8);
-
-        }
-    }
-
+      
 
   }
 
@@ -62,6 +66,7 @@ public class GroundIntake extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     gripper.moveGripper(0);
+
   }
 
   // Returns true when the command should end.

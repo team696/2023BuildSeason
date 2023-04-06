@@ -56,7 +56,7 @@ public class ArmSub extends SubsystemBase {
     testCanCoder.configMagnetOffset(-12);
     
 
-    rotMaxSpeedFor = 0.3;
+    rotMaxSpeedFor = 0.5;
     rotMaxSpeedRev = 0.3;
 
     limit = new SupplyCurrentLimitConfiguration(true, 10, 10, 0);
@@ -109,7 +109,7 @@ public class ArmSub extends SubsystemBase {
       telescopeArm.configPeakOutputReverse(-telMaxSpeedRev);
       telescopeArm.setSensorPhase(true);
       telescopeArm.setInverted(InvertType.None);
-      telescopeArm.config_kP(0, 0.3);
+      telescopeArm.config_kP(0, 0.2);
       telescopeArm.config_kI(0, 0.0);
       telescopeArm.config_kD(0, 0.0);
       telescopeArm.config_kF(0, 0.0);
@@ -125,14 +125,14 @@ public class ArmSub extends SubsystemBase {
       gripperJointFalcon.configPeakOutputReverse(-telMaxSpeedRev);
       gripperJointFalcon.setSensorPhase(true);
       gripperJointFalcon.setInverted(InvertType.InvertMotorOutput);
-      gripperJointFalcon.config_kP(0, 0.3);
+      gripperJointFalcon.config_kP(0, 0.4);
       gripperJointFalcon.config_kI(0, 0.0);
       gripperJointFalcon.config_kD(0, 0.0);
       gripperJointFalcon.config_kF(0, 0.0);
       gripperJointFalcon.setNeutralMode(NeutralMode.Brake);
       gripperJointFalcon.configNeutralDeadband(0.001);
-      gripperJointFalcon.configMotionAcceleration(5000);
-      gripperJointFalcon.configMotionCruiseVelocity(10000);
+      gripperJointFalcon.configMotionAcceleration(15000);
+      gripperJointFalcon.configMotionCruiseVelocity(15000);
       gripperJointFalcon.setSelectedSensorPosition(0);
       gripperJointFalcon.configAllowableClosedloopError(0, 10);
       
@@ -467,17 +467,25 @@ public void homeGripperJointPos(){
       if(GlobalVariables.robotDirection){
         if(GlobalVariables.gamePiece == 0){
           moveTelescopeArmPosition(Constants.ArmExtendValues.armExtendForHighCone);
+          GlobalVariables.armExtendGoal = Constants.ArmExtendValues.armExtendForHighCone;
+
         }
         else{
           moveTelescopeArmPosition(Constants.ArmExtendValues.armExtendForHighCube);
+          GlobalVariables.armExtendGoal = Constants.ArmExtendValues.armExtendForHighCube;
+
         }
       }
       else{
         if(GlobalVariables.gamePiece == 0){
           moveTelescopeArmPosition(Constants.ArmExtendValues.armExtendRevHighCone);
+          GlobalVariables.armExtendGoal = Constants.ArmExtendValues.armExtendRevHighCone;
+
         }
         else{
           moveTelescopeArmPosition(Constants.ArmExtendValues.armExtendRevHighCube);
+          GlobalVariables.armExtendGoal = Constants.ArmExtendValues.armExtendRevHighCube;
+
 
         }
       }

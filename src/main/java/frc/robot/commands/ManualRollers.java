@@ -6,17 +6,14 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.GlobalVariables;
-import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.Gripper;
 
-public class GroundIntake extends CommandBase {
-  /** Creates a new GroundIntake. */
-  ArmSub armSub;
+public class ManualRollers extends CommandBase {
+  /** Creates a new AdaptiveOuttake. */
   Gripper gripper;
-  public GroundIntake(ArmSub armSub, Gripper gripper) {
-    this.armSub = armSub;
+  public ManualRollers(Gripper gripper) {
     this.gripper = gripper;
-    addRequirements(armSub);
+    addRequirements(gripper);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -28,34 +25,11 @@ public class GroundIntake extends CommandBase {
   @Override
   public void execute() {
     if(GlobalVariables.gamePiece == 0){
-      armSub.moveGripperJointPosition(33000);
-      armSub.moveTelescopeArmPosition(8000);
-      armSub.moveRotArmPosition(1);
-      if((gripper.getDistanceSensorDist() <= 12)){
-      gripper.moveGripper(0);
-
-      }
-      else{
-        gripper.moveGripper(-1);
-
-      }
+      gripper.moveGripper(-1);
     }
-
     else{
-      armSub.moveGripperJointPosition(24000);
-      armSub.moveTelescopeArmPosition(8000);
-      armSub.moveRotArmPosition(1);
-      if((gripper.getDistanceSensorDist() <= 12)){
-        gripper.moveGripper(0);
-
-        }
-        else{
-          gripper.moveGripper(0.8);
-
-        }
+      gripper.moveGripper(1);
     }
-
-
   }
 
   // Called once the command ends or is interrupted.

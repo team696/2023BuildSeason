@@ -117,6 +117,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    m_robotContainer.armSub.ArmBrakeMode(NeutralMode.Brake);
+
     // m_robotContainer.s_Swerve.normalizeOdometry();
     // m_robotContainer.s_Swerve.autoZeroGyro();
     m_robotContainer.s_Swerve.zeroGyro();

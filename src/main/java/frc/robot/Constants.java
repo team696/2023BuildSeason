@@ -43,11 +43,11 @@ public final class Constants {
 
     public static final double armRotStow = 5;
 
-    public static final double armRotForHighCone = 50;
+    public static final double armRotForHighCone = 70;
     public static final double armRotForHighCube = 50;
 
-    public static final double armRotForMidCone = 50;
-    public static final double armRotForMidCube = 50;
+    public static final double armRotForMidCone = 65;
+    public static final double armRotForMidCube = 40;
 
     public static final double armRotForLowCone = 5;
     public static final double armRotForLowCube = 5;
@@ -55,22 +55,22 @@ public final class Constants {
     public static final double armRotForConePickup = 3;
     public static final double armRotForCubePickup = 3;
 
-    public static final double armRotForShelfCone = 70;
-    public static final double armRotForShelfCube = 70;
+    public static final double armRotForShelfCone = 120;
+    public static final double armRotForShelfCube = 110;
 
     public static final double armRotRevHighCone = 138;
-    public static final double armRotRevHighCube = 130;
+    public static final double armRotRevHighCube = 145;
 
-    public static final double armRotRevMidCone = 130;
-    public static final double armRotRevMidCube = 130;
+    public static final double armRotRevMidCone = 135;
+    public static final double armRotRevMidCube = 150;
 
-    public static final double armRotRevLowCone = 5;
+    public static final double armRotRevLowCone = 30;
     public static final double armRotRevLowCube = 90;
 
     public static final double armRotRevConePickup = 180;
     public static final double armRotRevCubePickup = 170;
     
-    public static final double armRotRevShelfCone = 120;
+    public static final double armRotRevShelfCone = 81;
     public static final double armRotRevShelfCube = 120;
 
     }
@@ -82,11 +82,11 @@ public final class Constants {
         public static final double armExtendCubePickup = 7000;
 
 
-        public static final double armExtendForHighCone = 50000;
-        public static final double armExtendForHighCube = 50000;
+        public static final double armExtendForHighCone = 48000;
+        public static final double armExtendForHighCube = 48000;
 
-        public static final double armExtendForMidCone = 30000;
-        public static final double armExtendForMidCube = 30000;
+        public static final double armExtendForMidCone = 35000;
+        public static final double armExtendForMidCube = 20000;
 
         public static final double armExtendForLowCone = 0;
         public static final double armExtendForLowCube = 0;
@@ -94,21 +94,21 @@ public final class Constants {
         public static final double armExtendForConePickup = 7000;
         public static final double armExtendForCubePickup = 7000;
 
-        public static final double armExtendForShelfCone = 50000;
-        public static final double armExtendForShelfCube = 50000;
+        public static final double armExtendForShelfCone = 45000;
+        public static final double armExtendForShelfCube = 45000;
 
 
-        public static final double armExtendRevHighCone = 50000;
-        public static final double armExtendRevHighCube = 50000;
+        public static final double armExtendRevHighCone = 48000;
+        public static final double armExtendRevHighCube = 35000;
 
         public static final double armExtendRevMidCone = 30000;
-        public static final double armExtendRevMidCube = 30000;
+        public static final double armExtendRevMidCube = 0;
 
         public static final double armExtendRevLowCone = 0;
         public static final double armExtendRevLowCube = 0;
 
-        public static final double armExtendRevShelfCone = 50000;
-        public static final double armExtendRevShelfCube = 50000;
+        public static final double armExtendRevShelfCone = 48000;
+        public static final double armExtendRevShelfCube = 48000;
     }
 
     public static final class JointRotationValues {
@@ -120,31 +120,32 @@ public final class Constants {
         
 
         public static final double JointRotForHighCone = 16000;
-        public static final double JointRotForHighCube = 9000;
+        public static final double JointRotForHighCube = 17000;
 
-        public static final double JointRotForMidCone = 16000;
-        public static final double JointRotForMidCube = 9000;
+        public static final double JointRotForMidCone = 45000;
+        public static final double JointRotForMidCube = 17000
+        ;
 
-        public static final double JointRotForLowCone = 9000;
-        public static final double JointRotForLowCube = 4000;
+        public static final double JointRotForLowCone = 17000;
+        public static final double JointRotForLowCube = 6000;
 
         public static final double JointRotForConePickup = 11000;
         public static final double JointRotForCubePickup = 9000;
 
-        public static final double JointRotForShelfCone = 16000;
+        public static final double JointRotForShelfCone = 2000;
         public static final double JointRotForShelfCube = 9000;
 
 
-        public static final double JointRotRevHighCone = 6600;
+        public static final double JointRotRevHighCone = 13500;
         public static final double JointRotRevHighCube = 4000;
 
-        public static final double JointRotRevMidCone = 11000;
+        public static final double JointRotRevMidCone = 6500;
         public static final double JointRotRevMidCube = 4000;
 
-        public static final double JointRotRevLowCone = 0;
+        public static final double JointRotRevLowCone = 2000;
         public static final double JointRotRevLowCube = 0;
 
-        public static final double JointRotRevShelfCone = 4000;
+        public static final double JointRotRevShelfCone = 48000;
         public static final double JointRotRevShelfCube = 0;
     }
 
@@ -222,7 +223,7 @@ public final class Constants {
             public static final int driveMotorID = /* 2 */5;
             public static final int angleMotorID = /* 1 */4;
             public static final int canCoderID = /* 3 */6;
-            public static final double angleOffset = /* 274; */  13;
+            public static final double angleOffset = /* 274; */  15;
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -232,7 +233,7 @@ public final class Constants {
             public static final int driveMotorID = /* 11 */11;
             public static final int angleMotorID = /* 10 */10;
             public static final int canCoderID = /* 12 */12;
-            public static final double angleOffset = /* 240 ; */ 218;
+            public static final double angleOffset = /* 240 ; */ 218.5;
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -242,7 +243,7 @@ public final class Constants {
             public static final int driveMotorID = /* 5 */2;
             public static final int angleMotorID = /* 4 */1;
             public static final int canCoderID = /* 6 */3;
-            public static final double angleOffset = /* 319; */ 310;
+            public static final double angleOffset = /* 319; */ 311;
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -252,7 +253,7 @@ public final class Constants {
             public static final int driveMotorID = /* 8 */8;
             public static final int angleMotorID = /* 7 */7;
             public static final int canCoderID = /* 9 */9;
-            public static final double angleOffset = /* 305 ; */ 288;
+            public static final double angleOffset = /* 305 ; */ 286;
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -342,8 +343,8 @@ public final class Constants {
                         new Rotation3d(
                                 0, 0,
                                 Math.toRadians(45)));
-        static final String camera1Name = "OV9281-01";
-        static final String camera2Name = "Cam_2";
+        static final String camera1Name = "RearCam";
+        static final String camera2Name = "FrontCam";
         static final String frontCamName = "HD_USB_Camera";
     }
     
