@@ -56,14 +56,14 @@ public class ArmSub extends SubsystemBase {
     testCanCoder.configMagnetOffset(-12);
     
 
-    rotMaxSpeedFor = 0.5;
-    rotMaxSpeedRev = 0.3;
+    rotMaxSpeedFor = 1;
+    rotMaxSpeedRev = 0.8;
 
-    limit = new SupplyCurrentLimitConfiguration(true, 10, 10, 0);
+    limit = new SupplyCurrentLimitConfiguration(true, 30, 30, 0);
 
     
 
-    armPID = new PIDController(0.024, 0.000, 0.000);
+    armPID = new PIDController(0.022, 0.000, 0.000);
     armPID.setTolerance(0.1);
     armPID.enableContinuousInput(0, 360);
     
@@ -109,14 +109,14 @@ public class ArmSub extends SubsystemBase {
       telescopeArm.configPeakOutputReverse(-telMaxSpeedRev);
       telescopeArm.setSensorPhase(true);
       telescopeArm.setInverted(InvertType.None);
-      telescopeArm.config_kP(0, 0.2);
+      telescopeArm.config_kP(0, 0.7);
       telescopeArm.config_kI(0, 0.0);
       telescopeArm.config_kD(0, 0.0);
       telescopeArm.config_kF(0, 0.0);
       telescopeArm.setNeutralMode(NeutralMode.Brake);
       telescopeArm.configNeutralDeadband(0.1);
-      telescopeArm.configMotionAcceleration(10000);
-      telescopeArm.configMotionCruiseVelocity(10000);
+      telescopeArm.configMotionAcceleration(45000);
+      telescopeArm.configMotionCruiseVelocity(300000);
       telescopeArm.setSelectedSensorPosition(0);
       telescopeArm.configSupplyCurrentLimit(limit);
 
@@ -125,14 +125,14 @@ public class ArmSub extends SubsystemBase {
       gripperJointFalcon.configPeakOutputReverse(-telMaxSpeedRev);
       gripperJointFalcon.setSensorPhase(true);
       gripperJointFalcon.setInverted(InvertType.InvertMotorOutput);
-      gripperJointFalcon.config_kP(0, 0.4);
+      gripperJointFalcon.config_kP(0, 0.6);
       gripperJointFalcon.config_kI(0, 0.0);
       gripperJointFalcon.config_kD(0, 0.0);
       gripperJointFalcon.config_kF(0, 0.0);
       gripperJointFalcon.setNeutralMode(NeutralMode.Brake);
       gripperJointFalcon.configNeutralDeadband(0.001);
-      gripperJointFalcon.configMotionAcceleration(15000);
-      gripperJointFalcon.configMotionCruiseVelocity(15000);
+      gripperJointFalcon.configMotionAcceleration(32000);
+      gripperJointFalcon.configMotionCruiseVelocity(40000);
       gripperJointFalcon.setSelectedSensorPosition(0);
       gripperJointFalcon.configAllowableClosedloopError(0, 10);
       
@@ -664,8 +664,8 @@ public void homeGripperJointPos(){
     SmartDashboard.putData("PID ERROR ", armPID);
     SmartDashboard.putNumber("Arm Encoder Position", getArmEncoderPosition() );
     SmartDashboard.putNumber("Arm Motor Position", getArmMotorPos());
-    SmartDashboard.putNumber("Arm Motor 1 Current", leftArm.getStatorCurrent());
-    SmartDashboard.putNumber("Arm Motor 2 Current", rightArm.getStatorCurrent());
+    SmartDashboard.putNumber("Arm Motor Actual Speed", leftArm.getSelectedSensorVelocity());
+    SmartDashboard.putNumber("Arm Motor Set Speed", leftArm.getMotorOutputPercent());
     SmartDashboard.putNumber("Telescope Position", telescopeArm.getSelectedSensorPosition());
     SmartDashboard.putNumber("Telescope Speed?", telescopeArm.getSupplyCurrent());
     SmartDashboard.putNumber("Joint Position ", getGripperJointPos() );

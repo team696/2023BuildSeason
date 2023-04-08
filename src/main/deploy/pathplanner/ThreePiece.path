@@ -55,16 +55,16 @@
     },
     {
       "anchorPoint": {
-        "x": 1.7499115340111024,
-        "y": 4.396379732930406
+        "x": 1.8983607197983627,
+        "y": 4.4077989010678875
       },
       "prevControl": {
-        "x": 3.4171100820834126,
-        "y": 4.944499803529522
+        "x": 3.5655592678706736,
+        "y": 4.955918971667003
       },
       "nextControl": {
-        "x": 3.4171100820834126,
-        "y": 4.944499803529522
+        "x": 3.5655592678706736,
+        "y": 4.955918971667003
       },
       "holonomicAngle": 0,
       "isReversal": true,
@@ -91,11 +91,11 @@
         "y": 4.426222384675781
       },
       "nextControl": {
-        "x": 6.705830505678105,
-        "y": 2.409444477008612
+        "x": 6.561774940844737,
+        "y": 4.426222384675781
       },
       "holonomicAngle": -38.290163192243014,
-      "isReversal": false,
+      "isReversal": true,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": true,
@@ -110,31 +110,39 @@
     },
     {
       "anchorPoint": {
-        "x": 3.4627867546333384,
-        "y": 3.1631095740823967
+        "x": 2.8118941707968883,
+        "y": 4.453475573617814
       },
       "prevControl": {
-        "x": 3.6454934448330416,
-        "y": 3.1288520696699527
+        "x": 5.004374453193352,
+        "y": 6.303380811889829
       },
       "nextControl": null,
-      "holonomicAngle": 0,
+      "holonomicAngle": -180.0,
       "isReversal": false,
-      "velOverride": 0.1,
+      "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
+        "names": [
+          "switchcube",
+          "placelow",
+          "stowarm"
+        ],
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
     }
   ],
-  "maxVelocity": 0.5,
-  "maxAcceleration": 1.0,
-  "isReversed": null,
   "markers": [
+    {
+      "position": 0.0,
+      "names": [
+        "switchcube",
+        "holdstow"
+      ]
+    },
     {
       "position": 0.4,
       "names": [
@@ -148,9 +156,8 @@
       ]
     },
     {
-      "position": 0.0,
+      "position": 2.15,
       "names": [
-        "switchcube",
         "holdstow"
       ]
     },
@@ -161,27 +168,15 @@
       ]
     },
     {
-      "position": 2.152727272727266,
+      "position": 2.36,
+      "names": [
+        "cubepickup"
+      ]
+    },
+    {
+      "position": 3.03,
       "names": [
         "holdstow"
-      ]
-    },
-    {
-      "position": 2.3563636363636347,
-      "names": [
-        "conepickup"
-      ]
-    },
-    {
-      "position": 3.025454545454368,
-      "names": [
-        "holdstow"
-      ]
-    },
-    {
-      "position": 1.8909090909090749,
-      "names": [
-        "goarm"
       ]
     }
   ]

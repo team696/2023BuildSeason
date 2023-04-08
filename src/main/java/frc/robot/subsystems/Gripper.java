@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
@@ -18,6 +19,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Gripper extends SubsystemBase {
 
   public TalonFX gripperFalcon;
+  private SupplyCurrentLimitConfiguration limit;
+
 
   private Rev2mDistanceSensor distanceSensor;
 
@@ -26,6 +29,11 @@ public class Gripper extends SubsystemBase {
     gripperFalcon = new TalonFX(35, "Karen");
     gripperFalcon.configFactoryDefault();
     gripperFalcon.setNeutralMode(NeutralMode.Brake);
+
+
+    limit = new SupplyCurrentLimitConfiguration(true, 50, 50, 0.5);
+    // gripperFalcon.configSupplyCurrentLimit(limit);
+
 
 
     distanceSensor = new Rev2mDistanceSensor(Port.kMXP);
@@ -37,6 +45,10 @@ public class Gripper extends SubsystemBase {
    return distanceSensor.getRange();
   }
 
+  public double getGripperMotorCurrent(){
+    return gripperFalcon.getSupplyCurrent();
+  }
+
   public void moveGripper(double percent ){
     gripperFalcon.set(TalonFXControlMode.PercentOutput, percent);
   }
@@ -44,6 +56,7 @@ public class Gripper extends SubsystemBase {
   @Override
   public void periodic() { 
     SmartDashboard.putNumber("Distance Sensor", getDistanceSensorDist());
+    SmartDashboard.putNumber("GripperCurrent", gripperFalcon.getSupplyCurrent());
    
   }
 }

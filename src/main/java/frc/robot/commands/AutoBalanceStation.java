@@ -29,7 +29,7 @@ public class AutoBalanceStation extends CommandBase {
     public AutoBalanceStation(Swerve s_Swerve,  boolean fieldRelative, boolean openLoop) {
         this.s_Swerve = s_Swerve;
         addRequirements(s_Swerve);
-        pidController = new PIDController(0.01 , 0, 0);
+        pidController = new PIDController(0.8 , 0, 0);
         pidController.setTolerance(1);
 
         this.fieldRelative = fieldRelative;
@@ -82,4 +82,9 @@ public class AutoBalanceStation extends CommandBase {
         rotation = rAxis * Constants.Swerve.maxAngularVelocity;
         s_Swerve.drive(translation, rotation, fieldRelative, openLoop);
     }
+    @Override
+  public boolean isFinished() {
+    // return pidController.atSetpoint();
+    return false;
+  }
 }

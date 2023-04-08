@@ -28,7 +28,7 @@ public class GroundIntake extends CommandBase {
   @Override
   public void execute() {
     if(GlobalVariables.gamePiece == 0){
-      armSub.moveGripperJointPosition(33000);
+      armSub.moveGripperJointPosition(31000);
       armSub.moveTelescopeArmPosition(8000);
       armSub.moveRotArmPosition(1);
       if((gripper.getDistanceSensorDist() <= 12)){

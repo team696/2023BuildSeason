@@ -74,6 +74,12 @@ public class RobotContainer {
   private final Trigger panelRelease = new JoystickButton(operatorPanel, 15);
   private final Trigger panelEmptyRight = new JoystickButton(operatorPanel, 12);
   private final Trigger panelEmptyLeft = new JoystickButton(operatorPanel, 14);
+  private final Trigger panelLED1 = new JoystickButton(operatorPanel, 4);
+  private final Trigger panelLED2 = new JoystickButton(operatorPanel, 2);
+  private final Trigger panelLED3 = new JoystickButton(operatorPanel, 7);
+  private final Trigger panelLED4 = new JoystickButton(operatorPanel, 6);
+  private final Trigger panelLED5 = new JoystickButton(operatorPanel, 1);
+
   
 
 
@@ -156,14 +162,17 @@ public class RobotContainer {
     panelHigh.whileTrue(new AdaptiveArmMovement(armSub, ArmPositions.HIGH_SCORE_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelMid.whileTrue(new AdaptiveArmMovement(armSub, ArmPositions.MID_SCORE_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelLow.whileTrue(new AdaptiveArmMovement(armSub, ArmPositions.GROUND_SCORE_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-    panelStow.onTrue(new AutoPlaceGamePiece(armSub, gripper, ArmPositions.HIGH_SCORE_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    // panelStow.onTrue(new AutoPlaceGamePiece(armSub, gripper, ArmPositions.HIGH_SCORE_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelGround.whileTrue(new GroundIntake(armSub, gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelShelf.whileTrue(new ShelfIntake(armSub, gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelRelease.whileTrue(new AdaptiveOuttake(gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelRollers.whileTrue(new ManualRollers(gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelEmptyRight.whileTrue(new UprightConeIntake(armSub, gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelEmptyLeft.whileTrue(new SingleSubstationIntake(armSub, gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    panelLED3.onTrue(new InstantCommand(() -> armSub.homeTelescopePosition()));
+    panelLED4.onTrue(new InstantCommand(() -> armSub.homeGripperJointPos()));
 
+    // panelStow.whileTrue(new AutoBalanceStation(s_Swerve, false, true).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
 
     // panelStow.whileTrue(new FullArmPosition(armSub, 150, 50000, 9000,  true));
     // panelStow.whileFalse(new FullArmPosition(armSub, 0, 0, 0,  false));
@@ -260,13 +269,14 @@ public class RobotContainer {
  　| (￣ヽ＿_ヽ_)__)
  　二つ */
   /**
+   * 
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
    
-    List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("FullAuto",  new PathConstraints(1, 1));
+    List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("ThreePiece",  new PathConstraints(3, 3));
 
 // This is just an example event map. It would be better to have a constant, global event map
 // in your code that will be used by all path following commands.
@@ -281,6 +291,10 @@ eventMap.put("cubepickup", new AutoGroundIntake(armSub, gripper, 1) );
 eventMap.put("conepickup", new AutoGroundIntake(armSub, gripper, 0) );
 eventMap.put("placemid", new AutoPlaceGamePiece(armSub, gripper, ArmPositions.MID_SCORE_ADAPTIVE));
 eventMap.put("holdstow", new AdaptiveArmMovement(armSub, ArmPositions.STOWED_ADAPTIVE));
+eventMap.put("balance", new AutoBalanceStation(s_Swerve, true, false));
+eventMap.put("placelow", new AutoPlaceGamePiece(armSub, gripper, ArmPositions.GROUND_SCORE_ADAPTIVE));
+
+
 
 
 
@@ -292,7 +306,7 @@ SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
     s_Swerve::resetOdometry, // Pose2d consumer, used to reset odometry at the beginning of auto
     Constants.Swerve.swerveKinematics, // SwerveDriveKinematics
     new PIDConstants(5.0, 0.0, 0.0), // PID constants to correct for translation error (used to create the X and Y PID controllers)
-    new PIDConstants(0.5, 0.0, 0.0), // PID constants to correct for rotation error (used to create the rotation controller)
+    new PIDConstants(1.5, 0.0, 0.0), // PID constants to correct for rotation error (used to create the rotation controller)
     s_Swerve::setModuleStates, // Module states consumer used to output to the drive subsystem
     eventMap,
     false, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true

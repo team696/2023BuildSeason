@@ -39,33 +39,33 @@ public class AutoGroundIntake extends CommandBase {
   @Override
   public void execute() {
     if(gamePiece == 0){
-      armSub.moveGripperJointPosition(33000);
+      armSub.moveGripperJointPosition(31000);
       armSub.moveTelescopeArmPosition(8000);
       armSub.moveRotArmPosition(1);
-      if((gripper.getDistanceSensorDist() <= 12)){
+     /*  if((gripper.getDistanceSensorDist() <= 12)){
       gripper.moveGripper(0);
       finished = true;
 
       }
-      else{
+      else{ */
         gripper.moveGripper(-1);
 
-      }
+    /*   } */
     }
 
     else{
       armSub.moveGripperJointPosition(24000);
       armSub.moveTelescopeArmPosition(8000);
       armSub.moveRotArmPosition(1);
-      if((gripper.getDistanceSensorDist() <= 12)){
+     /*  if((gripper.getDistanceSensorDist() <= 12)){
         gripper.moveGripper(0);
         finished = true;
 
         }
-        else{
+        else{ */
           gripper.moveGripper(0.8);
 
-        }
+       /*  } */
     }
 
 
@@ -80,6 +80,6 @@ public class AutoGroundIntake extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return finished;
+    return false;
   }
 }

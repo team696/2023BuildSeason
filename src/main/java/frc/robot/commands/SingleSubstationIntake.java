@@ -28,7 +28,7 @@ public class SingleSubstationIntake extends CommandBase {
   @Override
   public void execute() {
     if(GlobalVariables.gamePiece == 0){
-      armSub.moveGripperJointPosition(27000);
+      armSub.moveGripperJointPosition(25000);
       armSub.moveTelescopeArmPosition(0);
       armSub.moveRotArmPosition(40);
       if((gripper.getDistanceSensorDist() <= 12)){
@@ -42,7 +42,7 @@ public class SingleSubstationIntake extends CommandBase {
     }
 
     else{
-      armSub.moveGripperJointPosition(15000);
+      armSub.moveGripperJointPosition(13000);
       armSub.moveTelescopeArmPosition(0);
       armSub.moveRotArmPosition(40);
       if((gripper.getDistanceSensorDist() <= 12)){

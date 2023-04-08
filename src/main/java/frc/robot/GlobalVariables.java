@@ -13,7 +13,7 @@ public class GlobalVariables {
     public static int height;
     public static boolean robotDirection;
     public static double gripperConePlacement;
-    public static double armRotGoal;
+    public static double armRotGoal = 100;
     public static double armExtendGoal;
     public static enum StationSelect{
         CLOSE_RAMP, LEFT_SHELF, LEFT_RAMP, RIGHT_SHELF, RIGHT_RAMP

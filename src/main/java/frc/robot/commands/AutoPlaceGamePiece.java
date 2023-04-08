@@ -16,6 +16,7 @@ public class AutoPlaceGamePiece extends CommandBase {
   Gripper gripper;
   GlobalVariables.ArmPositions armPosition;
   boolean finished;
+  int timer;
   public AutoPlaceGamePiece(ArmSub armSub, Gripper gripper, GlobalVariables.ArmPositions armPosition) {
     this.armSub = armSub;
     this.armPosition = armPosition;
@@ -29,6 +30,7 @@ public class AutoPlaceGamePiece extends CommandBase {
   @Override
   public void initialize() {
     finished = false;
+    timer = 0;
 
   }
 
@@ -50,9 +52,10 @@ public class AutoPlaceGamePiece extends CommandBase {
 
       if(armSub.getArmEncoderPosition() >= GlobalVariables.armRotGoal*0.75){
         armSub.armExtendPresetPositions(armPosition);
-        if(armSub.getTelescopePos()>= (GlobalVariables.armExtendGoal -1500) &&
-        armSub.getTelescopePos()<= (GlobalVariables.armExtendGoal + 1500)){
-          if(gripper.getDistanceSensorDist() <= 12){
+        if(armSub.getTelescopePos()>= (GlobalVariables.armExtendGoal -500) &&
+        armSub.getTelescopePos()<= (GlobalVariables.armExtendGoal + 500)){
+          timer++;
+          if(/* gripper.getDistanceSensorDist() <= 12 */ timer>=5){
             if(GlobalVariables.gamePiece == 0){
               gripper.moveGripper(0.7);
             }
@@ -60,10 +63,15 @@ public class AutoPlaceGamePiece extends CommandBase {
               gripper.moveGripper(-1);
   
             }
+            if (timer >= 20){
+              finished = true;
+              gripper.moveGripper(0);
+
+
+            }
           }
           else{
             gripper.moveGripper(0);
-            finished = true;
           }
         }
         else{
@@ -79,7 +87,10 @@ public class AutoPlaceGamePiece extends CommandBase {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    gripper.moveGripper(0);
+
+  }
 
   // Returns true when the command should end.
   @Override
