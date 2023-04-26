@@ -79,6 +79,7 @@ public class RobotContainer {
   private final Trigger panelLED3 = new JoystickButton(operatorPanel, 7);
   private final Trigger panelLED4 = new JoystickButton(operatorPanel, 6);
   private final Trigger panelLED5 = new JoystickButton(operatorPanel, 1);
+  private final Trigger panelLock = new JoystickButton(operatorPanel, 8);
 
   
 
@@ -96,7 +97,6 @@ public class RobotContainer {
   // private final SequentialCommandGroup rightSideRed = new LeftSideAutoRed(s_Swerve, armSub, gripper);
   // private final SequentialCommandGroup balanceBlue = new BalanceAuto(s_Swerve, armSub, gripper);
   // private final SequentialCommandGroup balanceRed = new BalanceAutoRed(s_Swerve, armSub, gripper);
-
   /* Subsystems */
 
  
@@ -126,16 +126,66 @@ public class RobotContainer {
     operatorPanel.setOutput(17, true );
     operatorPanel.setOutput(18, true );
 
+    HashMap<String, Command> eventMap = new HashMap<>();
+    eventMap.put("marker1", new PrintCommand("Passed marker 1"));
+    eventMap.put("goarm", new AdaptiveArmMovement(armSub, ArmPositions.MID_SCORE_ADAPTIVE));
+    eventMap.put("stowarm", new AutoAdaptiveArmMovement(armSub, ArmPositions.STOWED_ADAPTIVE));
+    eventMap.put("placehigh", new AutoPlaceGamePiece(armSub, gripper, ArmPositions.HIGH_SCORE_ADAPTIVE));
+    eventMap.put("switchcone", new ConeVCube(0));
+    eventMap.put("switchcube", new ConeVCube(1));
+    eventMap.put("cubepickup", new AutoGroundIntake(armSub, gripper, 1) );
+    eventMap.put("conepickup", new AutoGroundIntake(armSub, gripper, 0) );
+    eventMap.put("placemid", new AutoPlaceGamePiece(armSub, gripper, ArmPositions.MID_SCORE_ADAPTIVE));
+    eventMap.put("holdstow", new AdaptiveArmMovement(armSub, ArmPositions.STOWED_ADAPTIVE));
+    eventMap.put("balance", new AutoBalanceStation(s_Swerve));
+    eventMap.put("placelow", new AutoPlaceGamePiece(armSub, gripper, ArmPositions.GROUND_SCORE_ADAPTIVE));
+    eventMap.put("shootcone", new AutoShootCone(armSub, gripper));
 
-    // m_chooser.setDefaultOption("Balance Blue", balanceBlue);
-    // m_chooser.addOption("Balance Red", balanceRed);
+    SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
+        s_Swerve::getPose, // Pose2d supplier
+        s_Swerve::resetOdometry, // Pose2d consumer, used to reset odometry at the beginning of auto
+        Constants.Swerve.swerveKinematics, // SwerveDriveKinematics
+        new PIDConstants(5.0, 0.0, 0.0), // PID constants to correct for translation error (used to create the X and Y PID controllers)
+        new PIDConstants(1.5, 0.0, 0.0), // PID constants to correct for rotation error (used to create the rotation controller)
+        s_Swerve::setModuleStates, // Module states consumer used to output to the drive subsystem
+        eventMap,
+        true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
+        s_Swerve // The drive subsystem. Used to properly set the requirements of path following commands
+    );
+    List<PathPlannerTrajectory> CableProtector = PathPlanner.loadPathGroup("CableProtector", new PathConstraints(3  , 3), new PathConstraints(0.5, 1),new PathConstraints(3  , 3));
+    List<PathPlannerTrajectory> ThreePiece = PathPlanner.loadPathGroup("ThreePieceCone",  new PathConstraints(3, 3));
+    List<PathPlannerTrajectory> TwoPieceClimb = PathPlanner.loadPathGroup("FullAuto",  new PathConstraints(3, 3),new PathConstraints(3, 3),new PathConstraints(3, 3),new PathConstraints(3, 3), new PathConstraints(2, 2));
+    List<PathPlannerTrajectory> MiddleOnePiece = PathPlanner.loadPathGroup("MiddleOnePiece",  new PathConstraints(2, 2));
+    List<PathPlannerTrajectory> MiddleTwoPiece = PathPlanner.loadPathGroup("MiddleTwoPiece",  new PathConstraints(2, 2));
+    List<PathPlannerTrajectory> CableProtectorClimb = PathPlanner.loadPathGroup("CableProtectorCharge", new PathConstraints(3  , 3), new PathConstraints(0.5, 1),new PathConstraints(3  , 3));
+    List<PathPlannerTrajectory> CableProtectorDoubleHigh = PathPlanner.loadPathGroup("CableProtectorDoubleHigh", new PathConstraints(3.5  , 3), new PathConstraints(0.5, 1),new PathConstraints(3.5  , 3),new PathConstraints(3.3  , 3.3),new PathConstraints(0.5, 1),new PathConstraints(3.0  , 3.0));
+
+
+    Command cCableProtector = autoBuilder.fullAuto(CableProtector);
+    Command cThreePiece = autoBuilder.fullAuto(ThreePiece);
+    Command cTwoPieceClimb = autoBuilder.fullAuto(TwoPieceClimb);
+    Command cMiddleOnePiece = autoBuilder.fullAuto(MiddleOnePiece).andThen(new AutoBalanceStation(s_Swerve));
+    Command cMiddleTwoPiece = autoBuilder.fullAuto(MiddleTwoPiece).andThen(new AutoBalanceStation(s_Swerve));
+    Command cCableProtectorClimb = autoBuilder.fullAuto(CableProtectorClimb);
+    Command cCableProtectorDoubleHigh = autoBuilder.fullAuto(CableProtectorDoubleHigh);
+
+
+
+     m_chooser.setDefaultOption("Cable Protector Shoot 3", cCableProtector);
+     m_chooser.addOption("Three Piece", cThreePiece);
+     m_chooser.addOption("Two Piece Climb", cTwoPieceClimb);
+     m_chooser.addOption("Middle One Piece", cMiddleOnePiece);
+     m_chooser.addOption("Mid!dle Two Piece", cMiddleTwoPiece);
+     m_chooser.addOption("Cable Protector Climb", cCableProtectorClimb);
+     m_chooser.addOption("Cable Protector Double High", cCableProtectorDoubleHigh);
+
     // m_chooser.addOption("Left Blue", leftSideBlue);
     // m_chooser.addOption("Right Red", rightSideRed);
 
     SmartDashboard.putData(m_chooser);
     
-    s_Swerve.setDefaultCommand(new TeleopSwerve(s_Swerve, joystickPanel, translationAxis, strafeAxis, rotationAxis, fieldRelative, openLoop).
-    withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+    s_Swerve.setDefaultCommand(new TeleopSwerve(s_Swerve, joystickPanel, translationAxis, strafeAxis, rotationAxis, fieldRelative, openLoop).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+    //s_Swerve.setDefaultCommand(new TeleopSwerve(s_Swerve, driver, 1,0,4,true,true));
     // armSub.setDefaultCommand(new HoldArmPos(armSub, ArmPositions.STOWED_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     //candle.setDefaultCommand(new InstantCommand(() -> candle.setColor(operatorExtraRight.getAsBoolean())));
     // armSub.setDefaultCommand(new MoveJointTemp(armSub, operatorPanel));
@@ -143,6 +193,7 @@ public class RobotContainer {
     // armSub.setDefaultCommand(new HoldJointPos(armSub, 0).alongWith(new ArmExtendPositionTest(armSub, 0)).alongWith(new ArmRotationTest(armSub, 5)).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
       armSub.setDefaultCommand(new AdaptiveArmMovement(armSub, ArmPositions.STOWED_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     candle.setDefaultCommand(new SetLedCommand(candle));
+    gripper.setDefaultCommand(new ConstantHold(gripper));
     configureButtonBindings();
 
   }
@@ -162,17 +213,18 @@ public class RobotContainer {
     panelHigh.whileTrue(new AdaptiveArmMovement(armSub, ArmPositions.HIGH_SCORE_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelMid.whileTrue(new AdaptiveArmMovement(armSub, ArmPositions.MID_SCORE_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelLow.whileTrue(new AdaptiveArmMovement(armSub, ArmPositions.GROUND_SCORE_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-    // panelStow.onTrue(new AutoPlaceGamePiece(armSub, gripper, ArmPositions.HIGH_SCORE_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    panelStow.onTrue(new AutoPlaceGamePiece(armSub, gripper, ArmPositions.MID_SCORE_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelGround.whileTrue(new GroundIntake(armSub, gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-    panelShelf.whileTrue(new ShelfIntake(armSub, gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    panelShelf.whileTrue(new ShelfIntake(armSub).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelRelease.whileTrue(new AdaptiveOuttake(gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-    panelRollers.whileTrue(new ManualRollers(gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    panelRollers.whileTrue(new ManualRollers(gripper, candle).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelEmptyRight.whileTrue(new UprightConeIntake(armSub, gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelEmptyLeft.whileTrue(new SingleSubstationIntake(armSub, gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelLED3.onTrue(new InstantCommand(() -> armSub.homeTelescopePosition()));
     panelLED4.onTrue(new InstantCommand(() -> armSub.homeGripperJointPos()));
-
-    // panelStow.whileTrue(new AutoBalanceStation(s_Swerve, false, true).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    panelLock.whileTrue(new MoveJointTemp(armSub, operatorPanel).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    panelLED5.whileTrue(new AdaptiveArmMovement(armSub, ArmPositions.FRAME_PERIMETER).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    // panelStow.onTrue(new AutoShootCone(armSub, gripper));
 
     // panelStow.whileTrue(new FullArmPosition(armSub, 150, 50000, 9000,  true));
     // panelStow.whileFalse(new FullArmPosition(armSub, 0, 0, 0,  false));
@@ -275,14 +327,14 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-   
-    List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("ThreePiece",  new PathConstraints(3, 3));
+   /* 
+    List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup("CableProtector",  new PathConstraints(0.1, 1),new PathConstraints(4  , 2));
 
 // This is just an example event map. It would be better to have a constant, global event map
 // in your code that will be used by all path following commands.
 HashMap<String, Command> eventMap = new HashMap<>();
 eventMap.put("marker1", new PrintCommand("Passed marker 1"));
-eventMap.put("goarm", new AdaptiveArmMovement(armSub, ArmPositions.HIGH_SCORE_ADAPTIVE));
+eventMap.put("goarm", new AdaptiveArmMovement(armSub, ArmPositions.MID_SCORE_ADAPTIVE));
 eventMap.put("stowarm", new AutoAdaptiveArmMovement(armSub, ArmPositions.STOWED_ADAPTIVE));
 eventMap.put("placehigh", new AutoPlaceGamePiece(armSub, gripper, ArmPositions.HIGH_SCORE_ADAPTIVE));
 eventMap.put("switchcone", new ConeVCube(0));
@@ -309,7 +361,7 @@ SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
     new PIDConstants(1.5, 0.0, 0.0), // PID constants to correct for rotation error (used to create the rotation controller)
     s_Swerve::setModuleStates, // Module states consumer used to output to the drive subsystem
     eventMap,
-    false, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
+    true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
     s_Swerve // The drive subsystem. Used to properly set the requirements of path following commands
 );
 
@@ -322,5 +374,7 @@ Command fullAuto = autoBuilder.fullAuto(pathGroup);
     return fullAuto;//new ButterAutoTest(s_Swerve);
     // return new LeftSideAuto(s_Swerve, armSub, gripper);
     // return new LeftSideAutoRed(s_Swerve, armSub, gripper);
+    */
+    return m_chooser.getSelected();
   }
 }

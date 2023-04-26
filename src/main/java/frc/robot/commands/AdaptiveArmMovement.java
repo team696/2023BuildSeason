@@ -31,18 +31,31 @@ public class AdaptiveArmMovement extends CommandBase {
        armSub.armExtendPresetPositions(armPosition);
         armSub.jointRotPresetPositions(armPosition);
 
-        if(armSub.getTelescopePos() <= 10000){
+        if(armSub.getTelescopePos() <= 10000 && armSub.getGripperJointPos() <= 5000){
         armSub.armRotPresetPositions(armPosition);
 
         }
       }
       else{
-       
+       if(GlobalVariables.robotDirection == false){
       armSub.armRotPresetPositions(armPosition);
       armSub.jointRotPresetPositions(armPosition);
 
       if(armSub.getArmEncoderPosition() >= GlobalVariables.armRotGoal*0.75){
         armSub.armExtendPresetPositions(armPosition);
+      }
+                                                  }
+      else{
+
+        armSub.armRotPresetPositions(armPosition);
+        if(armSub.getArmEncoderPosition() >= GlobalVariables.armRotGoal*0.15){
+        armSub.jointRotPresetPositions(armPosition);
+
+        if(armSub.getGripperJointPos()>= 10000){
+          armSub.armExtendPresetPositions(armPosition);
+        }
+        }
+        
       }
 
       }

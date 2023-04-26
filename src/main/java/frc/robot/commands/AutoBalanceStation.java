@@ -26,61 +26,29 @@ public class AutoBalanceStation extends CommandBase {
     /**
      * Driver control
      */
-    public AutoBalanceStation(Swerve s_Swerve,  boolean fieldRelative, boolean openLoop) {
-        this.s_Swerve = s_Swerve;
+    public AutoBalanceStation(Swerve s_Swerve) {
+        this.s_Swerve = s_Swerve ;
         addRequirements(s_Swerve);
-        pidController = new PIDController(0.8 , 0, 0);
-        pidController.setTolerance(1);
-
-        this.fieldRelative = fieldRelative;
-        this.openLoop = openLoop;
+        pidController = new PIDController(0.1 , 0, 0);
     }
 
     @Override
     public void execute() {
-        double yAxis = pidController.calculate(s_Swerve.getPitch(), 0);
+        double value = 0;
+        if (s_Swerve.getPitch() > 2.5) {
+            value = 1;
+        } 
+        if (s_Swerve.getPitch() < -2.5) {
+            value = -1;
+        }
+        double yAxis = pidController.calculate(value , 0);
         double xAxis = 0;
         double rAxis = 0;
-        System.out.println("AUTO BALANCING ");
-        
-        /* Deadbands */
-
-        if (Math.abs(yAxis) > Constants.stickDeadband) {
-            if (yAxis > 0){
-                yAxis = mapdouble(yAxis, Constants.stickDeadband, 1, 0, 1);
-            } else {
-                yAxis = mapdouble(yAxis, -Constants.stickDeadband, -1, 0, -1);
-            }
-        }
-        else{
-            yAxis = 0;
-        }
-        
-        if (Math.abs(xAxis) > Constants.stickDeadband) {
-            if (xAxis > 0){
-                xAxis = mapdouble(xAxis, Constants.stickDeadband, 1, 0, 1);
-            } else {
-                xAxis = mapdouble(xAxis, -Constants.stickDeadband, -1, 0, -1);
-            }
-        }
-        else{
-            xAxis = 0;
-        }
-
-        if (Math.abs(rAxis) > Constants.stickDeadband) {
-            if (rAxis > 0){
-                rAxis = mapdouble(rAxis, Constants.stickDeadband, 1, 0, 1);
-            } else {
-                rAxis = mapdouble(rAxis, -Constants.stickDeadband, -1, 0, -1);
-            }
-        }
-        else{
-            rAxis = 0;
-        }
+    
 
         translation = new Translation2d(yAxis, xAxis).times(Constants.Swerve.maxSpeed);
         rotation = rAxis * Constants.Swerve.maxAngularVelocity;
-        s_Swerve.drive(translation, rotation, fieldRelative, openLoop);
+        s_Swerve.drive(translation, rotation, true, true);
     }
     @Override
   public boolean isFinished() {

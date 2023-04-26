@@ -2,13 +2,13 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 2.046809905585623,
-        "y": 3.836840494193809
+        "x": 1.6699773570487313,
+        "y": 2.729181184858097
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.9272190852074016,
-        "y": 4.376782616813096
+        "x": 2.6699773570487313,
+        "y": 2.729181184858097
       },
       "holonomicAngle": 0,
       "isReversal": false,
@@ -16,24 +16,28 @@
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
+        "names": [
+          "switchcube",
+          "placehigh",
+          "stowarm"
+        ],
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
     },
     {
       "anchorPoint": {
-        "x": 3.0,
-        "y": 5.0
+        "x": 5.963584576741804,
+        "y": 2.6606661760332067
       },
       "prevControl": {
-        "x": 3.0,
-        "y": 4.0
+        "x": 5.038631957605795,
+        "y": 2.7177620167206156
       },
       "nextControl": {
-        "x": 3.0,
-        "y": 4.0
+        "x": 5.038631957605795,
+        "y": 2.7177620167206156
       },
       "holonomicAngle": 0,
       "isReversal": true,
@@ -49,12 +53,12 @@
     },
     {
       "anchorPoint": {
-        "x": 5.0,
-        "y": 3.0
+        "x": 3.8167809668952675,
+        "y": 2.740600352995578
       },
       "prevControl": {
-        "x": 4.0,
-        "y": 3.0
+        "x": 4.650380240931421,
+        "y": 2.740600352995578
       },
       "nextControl": null,
       "holonomicAngle": 0,
@@ -64,11 +68,18 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [],
-        "executionBehavior": "parallel",
+        "executionBehavior": "sequential",
         "waitBehavior": "none",
         "waitTime": 0
       }
     }
   ],
-  "markers": []
+  "markers": [
+    {
+      "position": 0.01,
+      "names": [
+        "holdstow"
+      ]
+    }
+  ]
 }

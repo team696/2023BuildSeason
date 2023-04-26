@@ -4,22 +4,16 @@
 
 package frc.robot.commands;
 
-import com.ctre.phoenix.CANifier.LEDChannel;
-import com.ctre.phoenix.led.CANdle;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.GlobalVariables;
-import frc.robot.subsystems.CANdleSub;
 import frc.robot.subsystems.Gripper;
 
-public class ManualRollers extends CommandBase {
-  /** Creates a new AdaptiveOuttake. */
+public class ConstantHold extends CommandBase {
   Gripper gripper;
-  CANdleSub candlesub;
-  public ManualRollers(Gripper gripper, CANdleSub candlesub) {
+  /** Creates a new ConstantHold. */
+  public ConstantHold(Gripper gripper) {
     this.gripper = gripper;
-    this.candlesub = candlesub;
-    addRequirements(gripper, candlesub);
+    addRequirements(gripper);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -31,22 +25,16 @@ public class ManualRollers extends CommandBase {
   @Override
   public void execute() {
     if(GlobalVariables.gamePiece == 0){
-      gripper.moveGripper(-1);
+      gripper.moveGripper(-0.075);
     }
     else{
-      gripper.moveGripper(1);
-    }
-
-    if(gripper.getGripperMotorCurrent() >= 100){
-      candlesub.pickupLed();
+      gripper.moveGripper(0.07);
     }
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    gripper.moveGripper(0);
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override

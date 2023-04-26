@@ -30,11 +30,15 @@ public class CANdleSub extends SubsystemBase {
   }
 
   public void disabledLed(){
-    m_candle.animate(new SingleFadeAnimation(255, 0, 0, 0, 0.6, numLed, ledOffset));
+    m_candle.animate(new SingleFadeAnimation(200, 0, 0, 0, 0.6, numLed, ledOffset));
   }
 
   public void enabledLed(){
     m_candle.animate(new SingleFadeAnimation(230, 10, 10, 0, 0.7, numLed, ledOffset));
+  }
+
+  public void pickupLed(){
+    m_candle.setLEDs(0, numLed, 0, 0, ledOffset, numLed);
   }
 
   public void setColor(boolean cone) {

@@ -41,7 +41,8 @@ public class Robot extends TimedRobot {
 
   private PowerDistribution pdh;
   DigitalInput input = new DigitalInput(0);
-
+  DigitalInput inputb = new DigitalInput(1);
+  boolean resetFlag = false;
   private Joystick panel = new Joystick(2);
 
 
@@ -71,8 +72,16 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-
+    boolean conevcube;
     CommandScheduler.getInstance().run();
+    if(GlobalVariables.gamePiece == 0){
+      conevcube = true;
+    }
+    else{
+      conevcube = false;
+    }
+    SmartDashboard.putBoolean("Game Piece", conevcube);
+    m_robotContainer.s_Swerve.updateRobotDirection();
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -89,7 +98,11 @@ public class Robot extends TimedRobot {
 
     }
 
-    
+    if (inputb.get() != resetFlag) {
+      resetFlag = inputb.get();
+      m_robotContainer.armSub.homeGripperJointPos();
+      m_robotContainer.armSub.homeTelescopePosition();
+    }
     candlesub.disabledLed();
     pdh.setSwitchableChannel(false);
   }
@@ -98,7 +111,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-    m_robotContainer.s_Swerve.resetOdometry(new Pose2d(Units.inchesToMeters(72), Units.inchesToMeters(176), new Rotation2d(0)));
+    // m_robotContainer.s_Swerve.resetOdometry(new Pose2d(Units.inchesToMeters(72), Units.inchesToMeters(176), new Rotation2d(0)));
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
@@ -121,8 +134,8 @@ public class Robot extends TimedRobot {
 
     // m_robotContainer.s_Swerve.normalizeOdometry();
     // m_robotContainer.s_Swerve.autoZeroGyro();
-    m_robotContainer.s_Swerve.zeroGyro();
-    m_robotContainer.s_Swerve.resetOdometry(new Pose2d(Units.inchesToMeters(72), Units.inchesToMeters(176), new Rotation2d(0)));
+    // m_robotContainer.s_Swerve.zeroGyro();
+    // m_robotContainer.s_Swerve.resetOdometry(new Pose2d(Units.inchesToMeters(72), Units.inchesToMeters(176), new Rotation2d(0)));
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
@@ -144,7 +157,7 @@ public class Robot extends TimedRobot {
     Alliance alliance;
 alliance = DriverStation.getAlliance();
 m_robotContainer.s_Swerve.updateOdometry();
-pdh.setSwitchableChannel(true);
+pdh.setSwitchableChannel(false);
 // System.out.println(alliance);
 
     // candlesub.enabledLed();

@@ -28,9 +28,9 @@ public class UprightConeIntake extends CommandBase {
   @Override
   public void execute() {
     
-      armSub.moveGripperJointPosition(46000);
+      armSub.moveGripperJointPosition(47000 * armSub.multiplier);
       armSub.moveTelescopeArmPosition(0);
-      armSub.moveRotArmPosition(44);
+      armSub.moveRotArmPosition(47);
       
       if((gripper.getDistanceSensorDist() <= 12)){
       gripper.moveGripper(0);

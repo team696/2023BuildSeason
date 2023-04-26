@@ -6,20 +6,18 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.GlobalVariables;
-import frc.robot.GlobalVariables.ArmPositions;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.Gripper;
 
-public class AutoPlaceGamePiece extends CommandBase {
+public class AutoShootCone extends CommandBase {
   /** Creates a new AdaptiveArmMovement. */
   ArmSub armSub;
   Gripper gripper;
   GlobalVariables.ArmPositions armPosition;
   boolean finished;
   int timer;
-  public AutoPlaceGamePiece(ArmSub armSub, Gripper gripper, GlobalVariables.ArmPositions armPosition) {
+  public AutoShootCone(ArmSub armSub, Gripper gripper) {
     this.armSub = armSub;
-    this.armPosition = armPosition;
     this.gripper = gripper;
     addRequirements(armSub, gripper);
     finished = false;
@@ -37,35 +35,24 @@ public class AutoPlaceGamePiece extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(armPosition == ArmPositions.STOWED_ADAPTIVE){
-       armSub.armExtendPresetPositions(armPosition);
-        if(armSub.getTelescopePos() <= 10000){
-        armSub.armRotPresetPositions(armPosition);
-        armSub.jointRotPresetPositions(armPosition);
+   
+      armSub.moveRotArmPosition(90);
+      armSub.moveGripperJointPosition(11000*armSub.multiplier);
 
-        }
-      }
-      else{
+      if(armSub.getArmEncoderPosition() >= 80){
        
-      armSub.armRotPresetPositions(armPosition);
-      armSub.jointRotPresetPositions(armPosition);
-
-      if(armSub.getArmEncoderPosition() >= GlobalVariables.armRotGoal*0.75){
-        armSub.armExtendPresetPositions(armPosition);
-        if(armSub.getTelescopePos()>= (GlobalVariables.armExtendGoal -500) &&
-        armSub.getTelescopePos()<= (GlobalVariables.armExtendGoal + 500)){
           timer++;
-          if(/* gripper.getDistanceSensorDist() <= 12 */ timer>=5){
+          if(/* gripper.getDistanceSensorDist() <= 12 */ timer>=15){
             if(GlobalVariables.gamePiece == 0){
-              gripper.moveGripper(0.7);
+              gripper.moveGripper(1);
             }
             else{
-              gripper.moveGripper(-0.6);
+              gripper.moveGripper(-1);
   
             }
-            if (timer >= 20){
-              finished = true;
+            if (timer >= 30){
               gripper.moveGripper(0);
+              finished = true;
 
 
             }
@@ -80,10 +67,10 @@ public class AutoPlaceGamePiece extends CommandBase {
       }
 
      
-      }
+      
 
       
-  }
+  
 
   // Called once the command ends or is interrupted.
   @Override

@@ -154,22 +154,22 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
     }
 
     public void updateRobotDirection(){
-        if (DriverStation.getAlliance() == Alliance.Blue){
+        // if (DriverStation.getAlliance() == Alliance.Blue){
             if(gyro.getYaw()>=90 || gyro.getYaw() <= -90){
                 GlobalVariables.robotDirection = true;
             }
             else{
                 GlobalVariables.robotDirection = false;
-            }
+            // }
         }
-        else{
-            if(gyro.getYaw()>=90 || gyro.getYaw() <= -90){
-                GlobalVariables.robotDirection = false;
-            }
-            else{
-                GlobalVariables.robotDirection = true;
-            } 
-        }
+        // else{
+        //     if(gyro.getYaw()>=90 || gyro.getYaw() <= -90){
+        //         GlobalVariables.robotDirection = false;
+        //     }
+        //     else{
+        //         GlobalVariables.robotDirection = true;
+        //     } 
+        // }
     }
 
    
@@ -270,7 +270,7 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
     }
 
     public double getPitch(){
-        return gyro.getRoll();
+        return gyro.getPitch();
     }
 
     public double getCamOffset(){
@@ -336,9 +336,9 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
 
     @Override
     public void periodic(){
-        updateRobotDirection();
+        // updateRobotDirection();
         // pcw.frontCamPipeline(2);
-        pcw.cameraPipelines(GlobalVariables.gamePiece);
+        // pcw.cameraPipelines(GlobalVariables.gamePiece);
 
         AprilTagGrid.setDefaultOption("Left Tag", gridTag1);
         AprilTagGrid.addOption("Mid Tag", gridTag2);
@@ -365,6 +365,9 @@ private  SwerveDrivePoseEstimator m_poseEstimator;
 
 
     SmartDashboard.putNumber("Gyro Yaw ", gyro.getYaw());
+    SmartDashboard.putNumber("Gyro Pitch ", gyro.getPitch());
+    SmartDashboard.putNumber("Gyro Roll ", gyro.getRoll());
+
     SmartDashboard.putNumber("AprilTag Yaw ",  getAprilTagEstPosition().getRotation().getDegrees());
     SmartDashboard.putBoolean("robot direction ", GlobalVariables.robotDirection);
     SmartDashboard.putNumber("Rear Cam offset ", pcw.getRearCamOffset());

@@ -36,6 +36,8 @@ public class ArmSub extends SubsystemBase {
   public PIDController telescopePID;
   public CANCoder testCanCoder;
 
+  public PIDController slowArmPID;
+
   private SupplyCurrentLimitConfiguration limit;
 
   public double rotMaxSpeedFor;
@@ -44,6 +46,7 @@ public class ArmSub extends SubsystemBase {
   public double telMaxSpeedFor;
   public double telMaxSpeedRev;
   
+  public double multiplier;
 
 
   /** Creates a new ArmSub. */
@@ -53,19 +56,26 @@ public class ArmSub extends SubsystemBase {
     testCanCoder = new CANCoder(14, "Karen");
     testCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
     testCanCoder.configSensorDirection(true);
-    testCanCoder.configMagnetOffset(-12);
+    testCanCoder.configMagnetOffset(150);
+
+    multiplier = 0.677;
     
 
     rotMaxSpeedFor = 1;
-    rotMaxSpeedRev = 0.8;
+    rotMaxSpeedRev = 0.6;
 
     limit = new SupplyCurrentLimitConfiguration(true, 30, 30, 0);
 
     
 
-    armPID = new PIDController(0.022, 0.000, 0.000);
+    armPID = new PIDController(0.018, 0.000, 0.000);
     armPID.setTolerance(0.1);
     armPID.enableContinuousInput(0, 360);
+
+    slowArmPID = new PIDController(0.007, 0.000, 0.000);
+    slowArmPID.setTolerance(0.1);
+    slowArmPID.enableContinuousInput(0, 360);
+
     
     
 
@@ -131,7 +141,7 @@ public class ArmSub extends SubsystemBase {
       gripperJointFalcon.config_kF(0, 0.0);
       gripperJointFalcon.setNeutralMode(NeutralMode.Brake);
       gripperJointFalcon.configNeutralDeadband(0.001);
-      gripperJointFalcon.configMotionAcceleration(32000);
+      gripperJointFalcon.configMotionAcceleration(30000);
       gripperJointFalcon.configMotionCruiseVelocity(40000);
       gripperJointFalcon.setSelectedSensorPosition(0);
       gripperJointFalcon.configAllowableClosedloopError(0, 10);
@@ -154,6 +164,10 @@ public class ArmSub extends SubsystemBase {
  public void moveRotArmPosition(double degrees){
   leftArm.set(ControlMode.PercentOutput, armPID.calculate(testCanCoder.getAbsolutePosition(), degrees));
 
+ }
+
+ public void moveRotArmPositionSlow(double degrees){
+  leftArm.set(ControlMode.PercentOutput, slowArmPID.calculate(testCanCoder.getAbsolutePosition(), degrees));
  }
 
 
@@ -182,6 +196,8 @@ public void moveTelescopeArmPosition(double position){
 public void moveGripperJointPosition(double position){
   gripperJointFalcon.set(TalonFXControlMode.MotionMagic, position);
 }
+
+
 
 public void moveGripperJointPercentOutput(double percent ){
   // gripperJointNeo.set(percent);
@@ -231,9 +247,14 @@ public void homeGripperJointPos(){
       break;
 
       case STOWED_ADAPTIVE:
-      moveRotArmPosition(Constants.ArmRotationValues.armRotStow);
+      if(GlobalVariables.robotDirection){
+      moveRotArmPositionSlow(Constants.ArmRotationValues.armRotStow);
       GlobalVariables.armRotGoal = Constants.ArmRotationValues.armRotStow;
-
+      }
+      else{
+        moveRotArmPosition(Constants.ArmRotationValues.armRotStow);
+        GlobalVariables.armRotGoal = Constants.ArmRotationValues.armRotStow;
+      }
       break;
 
       case GROUND_SCORE_ADAPTIVE: 
@@ -345,7 +366,10 @@ public void homeGripperJointPos(){
       }
       break;
 
-    
+      case FRAME_PERIMETER:
+        moveRotArmPosition(Constants.ArmRotationValues.framePerimeter);
+        GlobalVariables.armRotGoal = Constants.ArmRotationValues.framePerimeter;
+      break;
 
       default:
       moveRotArmPosition(Constants.ArmRotationValues.armRotStow);
@@ -492,7 +516,10 @@ public void homeGripperJointPos(){
      
       break;
 
-    
+      case FRAME_PERIMETER:
+        moveTelescopeArmPosition(Constants.ArmExtendValues.framePerimeter);
+        GlobalVariables.armExtendGoal = Constants.ArmExtendValues.framePerimeter;
+      break;
 
       default:
       moveTelescopeArmPosition(Constants.ArmExtendValues.armExtendStow);
@@ -508,20 +535,20 @@ public void homeGripperJointPos(){
 
       case GROUND_PICKUP_ADAPTIVE:
       if(GlobalVariables.gamePiece == 0){
-        moveGripperJointPosition(Constants.JointRotationValues.JointRotConePickup);
+        moveGripperJointPosition(Constants.JointRotationValues.JointRotConePickup * multiplier);
       }
       else{
-        moveGripperJointPosition(Constants.JointRotationValues.JointRotCubePickup);
+        moveGripperJointPosition(Constants.JointRotationValues.JointRotCubePickup* multiplier);
 
       }
       break;
 
       case STOWED_ADAPTIVE:
       if(GlobalVariables.gamePiece == 0){
-        moveGripperJointPosition(Constants.JointRotationValues.JointRotStowCone);
+        moveGripperJointPosition(Constants.JointRotationValues.JointRotStowCone* multiplier);
       }
       else{
-        moveGripperJointPosition(Constants.JointRotationValues.JointRotStowCube);
+        moveGripperJointPosition(Constants.JointRotationValues.JointRotStowCube* multiplier);
 
       }
       break;
@@ -529,18 +556,18 @@ public void homeGripperJointPos(){
       case GROUND_SCORE_ADAPTIVE: 
       if(GlobalVariables.robotDirection){
         if(GlobalVariables.gamePiece == 0){
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotForLowCone);
+          moveGripperJointPosition(Constants.JointRotationValues.JointRotForLowCone* multiplier);
         }
         else{
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotForLowCube);
+          moveGripperJointPosition(Constants.JointRotationValues.JointRotForLowCube* multiplier);
         }
       }
       else{
         if(GlobalVariables.gamePiece == 0){
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotRevLowCone);
+          moveGripperJointPosition(Constants.JointRotationValues.JointRotRevLowCone* multiplier);
         }
         else{
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotRevLowCube);
+          moveGripperJointPosition(Constants.JointRotationValues.JointRotRevLowCube* multiplier);
 
         }
       }
@@ -550,18 +577,18 @@ public void homeGripperJointPos(){
       case SHELF_PICKUP_ADAPTIVE:
       if(GlobalVariables.robotDirection){
         if(GlobalVariables.gamePiece == 0){
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotForShelfCone);
+          moveGripperJointPosition(Constants.JointRotationValues.JointRotForShelfCone* multiplier);
         }
         else{
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotForShelfCube);
+          moveGripperJointPosition(Constants.JointRotationValues.JointRotForShelfCube* multiplier);
         }
       }
       else{
         if(GlobalVariables.gamePiece == 0){
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotRevShelfCone);
+          moveGripperJointPosition(Constants.JointRotationValues.JointRotRevShelfCone* multiplier);
         }
         else{
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotRevShelfCube);
+          moveGripperJointPosition(Constants.JointRotationValues.JointRotRevShelfCube* multiplier);
 
         }
       }
@@ -570,18 +597,18 @@ public void homeGripperJointPos(){
       case MID_SCORE_ADAPTIVE:
       if(GlobalVariables.robotDirection){
         if(GlobalVariables.gamePiece == 0){
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotForMidCone);
+          moveGripperJointPosition(Constants.JointRotationValues.JointRotForMidCone* multiplier);
         }
         else{
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotForMidCube);
+          moveGripperJointPosition(Constants.JointRotationValues.JointRotForMidCube* multiplier);
         }
       }
       else{
         if(GlobalVariables.gamePiece == 0){
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotRevMidCone);
+          moveGripperJointPosition(Constants.JointRotationValues.JointRotRevMidCone* multiplier);
         }
         else{
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotRevMidCube);
+          moveGripperJointPosition(Constants.JointRotationValues.JointRotRevMidCube* multiplier);
 
         }
       }
@@ -591,32 +618,34 @@ public void homeGripperJointPos(){
       case HIGH_SCORE_ADAPTIVE:
       if(GlobalVariables.robotDirection){
         if(GlobalVariables.gamePiece == 0){
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotForHighCone);
+          moveGripperJointPosition(Constants.JointRotationValues.JointRotForHighCone* multiplier);
         }
         else{
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotForHighCube);
+          moveGripperJointPosition(Constants.JointRotationValues.JointRotForHighCube* multiplier);
         }
       }
       else{
         if(GlobalVariables.gamePiece == 0){
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotRevHighCone);
+          moveGripperJointPosition(Constants.JointRotationValues.JointRotRevHighCone* multiplier);
         }
         else{
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotRevHighCube);
+          moveGripperJointPosition(Constants.JointRotationValues.JointRotRevHighCube* multiplier);
 
         }
       }
      
       break;
 
-    
+      case FRAME_PERIMETER:
+        moveGripperJointPosition(Constants.JointRotationValues.framePerimeter * multiplier);
+      break;
 
       default:
       if(GlobalVariables.gamePiece == 0){
-        moveGripperJointPosition(Constants.JointRotationValues.JointRotStowCone);
+        moveGripperJointPosition(Constants.JointRotationValues.JointRotStowCone* multiplier);
       }
       else{
-        moveGripperJointPosition(Constants.JointRotationValues.JointRotStowCube);
+        moveGripperJointPosition(Constants.JointRotationValues.JointRotStowCube* multiplier);
 
       }
       break;

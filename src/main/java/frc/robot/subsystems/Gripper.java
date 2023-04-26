@@ -36,7 +36,7 @@ public class Gripper extends SubsystemBase {
 
 
 
-    distanceSensor = new Rev2mDistanceSensor(Port.kMXP);
+    distanceSensor = new Rev2mDistanceSensor(Port.kMXP); 
     distanceSensor.setAutomaticMode(true);
 
   }

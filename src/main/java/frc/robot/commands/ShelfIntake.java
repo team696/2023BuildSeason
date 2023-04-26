@@ -13,10 +13,10 @@ import frc.robot.subsystems.Gripper;
 public class ShelfIntake extends CommandBase {
   /** Creates a new AdaptiveArmMovement. */
   ArmSub armSub;
-  Gripper gripper;
-  public ShelfIntake(ArmSub armSub, Gripper gripper) {
+
+  public ShelfIntake(ArmSub armSub) {
     this.armSub = armSub;
-    this.gripper = gripper;
+   
     addRequirements(armSub);
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -37,35 +37,35 @@ public class ShelfIntake extends CommandBase {
         armSub.armExtendPresetPositions(ArmPositions.SHELF_PICKUP_ADAPTIVE);
       }
 
-      if(GlobalVariables.gamePiece == 0){
-        if((gripper.getDistanceSensorDist() <= 12)){
-          gripper.moveGripper(0);
+      // if(GlobalVariables.gamePiece == 0){
+      //   if((gripper.getDistanceSensorDist() <= 12)){
+      //     gripper.moveGripper(0);
     
-          }
-          else{
-            gripper.moveGripper(-1);
+      //     }
+      //     else{
+      //       gripper.moveGripper(-1);
     
-          }
-      }
-      else{
-        if((gripper.getDistanceSensorDist() <= 12)){
-          gripper.moveGripper(0);
+      //     }
+      // }
+      // else{
+      //   if((gripper.getDistanceSensorDist() <= 12)){
+      //     gripper.moveGripper(0);
   
-          }
-          else{
-            gripper.moveGripper(0.8);
+      //     }
+      //     else{
+      //       gripper.moveGripper(0.8);
   
-          }
+      //     }
       }
 
       
 
-  }
+  // }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    gripper.moveGripper(0);
+    // gripper.moveGripper(0);
 
   }
 

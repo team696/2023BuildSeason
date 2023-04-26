@@ -25,14 +25,15 @@ public class AdaptiveOuttake extends CommandBase {
   @Override
   public void execute() {
     if(GlobalVariables.gamePiece == 0){
-      gripper.moveGripper(1);
+      gripper.moveGripper(0.5);
     }
     else{
-      gripper.moveGripper(-1);
+      gripper.moveGripper(-0.6);
     }
   }
 
   // Called once the command ends or is interrupted.
+
   @Override
   public void end(boolean interrupted) {
     gripper.moveGripper(0);

@@ -55,10 +55,10 @@ public final class Constants {
     public static final double armRotForConePickup = 3;
     public static final double armRotForCubePickup = 3;
 
-    public static final double armRotForShelfCone = 120;
+    public static final double armRotForShelfCone = 105;//120;
     public static final double armRotForShelfCube = 110;
 
-    public static final double armRotRevHighCone = 138;
+    public static final double armRotRevHighCone = 141;
     public static final double armRotRevHighCube = 145;
 
     public static final double armRotRevMidCone = 135;
@@ -70,13 +70,14 @@ public final class Constants {
     public static final double armRotRevConePickup = 180;
     public static final double armRotRevCubePickup = 170;
     
-    public static final double armRotRevShelfCone = 81;
+    public static final double armRotRevShelfCone = 95;//81;
     public static final double armRotRevShelfCube = 120;
 
+    public static final double framePerimeter = 85;
     }
 
     public static final class ArmExtendValues {
-        public static final double armExtendStow = 0;
+        public static final double armExtendStow = 500;
 
         public static final double armExtendConePickup = 7000;
         public static final double armExtendCubePickup = 7000;
@@ -94,11 +95,11 @@ public final class Constants {
         public static final double armExtendForConePickup = 7000;
         public static final double armExtendForCubePickup = 7000;
 
-        public static final double armExtendForShelfCone = 41000;
+        public static final double armExtendForShelfCone = 0;//41000;
         public static final double armExtendForShelfCube = 41000;
 
 
-        public static final double armExtendRevHighCone = 48000;
+        public static final double armExtendRevHighCone = 52000;
         public static final double armExtendRevHighCube = 39000;
 
         public static final double armExtendRevMidCone = 22000;
@@ -107,8 +108,11 @@ public final class Constants {
         public static final double armExtendRevLowCone = 0;
         public static final double armExtendRevLowCube = 0;
 
-        public static final double armExtendRevShelfCone = 43000;
+        public static final double armExtendRevShelfCone = 0;//43000;
         public static final double armExtendRevShelfCube = 43000;
+
+        public static final double framePerimeter = 0;
+
     }
 
     public static final class JointRotationValues {
@@ -116,7 +120,7 @@ public final class Constants {
         public static final double JointRotStowCube = 1000;
 
         public static final double JointRotConePickup = 11000;
-        public static final double JointRotCubePickup = 9000;
+        public static final double JointRotCubePickup = 10000;
         
 
         public static final double JointRotForHighCone = 16000;
@@ -126,27 +130,30 @@ public final class Constants {
         public static final double JointRotForMidCube = 17000
         ;
 
-        public static final double JointRotForLowCone = 17000;
-        public static final double JointRotForLowCube = 6000;
+        public static final double JointRotForLowCone = 20000;
+        public static final double JointRotForLowCube = 12000;
 
         public static final double JointRotForConePickup = 11000;
-        public static final double JointRotForCubePickup = 9000;
+        public static final double JointRotForCubePickup = 8000;
 
-        public static final double JointRotForShelfCone = 1500;
+        public static final double JointRotForShelfCone = 8500;//1500;
         public static final double JointRotForShelfCube = 9000;
 
 
-        public static final double JointRotRevHighCone = 11500;
+        public static final double JointRotRevHighCone = 12000;
         public static final double JointRotRevHighCube = 2000;
 
         public static final double JointRotRevMidCone = 7500;
         public static final double JointRotRevMidCube = 4000;
-
+  
         public static final double JointRotRevLowCone = 1000;
         public static final double JointRotRevLowCube = 0;
 
-        public static final double JointRotRevShelfCone = 46000;
+        public static final double JointRotRevShelfCone = 43200;//46000;
         public static final double JointRotRevShelfCube = 0;
+
+        public static final double framePerimeter = 0;
+
     }
 
 
@@ -162,7 +169,7 @@ public final class Constants {
         public static final double wheelDiameter = Units.inchesToMeters(3.94);
         public static final double wheelCircumference = wheelDiameter * Math.PI;
 
-        public static final double openLoopRamp = 0.0;
+        public static final double openLoopRamp = 0.05;
         public static final double closedLoopRamp =  0.61 ;
 
         public static final double driveGearRatio = (6.12 / 1.0); //8:14:1
@@ -204,7 +211,7 @@ public final class Constants {
 
         /* Swerve Profiling Values */
         public static final double maxSpeed = 10; //meters per second
-        public static final double maxAngularVelocity = 11.5;
+        public static final double maxAngularVelocity = 16;
 
         /* Neutral Modes */
         public static final NeutralMode angleNeutralMode = NeutralMode.Coast;
@@ -223,7 +230,7 @@ public final class Constants {
             public static final int driveMotorID = /* 2 */5;
             public static final int angleMotorID = /* 1 */4;
             public static final int canCoderID = /* 3 */6;
-            public static final double angleOffset = /* 274; */  15.82;
+            public static final double angleOffset = /* 274; */  15.22;
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -233,7 +240,7 @@ public final class Constants {
             public static final int driveMotorID = /* 11 */11;
             public static final int angleMotorID = /* 10 */10;
             public static final int canCoderID = /* 12 */12;
-            public static final double angleOffset = /* 240 ; */ 218.67;
+            public static final double angleOffset = /* 240 ; */ 219.02;
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -253,7 +260,7 @@ public final class Constants {
             public static final int driveMotorID = /* 8 */8;
             public static final int angleMotorID = /* 7 */7;
             public static final int canCoderID = /* 9 */9;
-            public static final double angleOffset = /* 305 ; */ 285.73;
+            public static final double angleOffset = /* 305 ; */ 285.53;
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
