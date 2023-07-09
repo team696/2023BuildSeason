@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Gripper extends SubsystemBase {
 
-  public TalonFX gripperFalcon;
+  private TalonFX gripperFalcon;
  // private Rev2mDistanceSensor distanceSensor;
 
   /** Creates a new Gripper. */

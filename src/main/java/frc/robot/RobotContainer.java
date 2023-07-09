@@ -34,7 +34,6 @@ public class RobotContainer {
   public final CANdleSub candle = new CANdleSub();
 
   /* Controllers */
-  
   private final Joystick driver = new Joystick(1);
   private final Joystick joystickPanel = new Joystick(0);
   public  final Joystick operatorPanel = new Joystick(2);

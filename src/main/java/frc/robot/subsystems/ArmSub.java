@@ -4,7 +4,10 @@
 
 package frc.robot.subsystems;
 
+import java.util.HashMap;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -23,52 +26,69 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.math.Conversions;
 import frc.robot.Constants;
-import frc.robot.GlobalVariables;
 import frc.robot.Constants.ArmPositions;
+import frc.robot.GlobalVariables;
 
 public class ArmSub extends SubsystemBase {
-  public TalonFX leftArm;
-  public TalonFX rightArm; 
+  private TalonFX leftArm;
+  private TalonFX rightArm; 
 
-  public TalonFX telescopeArm;
+  private TalonFX telescopeArm;
 
-  public TalonFX gripperJointFalcon;
+  private TalonFX gripperJointFalcon;
 
 
-  public ProfiledPIDController armPID;
-  public PIDController jointPID;
-  public PIDController telescopePID;
-  public CANCoder testCanCoder;
+  private ProfiledPIDController armPID;
+  private CANCoder testCanCoder;
 
-  public PIDController slowArmPID;
+  private PIDController slowArmPID;
 
   private SupplyCurrentLimitConfiguration limit;
 
-  public double rotMaxSpeedFor;
-  public double rotMaxSpeedRev;
+  private double rotMaxSpeedFor = 1;
+  private double rotMaxSpeedRev = 0.6;
 
-  public double telMaxSpeedFor;
-  public double telMaxSpeedRev;
+  private double telMaxSpeedFor = 1;
+  private double telMaxSpeedRev = 1;
   
-  public double multiplier;
+  private final double multiplier = 0.667;
 
   public double armExtendGoal = 0;
   public double armRotGoal = 100;
 
   public boolean robotDirection = false;
 
+  private double testFF = 0;
+                              //frd/rev, cone/cube
+  private HashMap<ArmPositions, double[][]> ShoulderPos = new HashMap<>();
+  private void addPostoShoulder(ArmPositions pos, double w, double x, double y, double z) {
+    ShoulderPos.put(pos, new double[][] { 
+      {w,x}, 
+      {y,z}
+    });
+  }
+
+  private HashMap<ArmPositions, double[][]> ExtendPos = new HashMap<>();
+  private void addPostoExtend(ArmPositions pos, double w, double x, double y, double z) {
+    ExtendPos.put(pos, new double[][] { 
+      {w,x}, 
+      {y,z}
+    });
+  }
+
+  private HashMap<ArmPositions, double[][]> JointPos = new HashMap<>();
+  private void addPostoJoint(ArmPositions pos, double w, double x, double y, double z) {
+    JointPos.put(pos, new double[][] { 
+      {w,x}, 
+      {y,z}
+    });
+  }
   /** Creates a new ArmSub. */
   public ArmSub() {
     testCanCoder = new CANCoder(14, "Karen");
     testCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
     testCanCoder.configSensorDirection(true);
     testCanCoder.configMagnetOffset(150);
-
-    multiplier = 0.677;
-    
-
-    rotMaxSpeedFor = 1;
-    rotMaxSpeedRev = 0.6;
 
     limit = new SupplyCurrentLimitConfiguration(true, 30, 30, 0);
 
@@ -79,9 +99,6 @@ public class ArmSub extends SubsystemBase {
     slowArmPID = new PIDController(0.007, 0.000, 0.000);
     slowArmPID.setTolerance(0.1);
     slowArmPID.enableContinuousInput(0, 360);
-
-    
-    
 
     leftArm = new WPI_TalonFX(20, "Karen");
     rightArm = new WPI_TalonFX(21, "Karen");
@@ -100,8 +117,6 @@ public class ArmSub extends SubsystemBase {
       leftArm.setInverted(InvertType.InvertMotorOutput);
       leftArm.configRemoteFeedbackFilter(testCanCoder, 0);
       leftArm.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
- 
-
 
     rightArm.configFactoryDefault();
       rightArm.configPeakOutputForward(rotMaxSpeedFor);
@@ -114,9 +129,6 @@ public class ArmSub extends SubsystemBase {
       rightArm.config_kF(0, 0.06);
       rightArm.setNeutralMode(NeutralMode.Brake);
       rightArm.follow(leftArm);
-
-      telMaxSpeedFor = 1;
-      telMaxSpeedRev = 1;
     
       telescopeArm.configFactoryDefault();
       telescopeArm.configPeakOutputForward(telMaxSpeedFor);
@@ -152,6 +164,30 @@ public class ArmSub extends SubsystemBase {
       
       gripperJointFalcon.configSupplyCurrentLimit(limit);
 
+      addPostoShoulder(ArmPositions.GROUND_PICKUP_ADAPTIVE, Constants.ArmRotationValues.armRotForConePickup, Constants.ArmRotationValues.armRotForCubePickup, Constants.ArmRotationValues.armRotForConePickup, Constants.ArmRotationValues.armRotForCubePickup);
+      addPostoShoulder(ArmPositions.STOWED_ADAPTIVE, Constants.ArmRotationValues.armRotStow, Constants.ArmRotationValues.armRotStow, Constants.ArmRotationValues.armRotStow, Constants.ArmRotationValues.armRotStow);
+      addPostoShoulder(ArmPositions.GROUND_SCORE_ADAPTIVE, Constants.ArmRotationValues.armRotForLowCone, Constants.ArmRotationValues.armRotForLowCube,Constants.ArmRotationValues.armRotRevLowCone,Constants.ArmRotationValues.armRotRevLowCube);
+      addPostoShoulder(ArmPositions.SHELF_PICKUP_ADAPTIVE,  Constants.ArmRotationValues.armRotForShelfCone, Constants.ArmRotationValues.armRotForShelfCube, Constants.ArmRotationValues.armRotRevShelfCone, Constants.ArmRotationValues.armRotRevShelfCube);
+      addPostoShoulder(ArmPositions.MID_SCORE_ADAPTIVE ,Constants.ArmRotationValues.armRotForMidCone ,Constants.ArmRotationValues.armRotForMidCube ,Constants.ArmRotationValues.armRotRevMidCone ,Constants.ArmRotationValues.armRotRevMidCube );
+      addPostoShoulder(ArmPositions.HIGH_SCORE_ADAPTIVE ,Constants.ArmRotationValues.armRotForHighCone, Constants.ArmRotationValues.armRotForHighCube, Constants.ArmRotationValues.armRotRevHighCone, Constants.ArmRotationValues.armRotRevHighCube);
+      addPostoShoulder(ArmPositions.FRAME_PERIMETER ,Constants.ArmRotationValues.framePerimeter ,Constants.ArmRotationValues.framePerimeter ,Constants.ArmRotationValues.framePerimeter ,Constants.ArmRotationValues.framePerimeter );  
+
+      addPostoExtend  (ArmPositions.GROUND_PICKUP_ADAPTIVE, Constants.ArmExtendValues.armExtendConePickup, Constants.ArmExtendValues.armExtendCubePickup, Constants.ArmExtendValues.armExtendConePickup, Constants.ArmExtendValues.armExtendCubePickup);
+      addPostoExtend  (ArmPositions.STOWED_ADAPTIVE, Constants.ArmExtendValues.armExtendStow, Constants.ArmExtendValues.armExtendStow, Constants.ArmExtendValues.armExtendStow, Constants.ArmExtendValues.armExtendStow);
+      addPostoExtend  (ArmPositions.GROUND_SCORE_ADAPTIVE, Constants.ArmExtendValues.armExtendForLowCone, Constants.ArmExtendValues.armExtendForLowCube, Constants.ArmExtendValues.armExtendRevLowCone, Constants.ArmExtendValues.armExtendRevLowCube);
+      addPostoExtend  (ArmPositions.SHELF_PICKUP_ADAPTIVE, Constants.ArmExtendValues.armExtendForShelfCone, Constants.ArmExtendValues.armExtendForShelfCube, Constants.ArmExtendValues.armExtendRevShelfCone, Constants.ArmExtendValues.armExtendRevShelfCube);
+      addPostoExtend  (ArmPositions.MID_SCORE_ADAPTIVE, Constants.ArmExtendValues.armExtendForMidCone, Constants.ArmExtendValues.armExtendForMidCube, Constants.ArmExtendValues.armExtendRevMidCone, Constants.ArmExtendValues.armExtendRevMidCube);
+      addPostoExtend  (ArmPositions.HIGH_SCORE_ADAPTIVE, Constants.ArmExtendValues.armExtendForHighCone, Constants.ArmExtendValues.armExtendForHighCube, Constants.ArmExtendValues.armExtendRevHighCone, Constants.ArmExtendValues.armExtendRevHighCube);
+      addPostoExtend  (ArmPositions.FRAME_PERIMETER, Constants.ArmExtendValues.framePerimeter, Constants.ArmExtendValues.framePerimeter, Constants.ArmExtendValues.framePerimeter, Constants.ArmExtendValues.framePerimeter);
+      
+      addPostoJoint   (ArmPositions.GROUND_PICKUP_ADAPTIVE, Constants.JointRotationValues.JointRotConePickup, Constants.JointRotationValues.JointRotCubePickup, Constants.JointRotationValues.JointRotConePickup, Constants.JointRotationValues.JointRotCubePickup);
+      addPostoJoint   (ArmPositions.STOWED_ADAPTIVE, Constants.JointRotationValues.JointRotStowCone, Constants.JointRotationValues.JointRotStowCube, Constants.JointRotationValues.JointRotStowCone, Constants.JointRotationValues.JointRotStowCube);
+      addPostoJoint   (ArmPositions.GROUND_SCORE_ADAPTIVE, Constants.JointRotationValues.JointRotForLowCone, Constants.JointRotationValues.JointRotForLowCube, Constants.JointRotationValues.JointRotRevLowCone, Constants.JointRotationValues.JointRotRevLowCube);
+      addPostoJoint   (ArmPositions.SHELF_PICKUP_ADAPTIVE, Constants.JointRotationValues.JointRotForShelfCone, Constants.JointRotationValues.JointRotForShelfCube, Constants.JointRotationValues.JointRotRevShelfCone, Constants.JointRotationValues.JointRotRevShelfCube);
+      addPostoJoint   (ArmPositions.MID_SCORE_ADAPTIVE, Constants.JointRotationValues.JointRotForMidCone, Constants.JointRotationValues.JointRotForMidCube, Constants.JointRotationValues.JointRotRevMidCone, Constants.JointRotationValues.JointRotRevMidCube);
+      addPostoJoint   (ArmPositions.HIGH_SCORE_ADAPTIVE, Constants.JointRotationValues.JointRotForHighCone, Constants.JointRotationValues.JointRotForHighCube, Constants.JointRotationValues.JointRotRevHighCone, Constants.JointRotationValues.JointRotRevHighCube);
+      addPostoJoint   (ArmPositions.FRAME_PERIMETER, Constants.JointRotationValues.framePerimeter, Constants.JointRotationValues.framePerimeter, Constants.JointRotationValues.framePerimeter, Constants.JointRotationValues.framePerimeter);
+  
       SmartDashboard.putData(this);
   }
 
@@ -163,7 +199,7 @@ public class ArmSub extends SubsystemBase {
  
 
  public void moveRotArmPosition(double degrees){
-  leftArm.set(ControlMode.PercentOutput, armPID.calculate(testCanCoder.getAbsolutePosition(), degrees));
+  leftArm.set(ControlMode.PercentOutput, armPID.calculate(testCanCoder.getAbsolutePosition(), degrees), DemandType.ArbitraryFeedForward, testFF);
   armRotGoal = degrees;
  }
 
@@ -195,15 +231,13 @@ public void moveTelescopeArmPosition(double position){
 }
 
 public void moveGripperJointPosition(double position){
-  gripperJointFalcon.set(TalonFXControlMode.MotionMagic, position);
+  gripperJointFalcon.set(TalonFXControlMode.MotionMagic, position * multiplier);
 }
 
 
 
 public void moveGripperJointPercentOutput(double percent ){
-  // gripperJointNeo.set(percent);
   gripperJointFalcon.set(TalonFXControlMode.PercentOutput, percent);
-
 }
 
 public double getTelescopePos(){
@@ -232,344 +266,15 @@ public void homeGripperJointPos(){
  * @param position The dedicated position enum, current options are GROUND_PICKUP, STOWED, GROUND_SCORE, MID_SCORE, HIGH_SCORE, and SHELF_PICKUP
   */
   public void armRotPresetPositions(ArmPositions position){
-    switch(position){
-
-      case GROUND_PICKUP_ADAPTIVE:
-      if(GlobalVariables.gamePiece == 0){
-        moveRotArmPosition(Constants.ArmRotationValues.armRotForConePickup);
-      }
-      else{
-        moveRotArmPosition(Constants.ArmRotationValues.armRotForCubePickup);
-
-      }
-      break;
-
-      case STOWED_ADAPTIVE:
-      if(robotDirection){
-      moveRotArmPositionSlow(Constants.ArmRotationValues.armRotStow);
-      }
-      else{
-        moveRotArmPosition(Constants.ArmRotationValues.armRotStow);
-      }
-      break;
-
-      case GROUND_SCORE_ADAPTIVE: 
-      if(robotDirection){
-        if(GlobalVariables.gamePiece == 0){
-          moveRotArmPosition(Constants.ArmRotationValues.armRotForLowCone);
-
-        }
-        else{
-          moveRotArmPosition(Constants.ArmRotationValues.armRotForLowCube);
-
-        }
-      }
-      else{
-        if(GlobalVariables.gamePiece == 0){
-          moveRotArmPosition(Constants.ArmRotationValues.armRotRevLowCone);
-        }
-        else{
-          moveRotArmPosition(Constants.ArmRotationValues.armRotRevLowCube);
-        }
-      }
-      break;
-
-      case SHELF_PICKUP_ADAPTIVE:
-
-      if(robotDirection){
-        if(GlobalVariables.gamePiece == 0){
-          moveRotArmPosition(Constants.ArmRotationValues.armRotForShelfCone);
-        }
-        else{
-          moveRotArmPosition(Constants.ArmRotationValues.armRotForShelfCube);
-        }
-      }
-      else{
-        if(GlobalVariables.gamePiece == 0){
-          moveRotArmPosition(Constants.ArmRotationValues.armRotRevShelfCone);
-        }
-        else{
-          moveRotArmPosition(Constants.ArmRotationValues.armRotRevShelfCube);
-        }
-      }
-      break;
-
-      case MID_SCORE_ADAPTIVE:
-        if(robotDirection){
-          if(GlobalVariables.gamePiece == 0){
-            moveRotArmPosition(Constants.ArmRotationValues.armRotForMidCone);
-          }
-          else{
-            moveRotArmPosition(Constants.ArmRotationValues.armRotForMidCube);
-          }
-        }
-        else{
-          if(GlobalVariables.gamePiece == 0){
-            moveRotArmPosition(Constants.ArmRotationValues.armRotRevMidCone);
-          }
-          else{
-            moveRotArmPosition(Constants.ArmRotationValues.armRotRevMidCube);
-          }
-        }
-      break;
-
-      case HIGH_SCORE_ADAPTIVE:
-      if(robotDirection){
-        if(GlobalVariables.gamePiece == 0){
-          moveRotArmPosition(Constants.ArmRotationValues.armRotForHighCone);
-        }
-        else{
-          moveRotArmPosition(Constants.ArmRotationValues.armRotForHighCube);
-        }
-      }
-      else{
-        if(GlobalVariables.gamePiece == 0){
-          moveRotArmPosition( Constants.ArmRotationValues.armRotRevHighCone);
-        }
-        else{
-          moveRotArmPosition(Constants.ArmRotationValues.armRotRevHighCube);
-        }
-      }
-      break;
-
-      case FRAME_PERIMETER:
-        moveRotArmPosition(Constants.ArmRotationValues.framePerimeter);
-      break;
-
-      default:
-      moveRotArmPosition(Constants.ArmRotationValues.armRotStow);
-      break;
-    }
+    moveRotArmPosition(ShoulderPos.get(position)[robotDirection ? 1 : 0][GlobalVariables.gamePiece]);
   }
 
   public void armExtendPresetPositions(ArmPositions position){
-    switch(position){
-
-      case GROUND_PICKUP_ADAPTIVE:
-      if(GlobalVariables.gamePiece == 0){
-        moveTelescopeArmPosition(Constants.ArmExtendValues.armExtendConePickup);
-      }
-      else{
-        moveTelescopeArmPosition(Constants.ArmExtendValues.armExtendCubePickup);
-
-      }
-      break;
-
-      case STOWED_ADAPTIVE:
-      moveTelescopeArmPosition(Constants.ArmExtendValues.armExtendStow);
-      break;
-
-      case GROUND_SCORE_ADAPTIVE: 
-      if(robotDirection){
-        if(GlobalVariables.gamePiece == 0){
-          moveTelescopeArmPosition(Constants.ArmExtendValues.armExtendForLowCone);
-        }
-        else{
-          moveTelescopeArmPosition(Constants.ArmExtendValues.armExtendForLowCube);
-        }
-      }
-      else{
-        if(GlobalVariables.gamePiece == 0){
-          moveTelescopeArmPosition(Constants.ArmExtendValues.armExtendRevLowCone);
-        }
-        else{
-          moveTelescopeArmPosition(Constants.ArmExtendValues.armExtendRevLowCube);
-        }
-      }
-     
-      break;
-
-      case SHELF_PICKUP_ADAPTIVE:
-      if(robotDirection){
-        if(GlobalVariables.gamePiece == 0){
-          moveTelescopeArmPosition(Constants.ArmExtendValues.armExtendForShelfCone);
-        }
-        else{
-          moveTelescopeArmPosition(Constants.ArmExtendValues.armExtendForShelfCube);
-        }
-      }
-      else{
-        if(GlobalVariables.gamePiece == 0){
-          moveTelescopeArmPosition(Constants.ArmExtendValues.armExtendRevShelfCone);
-        }
-        else{
-          moveTelescopeArmPosition(Constants.ArmExtendValues.armExtendRevShelfCube);
-        }
-      }
-      break;
-
-      case MID_SCORE_ADAPTIVE:
-      if(robotDirection){
-        if(GlobalVariables.gamePiece == 0){
-          moveTelescopeArmPosition(Constants.ArmExtendValues.armExtendForMidCone);
-        }
-        else{
-          moveTelescopeArmPosition(Constants.ArmExtendValues.armExtendForMidCube);
-        }
-      }
-      else{
-        if(GlobalVariables.gamePiece == 0){
-          moveTelescopeArmPosition(Constants.ArmExtendValues.armExtendRevMidCone);
-        }
-        else{
-          moveTelescopeArmPosition(Constants.ArmExtendValues.armExtendRevMidCube);
-
-        }
-      }
-     
-      break;
-
-      case HIGH_SCORE_ADAPTIVE:
-      if(robotDirection){
-        if(GlobalVariables.gamePiece == 0){
-          moveTelescopeArmPosition(Constants.ArmExtendValues.armExtendForHighCone);
-        }
-        else{
-          moveTelescopeArmPosition(Constants.ArmExtendValues.armExtendForHighCube);
-        }
-      }
-      else{
-        if(GlobalVariables.gamePiece == 0){
-          moveTelescopeArmPosition(Constants.ArmExtendValues.armExtendRevHighCone);
-        }
-        else{
-          moveTelescopeArmPosition(Constants.ArmExtendValues.armExtendRevHighCube);
-        }
-      }
-     
-      break;
-
-      case FRAME_PERIMETER:
-        moveTelescopeArmPosition(Constants.ArmExtendValues.framePerimeter);
-              break;
-
-      default:
-      moveTelescopeArmPosition(Constants.ArmExtendValues.armExtendStow);
-
-      break;
-    }
+    moveTelescopeArmPosition(ExtendPos.get(position)[robotDirection ? 1 : 0][GlobalVariables.gamePiece]);
   }
 
   public void jointRotPresetPositions(ArmPositions position){
-    switch(position){
-
-      case GROUND_PICKUP_ADAPTIVE:
-      if(GlobalVariables.gamePiece == 0){
-        moveGripperJointPosition(Constants.JointRotationValues.JointRotConePickup * multiplier);
-      }
-      else{
-        moveGripperJointPosition(Constants.JointRotationValues.JointRotCubePickup* multiplier);
-
-      }
-      break;
-
-      case STOWED_ADAPTIVE:
-      if(GlobalVariables.gamePiece == 0){
-        moveGripperJointPosition(Constants.JointRotationValues.JointRotStowCone* multiplier);
-      }
-      else{
-        moveGripperJointPosition(Constants.JointRotationValues.JointRotStowCube* multiplier);
-
-      }
-      break;
-
-      case GROUND_SCORE_ADAPTIVE: 
-      if(robotDirection){
-        if(GlobalVariables.gamePiece == 0){
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotForLowCone* multiplier);
-        }
-        else{
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotForLowCube* multiplier);
-        }
-      }
-      else{
-        if(GlobalVariables.gamePiece == 0){
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotRevLowCone* multiplier);
-        }
-        else{
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotRevLowCube* multiplier);
-
-        }
-      }
-     
-      break;
-
-      case SHELF_PICKUP_ADAPTIVE:
-      if(robotDirection){
-        if(GlobalVariables.gamePiece == 0){
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotForShelfCone* multiplier);
-        }
-        else{
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotForShelfCube* multiplier);
-        }
-      }
-      else{
-        if(GlobalVariables.gamePiece == 0){
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotRevShelfCone* multiplier);
-        }
-        else{
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotRevShelfCube* multiplier);
-
-        }
-      }
-      break;
-
-      case MID_SCORE_ADAPTIVE:
-      if(robotDirection){
-        if(GlobalVariables.gamePiece == 0){
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotForMidCone* multiplier);
-        }
-        else{
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotForMidCube* multiplier);
-        }
-      }
-      else{
-        if(GlobalVariables.gamePiece == 0){
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotRevMidCone* multiplier);
-        }
-        else{
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotRevMidCube* multiplier);
-
-        }
-      }
-     
-      break;
-
-      case HIGH_SCORE_ADAPTIVE:
-      if(robotDirection){
-        if(GlobalVariables.gamePiece == 0){
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotForHighCone* multiplier);
-        }
-        else{
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotForHighCube* multiplier);
-        }
-      }
-      else{
-        if(GlobalVariables.gamePiece == 0){
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotRevHighCone* multiplier);
-        }
-        else{
-          moveGripperJointPosition(Constants.JointRotationValues.JointRotRevHighCube* multiplier);
-
-        }
-      }
-     
-      break;
-
-      case FRAME_PERIMETER:
-        moveGripperJointPosition(Constants.JointRotationValues.framePerimeter * multiplier);
-      break;
-
-      default:
-      if(GlobalVariables.gamePiece == 0){
-        moveGripperJointPosition(Constants.JointRotationValues.JointRotStowCone* multiplier);
-      }
-      else{
-        moveGripperJointPosition(Constants.JointRotationValues.JointRotStowCube* multiplier);
-
-      }
-      break;
-    }
+    moveGripperJointPosition(JointPos.get(position)[robotDirection ? 1 : 0][GlobalVariables.gamePiece] * multiplier);
   }
   
 /**
@@ -617,5 +322,7 @@ public void homeGripperJointPos(){
     builder.addDoubleProperty("Joint Speed", ()->gripperJointFalcon.getSelectedSensorVelocity(), null);
 
     SmartDashboard.putData("ArmPID", armPID);
+    builder.addDoubleProperty("Arm FF", ()->testFF, (t)->testFF=t);
+    builder.setActuator(true);
   }
 } 

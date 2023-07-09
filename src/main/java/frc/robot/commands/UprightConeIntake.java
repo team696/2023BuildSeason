@@ -26,7 +26,7 @@ public class UprightConeIntake extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-      armSub.moveGripperJointPosition(47000 * armSub.multiplier);
+      armSub.moveGripperJointPosition(47000);
       armSub.moveTelescopeArmPosition(0);
       armSub.moveRotArmPosition(47);
       gripper.moveGripper(-1);

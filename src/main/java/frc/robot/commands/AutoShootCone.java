@@ -38,7 +38,7 @@ public class AutoShootCone extends CommandBase {
   public void execute() {
    
       armSub.moveRotArmPosition(90);
-      armSub.moveGripperJointPosition(11000*armSub.multiplier);
+      armSub.moveGripperJointPosition(11000);
 
       if(armSub.getArmEncoderPosition() >= 80){
        

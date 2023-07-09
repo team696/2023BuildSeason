@@ -28,12 +28,12 @@ public class SingleSubstationIntake extends CommandBase {
   @Override
   public void execute() {
     if(GlobalVariables.gamePiece == 0){
-      armSub.moveGripperJointPosition(25000*armSub.multiplier);
+      armSub.moveGripperJointPosition(25000);
       armSub.moveTelescopeArmPosition(0);
       armSub.moveRotArmPosition(40);
       gripper.moveGripper(-1);
     } else{
-      armSub.moveGripperJointPosition(13000);
+      armSub.moveGripperJointPosition(19490);
       armSub.moveTelescopeArmPosition(0);
       armSub.moveRotArmPosition(40);
       gripper.moveGripper(0.8);

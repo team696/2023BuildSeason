@@ -37,20 +37,20 @@ import edu.wpi.first.apriltag.AprilTagFields;
 public class Swerve extends SubsystemBase {
     public Field2d m_fieldSim = new Field2d();
    
-    public AHRS gyro;
-    public ProfiledPIDController rotatePID;
-    public PIDController aimPID;
+    private AHRS gyro;
+    private ProfiledPIDController rotatePID;
+    private PIDController aimPID;
 
     private  SwerveModule m_frontLeft = new SwerveModule(0, Constants.Swerve.Mod0.constants);
     private  SwerveModule m_frontRight = new SwerveModule(1, Constants.Swerve.Mod1.constants);
     private  SwerveModule m_backLeft = new SwerveModule(2, Constants.Swerve.Mod2.constants);
     private  SwerveModule m_backRight = new SwerveModule(3, Constants.Swerve.Mod3.constants);
-    public SwerveModule[] mSwerveMods = { m_frontLeft, m_frontRight, m_backLeft, m_backRight };
+    private SwerveModule[] mSwerveMods = { m_frontLeft, m_frontRight, m_backLeft, m_backRight };
 
     private  SwerveDrivePoseEstimator m_poseEstimator;
 
-    public PhotonCamera cams[];
-    public PhotonPoseEstimator estimators[];
+    private PhotonCamera cams[];
+    private PhotonPoseEstimator estimators[];
 
     private boolean[] doCamOdometry = {true, true, true};
 

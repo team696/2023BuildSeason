@@ -38,7 +38,7 @@ public class AutoGroundIntake extends CommandBase {
   @Override
   public void execute() {
     if(gamePiece == 0){
-      armSub.moveGripperJointPosition(31000*armSub.multiplier);
+      armSub.moveGripperJointPosition(31000);
       armSub.moveTelescopeArmPosition(8000);
       armSub.moveRotArmPosition(1);
      /*  if((gripper.getDistanceSensorDist() <= 12)){
@@ -53,7 +53,7 @@ public class AutoGroundIntake extends CommandBase {
     }
 
     else{
-      armSub.moveGripperJointPosition(22000*armSub.multiplier);
+      armSub.moveGripperJointPosition(22000);
       armSub.moveTelescopeArmPosition(8000);
       armSub.moveRotArmPosition(1);
      /*  if((gripper.getDistanceSensorDist() <= 12)){
