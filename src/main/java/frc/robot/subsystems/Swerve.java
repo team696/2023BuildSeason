@@ -54,6 +54,8 @@ public class Swerve extends SubsystemBase {
 
     private boolean[] doCamOdometry = {true, true, true};
 
+    public double gyroOffset = 0;
+
     public Swerve() {
         gyro  = new AHRS();
         aimPID = new PIDController(0.05, 0, 0);
@@ -165,11 +167,12 @@ public class Swerve extends SubsystemBase {
 
     public void zeroGyro(){
         gyro.zeroYaw();
+        gyroOffset = 0;
     }
 
 
     public double db_getYaw() {
-        return 360.0 - gyro.getYaw();
+        return (-1 * gyro.getYaw() + 180 + gyroOffset) % 360 - 180;
     }
 
     public Rotation2d getYaw() {
@@ -224,6 +227,7 @@ public class Swerve extends SubsystemBase {
             final int index = i;
             builder.addBooleanProperty("^Cam " + i, ()->doCamOdometry[index], (a) -> doCamOdometry[index] = a);
         }
+        builder.addDoubleProperty("Gyro", ()->db_getYaw(), null);
         SmartDashboard.putData("Field", m_fieldSim);
     }
 }

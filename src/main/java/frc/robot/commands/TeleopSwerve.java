@@ -91,7 +91,7 @@ public class TeleopSwerve extends CommandBase {
                 rAxis = 0;
             }
         } else {
-            rAxis = pidController.calculate(s_Swerve.db_getYaw(), Math.abs(s_Swerve.db_getYaw() - 180) < 90 ? 180 : 0);
+            rAxis = pidController.calculate(s_Swerve.db_getYaw(), Math.abs(s_Swerve.db_getYaw()) < 90 ? 180 : 0);
         }
         
         translation = new Translation2d(yAxis, xAxis).times(Constants.Swerve.maxSpeed);

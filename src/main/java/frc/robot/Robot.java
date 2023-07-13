@@ -20,9 +20,9 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.commands.AutoScore;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -42,6 +42,7 @@ public class Robot extends TimedRobot {
   boolean resetFlag = false;
   public static boolean isCOMP = false;
 
+  private Autos autos;
   @Override
   public void robotInit() {
     pdh = new PowerDistribution(1, ModuleType.kRev);
@@ -50,17 +51,21 @@ public class Robot extends TimedRobot {
     PortForwarder.add(5800, "photonvision.local", 5800);
 
     DriverStation.silenceJoystickConnectionWarning(true);
+
+    autos = new Autos(m_robotContainer);
   }
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-    if(m_robotContainer.s_Swerve.db_getYaw()>=90 || m_robotContainer.s_Swerve.db_getYaw() <= -90){
+    if(Math.abs(m_robotContainer.s_Swerve.db_getYaw())>=90){
       m_robotContainer.armSub.robotDirection = true;
   }
   else{
     m_robotContainer.armSub.robotDirection = false;
-  }  }
+  }  
+  SmartDashboard.putNumber("Timer", DriverStation.getMatchTime());
+}
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
@@ -84,24 +89,27 @@ public class Robot extends TimedRobot {
       m_robotContainer.armSub.homeGripperJointPos();
       m_robotContainer.armSub.homeTelescopePosition();
     }
+    m_robotContainer.s_Swerve.gyroOffset = -1 * m_robotContainer.s_Swerve.getPose().getRotation().getDegrees();
+    autos.setTraj();
+
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-
+    m_autonomousCommand = autos.get();
+    autos.setTraj();
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
     m_robotContainer.armSub.ArmBrakeMode(NeutralMode.Brake);
-
+    
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-
+    
   }
 
   @Override
@@ -111,7 +119,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    AutoScore.autoSelectTab();
+    //AutoScore.autoSelectTab();
+    m_robotContainer.s_Swerve.zeroGyro(); 
   }
 
   /** This function is called periodically during operator control. */

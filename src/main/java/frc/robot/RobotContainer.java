@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -13,6 +14,10 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
+import edu.wpi.first.math.trajectory.Trajectory.State;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StringSubscriber;
+import edu.wpi.first.networktables.StringTopic;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -65,16 +70,11 @@ public class RobotContainer {
   private final Trigger panelLED5 = new JoystickButton(operatorPanel, 1);
   private final Trigger panelLock = new JoystickButton(operatorPanel, 8);
 
- public SendableChooser<Command> m_chooser = new SendableChooser<>();
-  public RobotContainer() {
-    CONFIGUREAUTOSHIT();
-    
+  public RobotContainer() {    
     armSub.setDefaultCommand(new AdaptiveArmMovement(armSub, ArmPositions.STOWED_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     candle.setDefaultCommand(candle.setColorC(GlobalVariables.gamePiece == 0));
     gripper.setDefaultCommand(new ConstantHold(gripper));
     configureButtonBindings();
-
-    SmartDashboard.putData("AUTOS", m_chooser);
   }
   
   private void configureButtonBindings() {
@@ -101,66 +101,7 @@ public class RobotContainer {
 
     operatorPanel.setOutputs(Integer.MAX_VALUE);
   }
-
-  public Command getAutonomousCommand() {
-    return m_chooser.getSelected();
-  }
-
-  private void CONFIGUREAUTOSHIT() {
-    HashMap<String, Command> eventMap = new HashMap<>();
-    eventMap.put("marker1", new PrintCommand("Passed marker 1"));
-    eventMap.put("goarm", new AdaptiveArmMovement(armSub, ArmPositions.MID_SCORE_ADAPTIVE));
-    eventMap.put("stowarm", new AutoAdaptiveArmMovement(armSub, ArmPositions.STOWED_ADAPTIVE));
-    eventMap.put("placehigh", new AutoPlaceGamePiece(armSub, gripper, ArmPositions.HIGH_SCORE_ADAPTIVE));
-    eventMap.put("switchcone", new InstantCommand(() -> GlobalVariables.gamePiece = 0));
-    eventMap.put("switchcube", new InstantCommand(() -> GlobalVariables.gamePiece = 1));
-    eventMap.put("cubepickup", new AutoGroundIntake(armSub, gripper, 1) );
-    eventMap.put("conepickup", new AutoGroundIntake(armSub, gripper, 0) );
-    eventMap.put("placemid", new AutoPlaceGamePiece(armSub, gripper, ArmPositions.MID_SCORE_ADAPTIVE));
-    eventMap.put("holdstow", new AdaptiveArmMovement(armSub, ArmPositions.STOWED_ADAPTIVE));
-    eventMap.put("balance", new AutoBalanceStation(s_Swerve));
-    eventMap.put("placelow", new AutoPlaceGamePiece(armSub, gripper, ArmPositions.GROUND_SCORE_ADAPTIVE));
-    eventMap.put("shootcone", new AutoShootCone(armSub, gripper));
-  
-    final SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
-        s_Swerve::getPose, // Pose2d supplier
-        s_Swerve::resetOdometry, // Pose2d consumer, used to reset odometry at the beginning of auto
-        Constants.Swerve.swerveKinematics, // SwerveDriveKinematics
-        new PIDConstants(5.0, 0.0, 0.0), // PID constants to correct for translation error (used to create the X and Y PID controllers)
-        new PIDConstants(1.5, 0.0, 0.0), // PID constants to correct for rotation error (used to create the rotation controller)
-        s_Swerve::setModuleStates, // Module states consumer used to output to the drive subsystem
-        eventMap,
-        true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
-        s_Swerve // The drive subsystem. Used to properly set the requirements of path following commands
-    );
-  
-    final List<PathPlannerTrajectory> CableProtector = PathPlanner.loadPathGroup("CableProtector", new PathConstraints(3  , 3), new PathConstraints(0.5, 1),new PathConstraints(3  , 3));
-    final List<PathPlannerTrajectory> ThreePiece = PathPlanner.loadPathGroup("ThreePieceCone",  new PathConstraints(3, 3));
-    final List<PathPlannerTrajectory> TwoPieceClimb = PathPlanner.loadPathGroup("FullAuto",  new PathConstraints(3, 3),new PathConstraints(3, 3),new PathConstraints(3, 3),new PathConstraints(3, 3), new PathConstraints(2, 2));
-    final List<PathPlannerTrajectory> MiddleOnePiece = PathPlanner.loadPathGroup("MiddleOnePiece",  new PathConstraints(2, 2));
-    final List<PathPlannerTrajectory> MiddleTwoPiece = PathPlanner.loadPathGroup("MiddleTwoPiece",  new PathConstraints(2, 2));
-    final List<PathPlannerTrajectory> CableProtectorClimb = PathPlanner.loadPathGroup("CableProtectorCharge", new PathConstraints(3  , 3), new PathConstraints(0.5, 1),new PathConstraints(3  , 3));
-    final List<PathPlannerTrajectory> CableProtectorDoubleHigh = PathPlanner.loadPathGroup("CableProtectorDoubleHigh", new PathConstraints(3.5  , 3), new PathConstraints(0.5, 1),new PathConstraints(3.5  , 3),new PathConstraints(3.3  , 3.3),new PathConstraints(0.5, 1),new PathConstraints(3.0  , 3.0));
-  
-    final Command cCableProtector = autoBuilder.fullAuto(CableProtector);
-    final Command cThreePiece = autoBuilder.fullAuto(ThreePiece);
-    final Command cTwoPieceClimb = autoBuilder.fullAuto(TwoPieceClimb);
-    final Command cMiddleOnePiece = autoBuilder.fullAuto(MiddleOnePiece).andThen(new AutoBalanceStation(s_Swerve));
-    final Command cMiddleTwoPiece = autoBuilder.fullAuto(MiddleTwoPiece).andThen(new AutoBalanceStation(s_Swerve));
-    final Command cCableProtectorClimb = autoBuilder.fullAuto(CableProtectorClimb);
-    final Command cCableProtectorDoubleHigh = autoBuilder.fullAuto(CableProtectorDoubleHigh);
-  
-    m_chooser.setDefaultOption("Cable Protector Shoot 3", cCableProtector);
-    m_chooser.addOption("Three Piece", cThreePiece);
-    m_chooser.addOption("Two Piece Climb", cTwoPieceClimb);
-    m_chooser.addOption("Middle One Piece", cMiddleOnePiece);
-    m_chooser.addOption("Middle Two Piece", cMiddleTwoPiece);
-    m_chooser.addOption("Cable Protector Climb", cCableProtectorClimb);
-    m_chooser.addOption("Cable Protector Double High", cCableProtectorDoubleHigh);
-  }
 }
-
-
 
 
 
@@ -171,4 +112,10 @@ public class RobotContainer {
  *      FUCK WITH ALL JOINT PIDS AND MESS WITH ARBITRARY FEED FORWARD
  *      CLEAN CODE !!!!
  * 
+ *       STUFF TO TEST
+ *      
+ *      TEST AUTO WITHOUT RESETODOMETRY FUNCTION
+ *      TEST AUTO ZERO GYRO BOTH TEAMS
+ *      TEST ALL FEATURES
+ *      TEST AUTO SCORE + DASHBOARD
  */

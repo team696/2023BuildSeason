@@ -60,6 +60,7 @@
       "/LiveWindow/Ungrouped/PIDController[37]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[38]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[39]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[40]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[41]": "PIDController",
       "/LiveWindow/Ungrouped/PIDController[42]": "PIDController",
@@ -144,7 +145,7 @@
       "/SmartDashboard/SendableChooser[1]": "String Chooser"
     },
     "windows": {
-      "/SmartDashboard/Field": {
+      "/SmartDashboard/AUTOS": {
         "window": {
           "visible": true
         }
@@ -152,11 +153,10 @@
     }
   },
   "NetworkTables": {
-    "Persistent Values": {
-      "open": false
-    },
-    "Retained Values": {
-      "open": false
+    "retained": {
+      "Dashboard": {
+        "open": true
+      }
     },
     "transitory": {
       "Shuffleboard": {
@@ -165,6 +165,15 @@
         }
       },
       "SmartDashboard": {
+        "AutoScore": {
+          "open": true
+        },
+        "PPSwerveControllerCommand": {
+          "open": true
+        },
+        "Swerve": {
+          "open": true
+        },
         "open": true
       }
     }
