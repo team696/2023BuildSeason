@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -40,9 +41,11 @@ public class Robot extends TimedRobot {
   DigitalInput input = new DigitalInput(0);
   DigitalInput inputb = new DigitalInput(1);
   boolean resetFlag = false;
-  public static boolean isCOMP = false;
+  public static int robotNum = 0;
 
   private Autos autos;
+
+  private double simAutoTimer = 0;
   @Override
   public void robotInit() {
     pdh = new PowerDistribution(1, ModuleType.kRev);
@@ -103,13 +106,15 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.schedule();
     }
     m_robotContainer.armSub.ArmBrakeMode(NeutralMode.Brake);
-    
+    simAutoTimer = Timer.getFPGATimestamp();
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    
+    if (robotNum == -1 && Timer.getFPGATimestamp() - simAutoTimer < autos.getFullTraj().getTotalTimeSeconds()) {
+      m_robotContainer.s_Swerve.m_fieldSim.setRobotPose(autos.getFullTraj().sample(Timer.getFPGATimestamp() - simAutoTimer).poseMeters);
+    }
   }
 
   @Override
@@ -170,10 +175,11 @@ public class Robot extends TimedRobot {
 			// first check if we are comp
 			if (Arrays.compare(Constants.MAC_ADDRESSES.COMP, macAddress) == 0) {
         System.out.println("Comp Bot Connected!");
-				isCOMP = true;
+				robotNum = 0;
 				break;
       }else if (Arrays.compare(Constants.MAC_ADDRESSES.SIM, macAddress) == 0){
         System.out.println("Simulation Connected!");
+        robotNum = -1;
         break;
 			} else {
 				System.out.print("New Mac Address Discovered! -> ");

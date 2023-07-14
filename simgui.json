@@ -149,6 +149,11 @@
         "window": {
           "visible": true
         }
+      },
+      "/SmartDashboard/Field": {
+        "window": {
+          "visible": true
+        }
       }
     }
   },
@@ -166,6 +171,9 @@
       },
       "SmartDashboard": {
         "AutoScore": {
+          "open": true
+        },
+        "Field": {
           "open": true
         },
         "PPSwerveControllerCommand": {

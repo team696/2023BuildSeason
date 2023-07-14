@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.kauailabs.navx.frc.AHRS;
 import frc.robot.SwerveModule;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -215,7 +216,9 @@ public class Swerve extends SubsystemBase {
                     m_poseEstimator.addVisionMeasurement(estimatedPoseA.estimatedPose.toPose2d(), estimatedPoseA.timestampSeconds); 
             }
         } 
-        m_fieldSim.setRobotPose(getPose()); 
+        if (Robot.robotNum != -1) {
+            m_fieldSim.setRobotPose(getPose());
+        } 
     }
 
     @Override

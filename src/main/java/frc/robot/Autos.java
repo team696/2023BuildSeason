@@ -14,6 +14,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.networktables.StringTopic;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -34,15 +35,15 @@ public class Autos {
 
     private SwerveAutoBuilder autoBuilder;
 
-    NetworkTableInstance inst = NetworkTableInstance.getDefault();
-    StringTopic dblTopic = inst.getStringTopic("/Dashboard/auto selected");
-    StringSubscriber sub = dblTopic.subscribe("none");  
+    private NetworkTableInstance inst = NetworkTableInstance.getDefault();
+    private StringTopic dblTopic = inst.getStringTopic("/Dashboard/auto selected");
+    private StringSubscriber sub = dblTopic.subscribe("none");  
 
     class autoshit {
       public String name = "";
       public List<PathPlannerTrajectory> traj = new ArrayList<PathPlannerTrajectory>();
       public Command command = new WaitCommand(1);
-
+      public Trajectory fulltraj = new PathPlannerTrajectory();
       public autoshit(String name) {
         this.name = name;
       }
@@ -56,22 +57,27 @@ public class Autos {
         return this;
       }
       public void end() {
+        for (int i = 0; i < traj.size(); ++i) {
+            fulltraj = fulltraj.concatenate(traj.get(i));
+        }
         autos.add(this);
       }
     }
 
+    public autoshit getAuto() {
+        return autoMap.get(sub.get());
+    }
+
     public Command get() {
-        return autoMap.get(sub.get()).command;
+        return getAuto().command;
     }
 
     public void setTraj() {
-        Trajectory p = new PathPlannerTrajectory();
-        if (sub.get() != null) {
-            for (int i = 0; i < autoMap.get(sub.get()).traj.size(); ++i) {
-                p = p.concatenate(autoMap.get(sub.get()).traj.get(i));
-            }
-        }
-        container.s_Swerve.m_fieldSim.getObject("traj").setTrajectory(p);
+        container.s_Swerve.m_fieldSim.getObject("traj").setTrajectory(getAuto().fulltraj);
+    }
+
+    public Trajectory getFullTraj() {
+        return getAuto().fulltraj;
     }
 
     public Autos(RobotContainer container){
@@ -102,7 +108,7 @@ public class Autos {
             true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
             container.s_Swerve // The drive subsystem. Used to properly set the requirements of path following commands
         );
-        
+
         new autoshit("none").end();
         new autoshit("Cable Protector Shoot 3").build("CableProtector", new PathConstraints(3, 3), new PathConstraints(0.5, 1),new PathConstraints(3, 3)).end();
         new autoshit("Three Piece").build("ThreePieceCone",new PathConstraints(3, 3)).end();
