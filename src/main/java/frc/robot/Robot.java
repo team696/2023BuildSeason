@@ -7,6 +7,7 @@ package frc.robot;
 
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+
 import java.util.Arrays;
 import java.util.List;
 import java.io.IOException;
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.ArmSub;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -40,6 +42,7 @@ public class Robot extends TimedRobot {
 
   DigitalInput input = new DigitalInput(0);
   DigitalInput inputb = new DigitalInput(1);
+
   boolean resetFlag = false;
   public static int robotNum = 0;
 
@@ -63,20 +66,16 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
     if(Math.abs(m_robotContainer.s_Swerve.db_getYaw())>=90){
       m_robotContainer.armSub.robotDirection = true;
-  }
-  else{
-    m_robotContainer.armSub.robotDirection = false;
-  }  
-  SmartDashboard.putNumber("Timer", DriverStation.getMatchTime());
+    } else {
+      m_robotContainer.armSub.robotDirection = false;
+    }  
+    SmartDashboard.putData("PDH",pdh);
+    SmartDashboard.putNumber("Timer", DriverStation.getMatchTime());
 }
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {
-    m_robotContainer.candle.disabledLed();
-    pdh.setSwitchableChannel(false);
-
-  }
+  public void disabledInit() {}
 
   @Override
   public void disabledPeriodic() {
@@ -92,9 +91,9 @@ public class Robot extends TimedRobot {
       m_robotContainer.armSub.homeGripperJointPos();
       m_robotContainer.armSub.homeTelescopePosition();
     }
-    m_robotContainer.s_Swerve.gyroOffset = -1 * m_robotContainer.s_Swerve.getPose().getRotation().getDegrees();
     autos.setTraj();
-
+    if (autos.getFullTraj().getTotalTimeSeconds() != 0 && robotNum == -1)
+      m_robotContainer.s_Swerve.m_fieldSim.setRobotPose((autos.getFullTraj().sample((Timer.getFPGATimestamp() - simAutoTimer)%autos.getFullTraj().getTotalTimeSeconds())).poseMeters);
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
@@ -113,7 +112,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     if (robotNum == -1 && Timer.getFPGATimestamp() - simAutoTimer < autos.getFullTraj().getTotalTimeSeconds()) {
-      m_robotContainer.s_Swerve.m_fieldSim.setRobotPose(autos.getFullTraj().sample(Timer.getFPGATimestamp() - simAutoTimer).poseMeters);
+      m_robotContainer.s_Swerve.m_fieldSim.setRobotPose((autos.getFullTraj().sample(Timer.getFPGATimestamp() - simAutoTimer)).poseMeters);
     }
   }
 
@@ -130,7 +129,13 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    if(m_robotContainer.panelGPSwitch.getAsBoolean()) {
+      ArmSub.gamePiece = 0;
+    } else {
+      ArmSub.gamePiece = 1;
+    }
+  }
 
   @Override
   public void testInit() {

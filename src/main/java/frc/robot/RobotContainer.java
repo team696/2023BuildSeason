@@ -59,7 +59,7 @@ public class RobotContainer {
   private final Trigger panelLow = new JoystickButton(operatorPanel, 3);  
   private final Trigger panelStow = new JoystickButton(operatorPanel, 5);
   private final Trigger panelGround = new JoystickButton(operatorPanel, 16);
-  private final Trigger panelGPSwitch = new JoystickButton(operatorPanel, 17);
+  public final Trigger panelGPSwitch = new JoystickButton(operatorPanel, 17);
   private final Trigger panelRelease = new JoystickButton(operatorPanel, 15);
   private final Trigger panelEmptyRight = new JoystickButton(operatorPanel, 12);
   private final Trigger panelEmptyLeft = new JoystickButton(operatorPanel, 14);
@@ -72,7 +72,6 @@ public class RobotContainer {
 
   public RobotContainer() {    
     armSub.setDefaultCommand(new AdaptiveArmMovement(armSub, ArmPositions.STOWED_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-    candle.setDefaultCommand(candle.setColorC(GlobalVariables.gamePiece == 0));
     gripper.setDefaultCommand(new ConstantHold(gripper));
     configureButtonBindings();
   }
@@ -94,10 +93,9 @@ public class RobotContainer {
     panelLED4.onTrue(new InstantCommand(() -> armSub.homeGripperJointPos()));
     panelLock.whileTrue(new MoveJointTemp(armSub, operatorPanel).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelLED5.whileTrue(new AdaptiveArmMovement(armSub, ArmPositions.FRAME_PERIMETER).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-    panelGPSwitch.onTrue(new InstantCommand(()-> GlobalVariables.gamePiece = 0));
-    panelGPSwitch.onFalse(new InstantCommand(()-> GlobalVariables.gamePiece = 1));
-    rightJoy.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));   
-    panelLED1.onTrue(new AutoScore(s_Swerve, armSub, gripper).andThen(new AutoPlaceGamePiece(armSub, gripper, ArmPositions.MID_SCORE_CONE)));
+     
+    rightJoy.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));    
+    panelLED1.onTrue(new AutoScore(s_Swerve, armSub, gripper));
 
     operatorPanel.setOutputs(Integer.MAX_VALUE);
   }

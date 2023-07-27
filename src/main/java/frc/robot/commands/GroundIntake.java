@@ -5,7 +5,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.GlobalVariables;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.Gripper;
 
@@ -27,7 +26,7 @@ public class GroundIntake extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(GlobalVariables.gamePiece == 0){
+    if(ArmSub.gamePiece == 0){
       armSub.moveGripperJointPosition(31000);
       armSub.moveTelescopeArmPosition(8000);
       armSub.moveRotArmPosition(1);

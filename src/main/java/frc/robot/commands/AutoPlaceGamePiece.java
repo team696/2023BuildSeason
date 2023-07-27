@@ -5,7 +5,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.GlobalVariables;
 import frc.robot.Constants.ArmPositions;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.Gripper;
@@ -56,7 +55,7 @@ public class AutoPlaceGamePiece extends CommandBase {
         armSub.getTelescopePos()<= (armSub.armExtendGoal + 500)){
           timer++;
           if(/* gripper.getDistanceSensorDist() <= 12 */ timer>=5){
-            if(GlobalVariables.gamePiece == 0){
+            if(ArmSub.gamePiece == 0){
               gripper.moveGripper(0.7);
             }
             else{

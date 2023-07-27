@@ -19,15 +19,12 @@ import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.math.Conversions;
 import frc.robot.Constants;
 import frc.robot.Constants.ArmPositions;
-import frc.robot.GlobalVariables;
 
 public class ArmSub extends SubsystemBase {
   private TalonFX leftArm;
@@ -38,7 +35,7 @@ public class ArmSub extends SubsystemBase {
   private TalonFX gripperJointFalcon;
 
 
-  private ProfiledPIDController armPID;
+  private PIDController armPID;
   private CANCoder testCanCoder;
 
   private PIDController slowArmPID;
@@ -57,6 +54,8 @@ public class ArmSub extends SubsystemBase {
   public double armRotGoal = 100;
 
   public boolean robotDirection = false;
+
+  public static int gamePiece = 0;
 
   private double testFF = 0;
                               //frd/rev, cone/cube
@@ -92,7 +91,7 @@ public class ArmSub extends SubsystemBase {
 
     limit = new SupplyCurrentLimitConfiguration(true, 30, 30, 0);
 
-    armPID = new ProfiledPIDController(0.01, 0.000, 0.000, new TrapezoidProfile.Constraints(1, 1));
+    armPID = new PIDController(0.01, 0.000, 0.000);
     armPID.setTolerance(0.1);
     armPID.enableContinuousInput(0, 360);
 
@@ -199,6 +198,18 @@ public class ArmSub extends SubsystemBase {
  
 
  public void moveRotArmPosition(double degrees){
+
+  final int kMeasuredPosHorizontal = 34;  // HORIZONTAL VALUE
+  final double kTicksPerDegree = 360 / 360; 
+  double currentPos = getArmEncoderPosition();
+  double degree = (currentPos - kMeasuredPosHorizontal) / kTicksPerDegree; 
+  double radians = java.lang.Math.toRadians(degree);
+  double cosineScalar = java.lang.Math.cos(radians);
+  
+  final double maxGravityFFRet = 0.07; //FORCE REQUIRED TO KEEP ARM AT HORIZONTAL WITH ARM RETRACTED, DETERMINE WITH testFF
+  final double maxGravityFFExt = 0.1;  // ^ BUT EXTENDED                  //MAX EXTENSION VALUE
+  double endFF = maxGravityFFRet + (telescopeArm.getSelectedSensorPosition() / 6969 * (maxGravityFFExt - maxGravityFFRet)) * cosineScalar;
+
   leftArm.set(ControlMode.PercentOutput, armPID.calculate(testCanCoder.getAbsolutePosition(), degrees), DemandType.ArbitraryFeedForward, testFF);
   armRotGoal = degrees;
  }
@@ -266,15 +277,15 @@ public void homeGripperJointPos(){
  * @param position The dedicated position enum, current options are GROUND_PICKUP, STOWED, GROUND_SCORE, MID_SCORE, HIGH_SCORE, and SHELF_PICKUP
   */
   public void armRotPresetPositions(ArmPositions position){
-    moveRotArmPosition(ShoulderPos.get(position)[robotDirection ? 1 : 0][GlobalVariables.gamePiece]);
+    moveRotArmPosition(ShoulderPos.get(position)[robotDirection ? 1 : 0][gamePiece]+3);
   }
 
   public void armExtendPresetPositions(ArmPositions position){
-    moveTelescopeArmPosition(ExtendPos.get(position)[robotDirection ? 1 : 0][GlobalVariables.gamePiece]);
+    moveTelescopeArmPosition(ExtendPos.get(position)[robotDirection ? 1 : 0][gamePiece]);
   }
 
   public void jointRotPresetPositions(ArmPositions position){
-    moveGripperJointPosition(JointPos.get(position)[robotDirection ? 1 : 0][GlobalVariables.gamePiece] * multiplier);
+    moveGripperJointPosition(JointPos.get(position)[robotDirection ? 1 : 0][gamePiece] * multiplier);
   }
   
 /**
@@ -313,6 +324,7 @@ public void homeGripperJointPos(){
   @Override
   public void initSendable(SendableBuilder builder) {
     builder.addDoubleProperty("Arm Encoder Position", ()->getArmEncoderPosition(), null);
+    builder.addBooleanProperty("Arm Encoder Status", ()->(testCanCoder.getMagnetFieldStrength().value == 3), null);
     builder.addDoubleProperty("Arm Motor Position", ()->getArmMotorPos(), null);
     builder.addDoubleProperty("Arm Motor Velocity", ()->leftArm.getSelectedSensorVelocity(), null);
     builder.addDoubleProperty("Arm Motor Set Speed", ()-> leftArm.getMotorOutputPercent(), null);

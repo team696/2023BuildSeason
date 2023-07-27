@@ -136,9 +136,12 @@
       "/Shuffleboard/CUM BLUE/Field": "Field2d",
       "/Shuffleboard/CUM RED/Field": "Field2d",
       "/Shuffleboard/RED/Field": "Field2d",
+      "/SmartDashboard//Auto/Autos": "String Chooser",
+      "/SmartDashboard//Autos/Auto Selector": "String Chooser",
       "/SmartDashboard/AUTOS": "String Chooser",
       "/SmartDashboard/ArmPID": "PIDController",
       "/SmartDashboard/ArmSub": "PIDController",
+      "/SmartDashboard/Autos": "String Chooser",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/PID ERROR ": "PIDController",
       "/SmartDashboard/SendableChooser[0]": "String Chooser",
@@ -170,16 +173,10 @@
         }
       },
       "SmartDashboard": {
-        "AutoScore": {
-          "open": true
-        },
-        "Field": {
+        "Autos": {
           "open": true
         },
         "PPSwerveControllerCommand": {
-          "open": true
-        },
-        "Swerve": {
           "open": true
         },
         "open": true
@@ -196,5 +193,8 @@
     "Server": {
       "open": true
     }
+  },
+  "NetworkTables View": {
+    "visible": false
   }
 }

@@ -17,7 +17,6 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.DoubleTopic;
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -30,7 +29,6 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
-import frc.robot.GlobalVariables;
 import frc.robot.Constants.ArmPositions;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.Gripper;
@@ -44,7 +42,7 @@ public class AutoScore extends CommandBase {
   Gripper g;
   double t;
 
-  TrajectoryConfig config = new TrajectoryConfig(2.6, 1).setEndVelocity(0).setKinematics(Constants.Swerve.swerveKinematics);
+  TrajectoryConfig config = new TrajectoryConfig(2.6, 1).setEndVelocity(-0.1).setKinematics(Constants.Swerve.swerveKinematics);
   Trajectory traj;
 
   CommandBase ap;
@@ -79,7 +77,7 @@ public class AutoScore extends CommandBase {
     switch ((int)Math.floor(sub.get() / 9)) {
       case 0:
         pp = ArmPositions.GROUND_SCORE_ADAPTIVE; //LOW
-        gp = GlobalVariables.gamePiece;
+        gp = ArmSub.gamePiece;
         break; 
       case 1:
         pp = ArmPositions.MID_SCORE_ADAPTIVE; //MID

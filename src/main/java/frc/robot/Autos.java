@@ -10,11 +10,13 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.networktables.StringTopic;
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -27,6 +29,7 @@ import frc.robot.commands.AutoBalanceStation;
 import frc.robot.commands.AutoGroundIntake;
 import frc.robot.commands.AutoPlaceGamePiece;
 import frc.robot.commands.AutoShootCone;
+import frc.robot.subsystems.ArmSub;
 
 public class Autos {
     private List<autoshit> autos = new ArrayList<autoshit>();
@@ -39,45 +42,89 @@ public class Autos {
     private StringTopic dblTopic = inst.getStringTopic("/Dashboard/auto selected");
     private StringSubscriber sub = dblTopic.subscribe("none");  
 
+    private SendableChooser<String> backup;
+
+    private final boolean useShuffleBoard = true;
+    
     class autoshit {
       public String name = "";
       public List<PathPlannerTrajectory> traj = new ArrayList<PathPlannerTrajectory>();
-      public Command command = new WaitCommand(1);
+      public Command command = new WaitCommand(0);
       public Trajectory fulltraj = new PathPlannerTrajectory();
       public autoshit(String name) {
         this.name = name;
       }
       public autoshit build(String hname, PathConstraints constraint, PathConstraints... constraints) {
         this.traj = PathPlanner.loadPathGroup(hname, false, constraint, constraints);
-        this.command = autoBuilder.fullAuto(this.traj);
+        this.command = this.command.andThen(autoBuilder.fullAuto(this.traj));
         return this;
       } 
-      public autoshit addEndCommand(Command end) {
-        this.command.andThen(end);
+
+      public autoshit add (Command end) {
+        this.command = this.command.andThen(end);
         return this;
       }
+
       public void end() {
         for (int i = 0; i < traj.size(); ++i) {
-            fulltraj = fulltraj.concatenate(traj.get(i));
+            fulltraj = concat(fulltraj, traj.get(i));fulltraj.concatenate(traj.get(i));            
         }
+
         autos.add(this);
       }
-    }
+
+      private Trajectory concat (Trajectory a, PathPlannerTrajectory b) {
+          if (a.getStates().isEmpty()) 
+            return b;
+          if (b.getStates().isEmpty())
+            return a;
+      
+          // Deep copy the current states.
+          List<State> States = new ArrayList<State>();
+
+          for (int i = 0; i < a.getStates().size(); ++i) {
+            var s = a.getStates().get(i);
+            States.add(
+                new State(
+                    s.timeSeconds,
+                    s.velocityMetersPerSecond,
+                    s.accelerationMetersPerSecondSq,
+                    s.poseMeters,
+                    s.curvatureRadPerMeter));
+          }
+
+          for (int i = 0; i < b.getStates().size(); ++i) {
+            var s = b.getState(i);
+            var pose = new Pose2d(s.poseMeters.getTranslation(), s.holonomicRotation);
+            States.add(
+                new State(
+                    s.timeSeconds + a.getTotalTimeSeconds(),
+                    s.velocityMetersPerSecond,
+                    s.accelerationMetersPerSecondSq,
+                    pose,
+                    s.curvatureRadPerMeter));
+          }
+          return new Trajectory(States);
+        }
+      }
 
     public autoshit getAuto() {
-        return autoMap.get(sub.get());
+        if (useShuffleBoard)
+          return autoMap.get(backup.getSelected()); 
+        else
+          return autoMap.get(sub.get());
     }
 
     public Command get() {
         return getAuto().command;
     }
 
-    public void setTraj() {
-        container.s_Swerve.m_fieldSim.getObject("traj").setTrajectory(getAuto().fulltraj);
+    public Trajectory getFullTraj() {
+      return getAuto().fulltraj;
     }
 
-    public Trajectory getFullTraj() {
-        return getAuto().fulltraj;
+    public void setTraj() {
+        container.s_Swerve.m_fieldSim.getObject("traj").setTrajectory(getFullTraj());
     }
 
     public Autos(RobotContainer container){
@@ -87,8 +134,8 @@ public class Autos {
         eventMap.put("goarm", new AdaptiveArmMovement(container.armSub, ArmPositions.MID_SCORE_ADAPTIVE));
         eventMap.put("stowarm", new AutoAdaptiveArmMovement(container.armSub, ArmPositions.STOWED_ADAPTIVE));
         eventMap.put("placehigh", new AutoPlaceGamePiece(container.armSub, container.gripper, ArmPositions.HIGH_SCORE_ADAPTIVE));
-        eventMap.put("switchcone", new InstantCommand(() -> GlobalVariables.gamePiece = 0));
-        eventMap.put("switchcube", new InstantCommand(() -> GlobalVariables.gamePiece = 1));
+        eventMap.put("switchcone", new InstantCommand(() -> ArmSub.gamePiece = 0));
+        eventMap.put("switchcube", new InstantCommand(() -> ArmSub.gamePiece = 1));
         eventMap.put("cubepickup", new AutoGroundIntake(container.armSub, container.gripper, 1) );
         eventMap.put("conepickup", new AutoGroundIntake(container.armSub, container.gripper, 0) );
         eventMap.put("placemid", new AutoPlaceGamePiece(container.armSub, container.gripper, ArmPositions.MID_SCORE_ADAPTIVE));
@@ -118,13 +165,24 @@ public class Autos {
         new autoshit("Cable Protector Climb").build("CableProtectorCharge",new PathConstraints(3  , 3), new PathConstraints(0.5, 1),new PathConstraints(3  , 3)).end();
         new autoshit("Cable Protector Double High").build("CableProtectorDoubleHigh",new PathConstraints(3.5  , 3), new PathConstraints(0.5, 1),new PathConstraints(3.5  , 3),new PathConstraints(3.3  , 3.3),new PathConstraints(0.5, 1),new PathConstraints(3.0  , 3.0)).end();
         
+        if (useShuffleBoard)
+          backup = new SendableChooser<String>();
+
         String[] names = new String[autos.size()];
 
         for (int i = 0; i < autos.size(); i++) {
             autoMap.put(autos.get(i).name, autos.get(i));
             names[i] = autos.get(i).name;
+
+            if(useShuffleBoard) {
+              backup.addOption(autos.get(i).name, autos.get(i).name);
+              backup.setDefaultOption("none", "none");
+            }
         }
         
-        SmartDashboard.putStringArray("Auto List", names);
+        SmartDashboard.putStringArray("/Autos/Auto List", names);
+
+        if(useShuffleBoard)
+          SmartDashboard.putData("/Autos/Auto Selector", backup);
     }
 }

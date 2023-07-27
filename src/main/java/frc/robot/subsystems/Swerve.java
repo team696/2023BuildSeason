@@ -36,19 +36,19 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 
 public class Swerve extends SubsystemBase {
-    public Field2d m_fieldSim = new Field2d();
+    public final Field2d m_fieldSim = new Field2d();
    
     private AHRS gyro;
     private ProfiledPIDController rotatePID;
     private PIDController aimPID;
 
-    private  SwerveModule m_frontLeft = new SwerveModule(0, Constants.Swerve.Mod0.constants);
-    private  SwerveModule m_frontRight = new SwerveModule(1, Constants.Swerve.Mod1.constants);
-    private  SwerveModule m_backLeft = new SwerveModule(2, Constants.Swerve.Mod2.constants);
-    private  SwerveModule m_backRight = new SwerveModule(3, Constants.Swerve.Mod3.constants);
-    private SwerveModule[] mSwerveMods = { m_frontLeft, m_frontRight, m_backLeft, m_backRight };
-
-    private  SwerveDrivePoseEstimator m_poseEstimator;
+    private final SwerveModule m_frontLeft = new SwerveModule(0, Constants.Swerve.Mod0.constants);
+    private final SwerveModule m_frontRight = new SwerveModule(1, Constants.Swerve.Mod1.constants);
+    private final SwerveModule m_backLeft = new SwerveModule(2, Constants.Swerve.Mod2.constants);
+    private final SwerveModule m_backRight = new SwerveModule(3, Constants.Swerve.Mod3.constants);
+    private final SwerveModule[] mSwerveMods = { m_frontLeft, m_frontRight, m_backLeft, m_backRight };
+    private SwerveModulePosition[] SwervePositions = new SwerveModulePosition[4];
+    private SwerveDrivePoseEstimator m_poseEstimator;
 
     private PhotonCamera cams[];
     private PhotonPoseEstimator estimators[];
@@ -69,11 +69,11 @@ public class Swerve extends SubsystemBase {
 
         rotatePID.setTolerance(0.001);
  
-        m_poseEstimator = new SwerveDrivePoseEstimator( Constants.Swerve.swerveKinematics, getYaw(), new SwerveModulePosition[] {
-            m_frontRight.getPosition(),
-            m_frontLeft.getPosition(),
-            m_backRight.getPosition(),
-            m_backLeft.getPosition()}, new Pose2d(1.0, 1.0, getYaw()), VecBuilder.fill(0.1, 0.1, 0.05), VecBuilder.fill(0.9, 0.9, 0.9));
+        for (int i = 0; i < 4; ++i) {
+            SwervePositions[i] = mSwerveMods[i].getPosition();
+        }
+
+        m_poseEstimator = new SwerveDrivePoseEstimator( Constants.Swerve.swerveKinematics, getYaw(), SwervePositions, new Pose2d(1.0, 1.0, getYaw()), VecBuilder.fill(0.1, 0.1, 0.05), VecBuilder.fill(0.9, 0.9, 0.9));
             
         AprilTagFieldLayout aprilTagFieldLayout;
         try {
@@ -109,8 +109,7 @@ public class Swerve extends SubsystemBase {
                                     translation.getY(), 
                                     rotation, 
                                     getYaw()
-                                )
-                                : new ChassisSpeeds(
+                                ) : new ChassisSpeeds(
                                     translation.getX(), 
                                     translation.getY(), 
                                     rotation)
@@ -146,12 +145,7 @@ public class Swerve extends SubsystemBase {
     }
 
     public void resetOdometry(Pose2d pose) {
-        m_poseEstimator.resetPosition(getYaw(), new SwerveModulePosition[] {
-            m_frontRight.getPosition(),
-            m_frontLeft.getPosition(),
-            m_backRight.getPosition(),
-            m_backLeft.getPosition()
-          }, pose);
+        m_poseEstimator.resetPosition(getYaw(), SwervePositions, pose);
     }
 
     public void resetOdometry(){
@@ -186,12 +180,11 @@ public class Swerve extends SubsystemBase {
 
     @Override
     public void periodic(){
-        m_poseEstimator.update(getYaw(), new SwerveModulePosition[] {
-            m_frontRight.getPosition(),
-            m_frontLeft.getPosition(),
-            m_backRight.getPosition(),
-            m_backLeft.getPosition()
-        });
+        for (int i = 0; i < 4; ++i) {
+            SwervePositions[i] = mSwerveMods[i].getPosition();
+        }
+
+        m_poseEstimator.update(getYaw(), SwervePositions);
         
         for (int i = 0; i < 3; i ++) {
             if (!cams[i].isConnected()) {

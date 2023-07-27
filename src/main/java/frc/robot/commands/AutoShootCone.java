@@ -5,7 +5,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.GlobalVariables;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.Gripper;
 import frc.robot.Constants.ArmPositions;
@@ -44,7 +43,7 @@ public class AutoShootCone extends CommandBase {
        
           timer++;
           if(/* gripper.getDistanceSensorDist() <= 12 */ timer>=15){
-            if(GlobalVariables.gamePiece == 0){
+            if(ArmSub.gamePiece == 0){
               gripper.moveGripper(1);
             }
             else{

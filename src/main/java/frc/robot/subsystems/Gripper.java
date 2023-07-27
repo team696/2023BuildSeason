@@ -9,17 +9,18 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-//import com.revrobotics.Rev2mDistanceSensor;
-//import com.revrobotics.Rev2mDistanceSensor.Port;
-//import com.revrobotics.Rev2mDistanceSensor.Unit;
+import com.revrobotics.Rev2mDistanceSensor;
+import com.revrobotics.Rev2mDistanceSensor.Port;
+import com.revrobotics.Rev2mDistanceSensor.Unit;
 
 public class Gripper extends SubsystemBase {
 
   private TalonFX gripperFalcon;
- // private Rev2mDistanceSensor distanceSensor;
+  private Rev2mDistanceSensor distanceSensor;
 
   /** Creates a new Gripper. */
   public Gripper() {
@@ -27,9 +28,11 @@ public class Gripper extends SubsystemBase {
     gripperFalcon.configFactoryDefault();
     gripperFalcon.setNeutralMode(NeutralMode.Brake);
 
-    //distanceSensor = new Rev2mDistanceSensor(Port.kOnboard); 
-    //distanceSensor.setAutomaticMode(true);
-   // distanceSensor.setDistanceUnits(Unit.kMillimeters);
+    if (RobotBase.isReal()){
+      distanceSensor = new Rev2mDistanceSensor(Port.kOnboard); 
+      distanceSensor.setAutomaticMode(true);
+      distanceSensor.setDistanceUnits(Unit.kMillimeters);
+    }
 
     SmartDashboard.putData(this);
   }
@@ -43,7 +46,7 @@ public class Gripper extends SubsystemBase {
   }
 
   public double getDistanceSensorM(){
-    return 0;//distanceSensor.getRange() /  1000;
+    return RobotBase.isReal() ? distanceSensor.getRange() / 1000 : 0;
  }
 
   @Override
