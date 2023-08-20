@@ -5,9 +5,9 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants.ArmPositions;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.Gripper;
+import frc.robot.util.Constants.ArmPositions;
 
 public class AutoPlaceGamePiece extends CommandBase {
   /** Creates a new AdaptiveArmMovement. */

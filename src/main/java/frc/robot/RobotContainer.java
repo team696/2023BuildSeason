@@ -4,35 +4,17 @@
 
 package frc.robot;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.auto.PIDConstants;
-import com.pathplanner.lib.auto.SwerveAutoBuilder;
-
-import edu.wpi.first.math.trajectory.Trajectory.State;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StringSubscriber;
-import edu.wpi.first.networktables.StringTopic;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.ArmPositions;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
+import frc.robot.util.Constants.ArmPositions;
 @SuppressWarnings("unused")
-public class RobotContainer {
 
+public class RobotContainer {
   public final Swerve s_Swerve = new Swerve();
   public final ArmSub armSub = new ArmSub();
   public final Gripper gripper = new Gripper();
@@ -72,7 +54,7 @@ public class RobotContainer {
 
   public RobotContainer() {    
     armSub.setDefaultCommand(new AdaptiveArmMovement(armSub, ArmPositions.STOWED_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-    gripper.setDefaultCommand(new ConstantHold(gripper));
+    gripper.setDefaultCommand(gripper.defaultCommand()); //TODO:: TEST THIS -> CLEANER CODE     //TODO: Move to Gripper Sub Constructor!
     configureButtonBindings();
   }
   

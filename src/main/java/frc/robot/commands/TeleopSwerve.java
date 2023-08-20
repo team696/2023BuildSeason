@@ -1,9 +1,10 @@
 package frc.robot.commands;
 
-import frc.robot.Constants;
 import frc.robot.subsystems.Swerve;
+import frc.robot.util.Constants;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -55,8 +56,7 @@ public class TeleopSwerve extends CommandBase {
         double xAxis = controller.getRawAxis(strafeAxis);
         double rAxis = controller.getRawAxis(rotationAxis);
         
-        /* Deadbands */
-
+        /* Deadbands 
         if (Math.abs(yAxis) > Constants.stickDeadband) {
             if (yAxis > 0){
                 yAxis = mapdouble(yAxis, Constants.stickDeadband, 1, 0, 1);
@@ -78,7 +78,7 @@ public class TeleopSwerve extends CommandBase {
         else{
             xAxis = 0;
         }
-
+        */
         if (leftJoy.getAsBoolean() != true){
             if (Math.abs(rAxis) > Constants.stickDeadband) {
                 if (rAxis > 0)
@@ -93,9 +93,12 @@ public class TeleopSwerve extends CommandBase {
         } else {
             rAxis = pidController.calculate(s_Swerve.db_getYaw(), Math.abs(s_Swerve.db_getYaw()) < 90 ? 0 : 180);
         }
-        
-        translation = new Translation2d(yAxis, xAxis);
-        translation = translation.times(Constants.Swerve.maxSpeed);
+        // TODO: TEST THIS AS WELL, POTENTIALLY INCREASE MAX SPEED, NOW THAT STICKS WORK RIGHT!
+        Rotation2d theta = new Rotation2d(xAxis, yAxis);
+        double magnitude = Math.min(Math.sqrt((xAxis * xAxis) + (yAxis * yAxis)),1);
+        if (magnitude < Constants.stickDeadband) magnitude = 0;
+       // translation = new Translation2d(yAxis, xAxis);
+        translation = new Translation2d(magnitude, theta).times(Constants.Swerve.maxSpeed);
         rotation = rAxis * Constants.Swerve.maxAngularVelocity;
         s_Swerve.drive(translation, rotation, fieldRelative, openLoop);
     }

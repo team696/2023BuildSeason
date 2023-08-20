@@ -9,7 +9,7 @@ import com.ctre.phoenix.led.*;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.util.Constants;
 
 public class CANdleSub extends SubsystemBase {
   

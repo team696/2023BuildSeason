@@ -28,11 +28,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants;
-import frc.robot.Constants.ArmPositions;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.Swerve;
+import frc.robot.util.Constants;
+import frc.robot.util.Constants.ArmPositions;
 
 public class AutoScore extends CommandBase {
   /** Creates a new AutoScore. */

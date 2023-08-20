@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Constants.ArmPositions;
 import frc.robot.commands.AdaptiveArmMovement;
 import frc.robot.commands.AutoAdaptiveArmMovement;
 import frc.robot.commands.AutoBalanceStation;
@@ -30,6 +29,8 @@ import frc.robot.commands.AutoGroundIntake;
 import frc.robot.commands.AutoPlaceGamePiece;
 import frc.robot.commands.AutoShootCone;
 import frc.robot.subsystems.ArmSub;
+import frc.robot.util.Constants;
+import frc.robot.util.Constants.ArmPositions;
 
 public class Autos {
     private List<autoshit> autos = new ArrayList<autoshit>();

@@ -25,8 +25,8 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.math.Conversions;
-import frc.robot.Constants;
-import frc.robot.Constants.ArmPositions;
+import frc.robot.util.Constants;
+import frc.robot.util.Constants.ArmPositions;
 
 public class ArmSub extends SubsystemBase {
   private TalonFX leftArm;

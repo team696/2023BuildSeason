@@ -5,9 +5,9 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants.ArmPositions;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.Gripper;
+import frc.robot.util.Constants.ArmPositions;
 public class ShelfIntake extends CommandBase {
   /** Creates a new AdaptiveArmMovement. */
   ArmSub armSub;
@@ -15,7 +15,7 @@ public class ShelfIntake extends CommandBase {
   public ShelfIntake(ArmSub armSub, Gripper gripp) {
     this.armSub = armSub;
     this.gripper = gripp;
-    addRequirements(armSub);
+    addRequirements(armSub, gripp);
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
