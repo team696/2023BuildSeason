@@ -22,18 +22,25 @@ public class AutoBalanceStation extends CommandBase {
         addRequirements(s_Swerve);
         pidController = new PIDController(0.1 , 0, 0);
     }
-
+    //TODO:: TEST ALL DIRECTIONS 
     @Override
     public void execute() {
-        double value = 0;
+        double yvalue = 0;
         if (s_Swerve.getPitch() > 2.5) {
-            value = 1;
+            yvalue = 1;
         } 
         if (s_Swerve.getPitch() < -2.5) {
-            value = -1;
+            yvalue = -1;
         }
-        double yAxis = pidController.calculate(value , 0);
-        double xAxis = 0;
+        double xvalue = 0;
+        if (s_Swerve.getRoll() > 2.5) {
+            xvalue = 1;
+        }
+        if (s_Swerve.getRoll() < -2.5) {
+            xvalue = -1;
+        }
+        double yAxis = pidController.calculate(yvalue , 0);
+        double xAxis = pidController.calculate(xvalue, 0);
         double rAxis = 0;
     
 
