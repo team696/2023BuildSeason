@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.Rev2mDistanceSensor;
@@ -37,6 +38,7 @@ public class Gripper extends SubsystemBase {
     SmartDashboard.putData(this);
   }
 
+  
   public double getGripperMotorCurrent(){
     return gripperFalcon.getSupplyCurrent();
   }
@@ -47,6 +49,10 @@ public class Gripper extends SubsystemBase {
 
   public double getDistanceSensorM(){
     return RobotBase.isReal() ? distanceSensor.getRange() / 1000 : 0;
+ }
+
+ public CommandBase defaultCommand() {
+  return this.runEnd(() -> {if (ArmSub.gamePiece == 0) moveGripper(-0.075); else moveGripper(0.07);}, ()->moveGripper(0));
  }
 
   @Override
