@@ -178,6 +178,10 @@ public class Swerve extends SubsystemBase {
         return gyro.getPitch();
     }
 
+    public double getRoll() {
+        return gyro.getRoll();
+    }
+
     @Override
     public void periodic(){
         for (int i = 0; i < 4; ++i) {

@@ -19,6 +19,8 @@ import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -38,12 +40,12 @@ public class ArmSub extends SubsystemBase {
   private PIDController armPID;
   private CANCoder testCanCoder;
 
-  private PIDController slowArmPID;
+  private ProfiledPIDController pArmPID;
 
   private SupplyCurrentLimitConfiguration limit;
 
   private double rotMaxSpeedFor = 1;
-  private double rotMaxSpeedRev = 0.6;
+  private double rotMaxSpeedRev = 0.4;
 
   private double telMaxSpeedFor = 1;
   private double telMaxSpeedRev = 1;
@@ -51,13 +53,12 @@ public class ArmSub extends SubsystemBase {
   private final double multiplier = 0.667;
 
   public double armExtendGoal = 0;
-  public double armRotGoal = 100;
+  public double armRotGoal = 0;
+  public double wristRotGoal = 0;
 
-  public boolean robotDirection = false;
+  public int robotDirection = 0;
 
   public static int gamePiece = 0;
-
-  private double testFF = 0;
                               //frd/rev, cone/cube
   private HashMap<ArmPositions, double[][]> ShoulderPos = new HashMap<>();
   private void addPostoShoulder(ArmPositions pos, double w, double x, double y, double z) {
@@ -87,17 +88,18 @@ public class ArmSub extends SubsystemBase {
     testCanCoder = new CANCoder(14, "Karen");
     testCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
     testCanCoder.configSensorDirection(true);
-    testCanCoder.configMagnetOffset(150);
-
+    testCanCoder.configMagnetOffset(148);
+    
     limit = new SupplyCurrentLimitConfiguration(true, 30, 30, 0);
 
-    armPID = new PIDController(0.01, 0.000, 0.000);
-    armPID.setTolerance(0.1);
+    armPID = new PIDController(0.012, 0.000, 0.000);
+    armPID.setTolerance(0);
     armPID.enableContinuousInput(0, 360);
 
-    slowArmPID = new PIDController(0.007, 0.000, 0.000);
-    slowArmPID.setTolerance(0.1);
-    slowArmPID.enableContinuousInput(0, 360);
+    TrapezoidProfile.Constraints m_constraints = new TrapezoidProfile.Constraints(1, 1); // TODO: TEST THIS SHIT:: MAKE IT GOOD:: YAY :)
+    pArmPID = new ProfiledPIDController(0.012, 0.000, 0.000, m_constraints);
+    pArmPID.setTolerance(0.1);
+    pArmPID.enableContinuousInput(0, 360);
 
     leftArm = new WPI_TalonFX(20, "Karen");
     rightArm = new WPI_TalonFX(21, "Karen");
@@ -199,29 +201,25 @@ public class ArmSub extends SubsystemBase {
 
  public void moveRotArmPosition(double degrees){
 
-  final int kMeasuredPosHorizontal = 34;  // HORIZONTAL VALUE
+  final int kMeasuredPosHorizontal = 17;  // HORIZONTAL VALUE
   final double kTicksPerDegree = 360 / 360; 
-  double currentPos = getArmEncoderPosition();
+  double currentPos = testCanCoder.getAbsolutePosition();
   double degree = (currentPos - kMeasuredPosHorizontal) / kTicksPerDegree; 
   double radians = java.lang.Math.toRadians(degree);
   double cosineScalar = java.lang.Math.cos(radians);
   
-  final double maxGravityFFRet = 0.07; //FORCE REQUIRED TO KEEP ARM AT HORIZONTAL WITH ARM RETRACTED, DETERMINE WITH testFF
-  final double maxGravityFFExt = 0.1;  // ^ BUT EXTENDED                  //MAX EXTENSION VALUE
-  double endFF = maxGravityFFRet + (telescopeArm.getSelectedSensorPosition() / 6969 * (maxGravityFFExt - maxGravityFFRet)) * cosineScalar;
+  final double maxGravityFFRet = 0.04007; //FORCE REQUIRED TO KEEP ARM AT HORIZONTAL WITH ARM RETRACTED, DETERMINE WITH testFF
+  final double maxGravityFFExt = 0.0436;  // ^ BUT EXTENDED                  //MAX EXTENSION VALUE
+  double endFF = maxGravityFFRet + (telescopeArm.getSelectedSensorPosition() / 53075 * (maxGravityFFExt - maxGravityFFRet)) * cosineScalar;
 
-  leftArm.set(ControlMode.PercentOutput, armPID.calculate(testCanCoder.getAbsolutePosition(), degrees), DemandType.ArbitraryFeedForward, testFF);
+  leftArm.set(ControlMode.PercentOutput, pArmPID.calculate(testCanCoder.getAbsolutePosition(), degrees), DemandType.ArbitraryFeedForward, endFF);
   armRotGoal = degrees;
  }
-
- public void moveRotArmPositionSlow(double degrees){
-  leftArm.set(ControlMode.PercentOutput, slowArmPID.calculate(testCanCoder.getAbsolutePosition(), degrees));
- }
-
 
 /**
  * Moves the arm by percent output.
  * @param percent 0.0 - 1.0.
+ * 
   */
   public void moveRotArmPercentOutput(double percent){
     leftArm.set(TalonFXControlMode.PercentOutput, percent);
@@ -242,7 +240,8 @@ public void moveTelescopeArmPosition(double position){
 }
 
 public void moveGripperJointPosition(double position){
-  gripperJointFalcon.set(TalonFXControlMode.MotionMagic, position * multiplier);
+  gripperJointFalcon.set(TalonFXControlMode.MotionMagic, position);
+  wristRotGoal = position;
 }
 
 
@@ -271,21 +270,23 @@ public void homeGripperJointPos(){
  * Moves the arm to a dedicated degree.
  * @param position Desired arm position in degrees
  */
- 
+
 /**
  * Moves the arm to a dedicated preset positions
- * @param position The dedicated position enum, current options are GROUND_PICKUP, STOWED, GROUND_SCORE, MID_SCORE, HIGH_SCORE, and SHELF_PICKUP
+ * @param position The dedicated position enum    
   */
   public void armRotPresetPositions(ArmPositions position){
-    moveRotArmPosition(ShoulderPos.get(position)[robotDirection ? 1 : 0][gamePiece]+3);
+    moveRotArmPosition(ShoulderPos.get(position)[robotDirection][gamePiece]+3);
   }
 
   public void armExtendPresetPositions(ArmPositions position){
-    moveTelescopeArmPosition(ExtendPos.get(position)[robotDirection ? 1 : 0][gamePiece]);
+
+    moveTelescopeArmPosition(ExtendPos.get(position)[robotDirection][gamePiece]);
+  
   }
 
   public void jointRotPresetPositions(ArmPositions position){
-    moveGripperJointPosition(JointPos.get(position)[robotDirection ? 1 : 0][gamePiece] * multiplier);
+    moveGripperJointPosition(JointPos.get(position)[robotDirection][gamePiece] * multiplier);
   }
   
 /**
@@ -323,18 +324,15 @@ public void homeGripperJointPos(){
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.addDoubleProperty("Arm Encoder Position", ()->getArmEncoderPosition(), null);
-    builder.addBooleanProperty("Arm Encoder Status", ()->(testCanCoder.getMagnetFieldStrength().value == 3), null);
-    builder.addDoubleProperty("Arm Motor Position", ()->getArmMotorPos(), null);
-    builder.addDoubleProperty("Arm Motor Velocity", ()->leftArm.getSelectedSensorVelocity(), null);
-    builder.addDoubleProperty("Arm Motor Set Speed", ()-> leftArm.getMotorOutputPercent(), null);
-    builder.addDoubleProperty("Telescope Position", ()->telescopeArm.getSelectedSensorPosition(), null);
-    builder.addDoubleProperty("Telescope Current", ()->telescopeArm.getSupplyCurrent(), null);
-    builder.addDoubleProperty("Joint Position", ()->getGripperJointPos(), null);
-    builder.addDoubleProperty("Joint Speed", ()->gripperJointFalcon.getSelectedSensorVelocity(), null);
 
-    SmartDashboard.putData("ArmPID", armPID);
-    builder.addDoubleProperty("Arm FF", ()->testFF, (t)->testFF=t);
-    builder.setActuator(true);
+    builder.addDoubleProperty("^Arm Rotation Goal", ()->{return armRotGoal;}, null);
+    builder.addDoubleProperty("^Arm Extension Goal", ()-> {return armExtendGoal;}, null);
+    builder.addDoubleProperty("^Wrist Rotation Goal", ()-> {return wristRotGoal;}, null);
+
+    builder.addDoubleProperty("^Arm Rotation Position", ()->testCanCoder.getAbsolutePosition(), null);
+    builder.addDoubleProperty("^Arm Extension Position", ()->telescopeArm.getSelectedSensorPosition(), null);
+    builder.addDoubleProperty("^Wrist Rotation Position", ()->getGripperJointPos(), null);
+
+    builder.addIntegerProperty("Arm Encoder Status", ()->testCanCoder.getMagnetFieldStrength().value, null);
   }
 } 

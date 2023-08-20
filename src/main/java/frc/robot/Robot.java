@@ -65,9 +65,9 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
     if(Math.abs(m_robotContainer.s_Swerve.db_getYaw())>=90){
-      m_robotContainer.armSub.robotDirection = true;
+      m_robotContainer.armSub.robotDirection = 0;
     } else {
-      m_robotContainer.armSub.robotDirection = false;
+      m_robotContainer.armSub.robotDirection = 1;
     }  
     SmartDashboard.putData("PDH",pdh);
     SmartDashboard.putNumber("Timer", DriverStation.getMatchTime());

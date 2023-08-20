@@ -36,7 +36,7 @@ public class AdaptiveArmMovement extends CommandBase {
         }
       }
       else{
-       if(armSub.robotDirection == false){
+       if(armSub.robotDirection == 0){
       armSub.armRotPresetPositions(armPosition);
       armSub.jointRotPresetPositions(armPosition);
 
@@ -50,9 +50,8 @@ public class AdaptiveArmMovement extends CommandBase {
         if(armSub.getArmEncoderPosition() >= armSub.armRotGoal*0.15){
         armSub.jointRotPresetPositions(armPosition);
 
-        if(armSub.getGripperJointPos()>= 10000){
           armSub.armExtendPresetPositions(armPosition);
-        }
+        
         }
         
       }

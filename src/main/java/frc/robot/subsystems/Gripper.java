@@ -52,6 +52,7 @@ public class Gripper extends SubsystemBase {
   @Override
   public void periodic() {    
   }
+
   public void initSendable(SendableBuilder builder) {
     builder.addDoubleProperty("Gripper Current", ()->gripperFalcon.getSupplyCurrent(), null);
     builder.addDoubleProperty("Distance (m)", () -> {return getDistanceSensorM();}, null);

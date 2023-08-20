@@ -84,7 +84,7 @@ public class RobotContainer {
     panelLow.whileTrue(new AdaptiveArmMovement(armSub, ArmPositions.GROUND_SCORE_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelStow.onTrue(new AutoPlaceGamePiece(armSub, gripper, ArmPositions.MID_SCORE_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelGround.whileTrue(new GroundIntake(armSub, gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-    panelShelf.whileTrue(new ShelfIntake(armSub).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    panelShelf.whileTrue(new ShelfIntake(armSub, gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelRelease.whileTrue(new AdaptiveOuttake(gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelRollers.whileTrue(new ManualRollers(gripper, candle).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelEmptyRight.whileTrue(new UprightConeIntake(armSub, gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
@@ -104,12 +104,7 @@ public class RobotContainer {
 
 
 
-/*
- *  TODO:
- *      POTENTIALLY ADD AUTO LINK SCORING DETECTION -> PRIORITIZE CERTAIN POSITIONS OVER OTHERS
- *      FUCK WITH ALL JOINT PIDS AND MESS WITH ARBITRARY FEED FORWARD
- *      CLEAN CODE !!!!
- * 
+/* 
  *       STUFF TO TEST
  *      
  *      TEST AUTO WITHOUT RESETODOMETRY FUNCTION

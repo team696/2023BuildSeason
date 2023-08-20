@@ -11,6 +11,7 @@ import frc.lib.util.SwerveModuleConstants;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 
@@ -37,34 +38,34 @@ public class SwerveModule {
     public SwerveModule(int moduleNumber, SwerveModuleConstants moduleConstants){
             /* Swerve Angle Motor Configurations */
         SupplyCurrentLimitConfiguration angleSupplyLimit = new SupplyCurrentLimitConfiguration(
-            Constants.Swerve.angleEnableCurrentLimit, 
-            Constants.Swerve.angleContinuousCurrentLimit, 
-            Constants.Swerve.anglePeakCurrentLimit, 
-            Constants.Swerve.anglePeakCurrentDuration);
+            true, 
+            25, 
+            40, 
+            0.1);
 
-        swerveAngleFXConfig.slot0.kP = Constants.Swerve.angleKP;
-        swerveAngleFXConfig.slot0.kI = Constants.Swerve.angleKI;
-        swerveAngleFXConfig.slot0.kD = Constants.Swerve.angleKD;
-        swerveAngleFXConfig.slot0.kF = Constants.Swerve.angleKF;
+        swerveAngleFXConfig.slot0.kP = 0.6;
+        swerveAngleFXConfig.slot0.kI = 0.0;
+        swerveAngleFXConfig.slot0.kD = 12.0;
+        swerveAngleFXConfig.slot0.kF = 0.0;
         swerveAngleFXConfig.supplyCurrLimit = angleSupplyLimit;
         swerveAngleFXConfig.initializationStrategy = SensorInitializationStrategy.BootToZero;
 
 
         /* Swerve Drive Motor Configuration */
         SupplyCurrentLimitConfiguration driveSupplyLimit = new SupplyCurrentLimitConfiguration(
-            Constants.Swerve.driveEnableCurrentLimit, 
-            Constants.Swerve.driveContinuousCurrentLimit, 
-            Constants.Swerve.drivePeakCurrentLimit, 
-            Constants.Swerve.drivePeakCurrentDuration);
+            true, 
+            35, 
+            60, 
+            0.1);
 
-        swerveDriveFXConfig.slot0.kP = Constants.Swerve.driveKP;
-        swerveDriveFXConfig.slot0.kI = Constants.Swerve.driveKI;
-        swerveDriveFXConfig.slot0.kD = Constants.Swerve.driveKD;
-        swerveDriveFXConfig.slot0.kF = Constants.Swerve.driveKF;        
+        swerveDriveFXConfig.slot0.kP = 0.1;
+        swerveDriveFXConfig.slot0.kI = 0.0;
+        swerveDriveFXConfig.slot0.kD = 0.0;
+        swerveDriveFXConfig.slot0.kF = 0.0;        
         swerveDriveFXConfig.supplyCurrLimit = driveSupplyLimit;
         swerveDriveFXConfig.initializationStrategy = SensorInitializationStrategy.BootToZero;
-        swerveDriveFXConfig.openloopRamp = Constants.Swerve.openLoopRamp;
-        swerveDriveFXConfig.closedloopRamp = Constants.Swerve.closedLoopRamp;
+        swerveDriveFXConfig.openloopRamp = 0.05;
+        swerveDriveFXConfig.closedloopRamp = 0.1;
         swerveDriveFXConfig.nominalOutputForward = 0.03;
         swerveDriveFXConfig.nominalOutputReverse = -0.03;
 
@@ -128,7 +129,7 @@ public class SwerveModule {
         mAngleMotor.configFactoryDefault();
         mAngleMotor.configAllSettings(swerveAngleFXConfig);
         mAngleMotor.setInverted(Constants.Swerve.angleMotorInvert);
-        mAngleMotor.setNeutralMode(Constants.Swerve.angleNeutralMode);
+        mAngleMotor.setNeutralMode(NeutralMode.Coast);
         resetToAbsolute();
     }
 
@@ -136,7 +137,7 @@ public class SwerveModule {
         mDriveMotor.configFactoryDefault();
         mDriveMotor.configAllSettings(swerveDriveFXConfig);
         mDriveMotor.setInverted(Constants.Swerve.driveMotorInvert);
-        mDriveMotor.setNeutralMode(Constants.Swerve.driveNeutralMode);
+        mDriveMotor.setNeutralMode(NeutralMode.Brake);
         mDriveMotor.setSelectedSensorPosition(0);
     }
 

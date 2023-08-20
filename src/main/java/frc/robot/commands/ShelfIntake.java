@@ -7,14 +7,14 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.ArmPositions;
 import frc.robot.subsystems.ArmSub;
-
+import frc.robot.subsystems.Gripper;
 public class ShelfIntake extends CommandBase {
   /** Creates a new AdaptiveArmMovement. */
   ArmSub armSub;
-
-  public ShelfIntake(ArmSub armSub) {
+  Gripper gripper;
+  public ShelfIntake(ArmSub armSub, Gripper gripp) {
     this.armSub = armSub;
-   
+    this.gripper = gripp;
     addRequirements(armSub);
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -26,8 +26,8 @@ public class ShelfIntake extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-   
-       
+    gripper.moveGripper(-1);
+
       armSub.armRotPresetPositions(ArmPositions.SHELF_PICKUP_ADAPTIVE);
       armSub.jointRotPresetPositions(ArmPositions.SHELF_PICKUP_ADAPTIVE);
 
