@@ -24,7 +24,7 @@ public class UprightConeIntake extends CommandBase {
   public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
-  @Override
+  @Override //TODO: TURN ME INTO ADAPTIVE
   public void execute() {
       armSub.moveGripperJointPosition(47000);
       armSub.moveTelescopeArmPosition(0);

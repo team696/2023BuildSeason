@@ -55,30 +55,7 @@ public class TeleopSwerve extends CommandBase {
         double yAxis = -controller.getRawAxis(translationAxis);
         double xAxis = controller.getRawAxis(strafeAxis);
         double rAxis = controller.getRawAxis(rotationAxis);
-        
-        /* Deadbands 
-        if (Math.abs(yAxis) > Constants.stickDeadband) {
-            if (yAxis > 0){
-                yAxis = mapdouble(yAxis, Constants.stickDeadband, 1, 0, 1);
-            } else {
-                yAxis = mapdouble(yAxis, -Constants.stickDeadband, -1, 0, -1);
-            }
-        }
-        else{
-            yAxis = 0;
-        }
-        
-        if (Math.abs(xAxis) > Constants.stickDeadband) {
-            if (xAxis > 0){
-                xAxis = mapdouble(xAxis, Constants.stickDeadband, 1, 0, 1);
-            } else {
-                xAxis = mapdouble(xAxis, -Constants.stickDeadband, -1, 0, -1);
-            }
-        }
-        else{
-            xAxis = 0;
-        }
-        */
+
         if (leftJoy.getAsBoolean() != true){
             if (Math.abs(rAxis) > Constants.stickDeadband) {
                 if (rAxis > 0)
@@ -93,10 +70,10 @@ public class TeleopSwerve extends CommandBase {
         } else {
             rAxis = pidController.calculate(s_Swerve.db_getYaw(), Math.abs(s_Swerve.db_getYaw()) < 90 ? 0 : 180);
         }
+
         Rotation2d theta = new Rotation2d(yAxis, xAxis);
         double magnitude = Math.min(Math.sqrt((xAxis * xAxis) + (yAxis * yAxis)),1);
         if (magnitude < Constants.stickDeadband) magnitude = 0;
-       // translation = new Translation2d(yAxis, xAxis);
         translation = new Translation2d(magnitude, theta).times(Constants.Swerve.maxSpeed);
         rotation = rAxis * Constants.Swerve.maxAngularVelocity;
         s_Swerve.drive(translation, rotation, fieldRelative, openLoop);

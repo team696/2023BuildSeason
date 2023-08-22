@@ -234,36 +234,17 @@ public class Autos {
         sub = dblTopic.subscribe("none");  
     }
 
-    private void empty(Pose2d pose) {
-
+    private void setToBegin(Pose2d pose) {
+      // We Don't Want To Reset Our Pose if we have camera odometry -> 
+      //container.s_Swerve.resetOdometry(pose); If We don't have odometry run this to run autos properly!
     }
-    private List<PathPlannerTrajectory> flipList(List<PathPlannerTrajectory> list) {
-      List<PathPlannerTrajectory> end = new ArrayList<PathPlannerTrajectory>(list.size());
-      for (PathPlannerTrajectory traj : list){
-        List<State> states = new ArrayList<State>(traj.getStates().size());
-        for (int i = 0; i < traj.getStates().size(); ++i) {
-          State current = traj.getStates().get(i);
 
-          states.add(new State(
-            current.timeSeconds,
-            current.velocityMetersPerSecond,
-            current.accelerationMetersPerSecondSq,
-            new Pose2d(new Translation2d((current.poseMeters.getTranslation().getX()) * -1 + 16.5, current.poseMeters.getTranslation().getY()), new Rotation2d(current.poseMeters.getRotation().getRadians() * -1 + Math.PI)),
-            current.curvatureRadPerMeter
-          ));
-
-        }
-        PathPlannerTrajectory p = new PathPlannerTrajectory (states, traj.getMarkers(), traj.getStartStopEvent(), traj.getEndStopEvent(), traj.fromGUI);
-        end.add(p);
-      }
-      return end;
-    }
     public Autos(RobotContainer container){
         this.container = container;
         HashMap<String, Command> eventMap = new HashMap<>();
         eventMap.put("marker1", new PrintCommand("Passed marker 1"));
         eventMap.put("goarm", new AdaptiveArmMovement(container.armSub, ArmPositions.MID_SCORE_ADAPTIVE));
-        eventMap.put("stowarm", new AutoAdaptiveArmMovement(container.armSub, ArmPositions.STOWED_ADAPTIVE));
+        eventMap.put("stowarm", new AutoAdaptiveArmMovement(container.armSub, ArmPositions.STOWED_ADAPTIVE)); // TODO: THIS IS REDUNDANT -> DEFAULT COMMANDS ARE RUN DURING AUTO -> FIX OTHER COMMANDS TO REMOVE THIS!
         eventMap.put("placehigh", new AutoPlaceGamePiece(container.armSub, container.gripper, ArmPositions.HIGH_SCORE_ADAPTIVE));
         eventMap.put("switchcone", new InstantCommand(() -> ArmSub.gamePiece = 0));
         eventMap.put("switchcube", new InstantCommand(() -> ArmSub.gamePiece = 1));
@@ -277,7 +258,7 @@ public class Autos {
 
         autoBuilder = new SwerveAutoBuilder(
             container.s_Swerve::getPose, // Pose2d supplier
-            this::empty, // Pose2d consumer, used to reset odometry at the beginning of auto
+            this::setToBegin, // Pose2d consumer, used to reset odometry at the beginning of auto
             Constants.Swerve.swerveKinematics, // SwerveDriveKinematics
             new PIDConstants(5.0, 0.0, 0.0), // PID constants to correct for translation error (used to create the X and Y PID controllers)
             new PIDConstants(1.5, 0.0, 0.0), // PID constants to correct for rotation error (used to create the rotation controller)
@@ -321,13 +302,5 @@ public class Autos {
         } else {
           SmartDashboard.putStringArray("Auto List", names);
         }
-
-
-        //List<PathPlannerTrajectory> list = flipList(PathPlanner.loadPathGroup("Test", false, new PathConstraints(1, 1)));
-        //for (int i = 0; i < list.size(); ++i) {
-        //  container.s_Swerve.m_fieldSim.getObject("traj" + i).setTrajectory(list.get(i));
-
-        //}
-
     }
 }

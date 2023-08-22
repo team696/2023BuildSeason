@@ -34,7 +34,7 @@ public class AutoShootCone extends CommandBase {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
+  public void execute() { // TODO: REPLACE WITH DISTANCE SENSOR FOR BETTER CODE, TIMERS SHOULDN'T REALLY BE USED!
    
       armSub.moveRotArmPosition(90);
       armSub.moveGripperJointPosition(11000);

@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -60,6 +59,8 @@ public class AutoScore extends CommandBase {
   DoubleTopic dblTopic = inst.getDoubleTopic("/Dashboard/cock");
   DoubleSubscriber sub = dblTopic.subscribe(1);
 
+  double tv = 0;
+
   double[] ppp = {5,4.4,3.8,3.25,2.75,2.15,1.6,1.05,0.5};
 
   public AutoScore(Swerve swerve, ArmSub armSub, Gripper gripper) {
@@ -74,18 +75,18 @@ public class AutoScore extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    switch ((int)Math.floor(sub.get() / 9)) {
+    switch ((int)Math.floor(getSelected() / 9)) {
       case 0:
         pp = ArmPositions.GROUND_SCORE_ADAPTIVE; //LOW
         gp = ArmSub.gamePiece;
         break; 
       case 1:
         pp = ArmPositions.MID_SCORE_ADAPTIVE; //MID
-        gp = ((sub.get() %9)%3 == 1) ? 1 : 0;
+        gp = ((getSelected() %9)%3 == 1) ? 1 : 0;
         break;
       case 2: 
         pp = ArmPositions.HIGH_SCORE_ADAPTIVE; //HIGH
-        gp = ((sub.get() %9)%3 == 1) ? 1 : 0;
+        gp = ((getSelected() %9)%3 == 1) ? 1 : 0;
         break;
       default:
         throw new IllegalArgumentException(); // HOW TF DID WE GET THAT
@@ -95,7 +96,7 @@ public class AutoScore extends CommandBase {
     Alliance al = DriverStation.getAlliance();
     of = (0.3/2 - 0.055 - g.getDistanceSensorM()) * (al == DriverStation.Alliance.Red ? -1 : 1);
     x = (al == DriverStation.Alliance.Red ? 14.82 : 1.5); 
-    y = ppp[al==DriverStation.Alliance.Red ? 8-(int)((sub.get())%9) : (int)((sub.get())%9)];
+    y = ppp[al==DriverStation.Alliance.Red ? 8-(int)((getSelected())%9) : (int)((getSelected())%9)];
     r = new Rotation2d(al == DriverStation.Alliance.Red ? 0 : Math.PI);
     Rotation2d nr = new Rotation2d(Math.abs(curPose.getX() - x) < 2 ? ((y > curPose.getY() ? Math.PI/2 : Math.PI/2 * 3)) : (r.getRadians()));
     Pose2d newPose = new Pose2d(curPose.getTranslation(), nr);
@@ -132,15 +133,12 @@ public class AutoScore extends CommandBase {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.addDoubleProperty("Score Position", ()->sub.get(), null);
-   
+    builder.addDoubleProperty("Score Position", this::getSelected, null);
+    builder.addIntegerProperty("Score Position Setter", null, (t)->tv = t);
+    SmartDashboard.putNumber("AutoScore/Score Position Setter", 1);
   }
 
-  public static void autoSelectTab() {
-    if (DriverStation.getAlliance() == Alliance.Red){
-      Shuffleboard.selectTab("RED");
-    } else {
-      Shuffleboard.selectTab("BLUE");
-    }
+  private double getSelected() {
+    return tv;//sub.get();
   }
 }

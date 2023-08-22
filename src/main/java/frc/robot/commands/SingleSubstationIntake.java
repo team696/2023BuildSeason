@@ -24,7 +24,7 @@ public class SingleSubstationIntake extends CommandBase {
   public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
-  @Override
+  @Override //TODO: TURN ME INTO ADAPTIVE
   public void execute() {
     if(ArmSub.gamePiece == 0){
       armSub.moveGripperJointPosition(25000);

@@ -72,9 +72,9 @@ public class RobotContainer {
     panelEmptyLeft.whileTrue(new SingleSubstationIntake(armSub, gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelLED3.onTrue(new InstantCommand(() -> armSub.homeTelescopePosition()));
     panelLED4.onTrue(new InstantCommand(() -> armSub.homeGripperJointPos()));
-    panelLock.whileTrue(new MoveJointTemp(armSub, operatorPanel).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    panelLock.whileTrue(armSub.manualMoveGripper(()->operatorPanel.getRawAxis(0)).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)); //TODO : TEST ME old: new MoveJointTemp(armSub, operatorPanel) IF I WORK DELETE MoveJointTemp Command File
     panelLED5.whileTrue(new AdaptiveArmMovement(armSub, ArmPositions.FRAME_PERIMETER).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-     
+    
     rightJoy.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));    
     panelLED1.onTrue(new AutoScore(s_Swerve, armSub, gripper));
 

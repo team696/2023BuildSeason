@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import java.util.HashMap;
+import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
@@ -23,12 +24,15 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.math.Conversions;
 import frc.robot.util.Constants;
 import frc.robot.util.Constants.ArmPositions;
 
 public class ArmSub extends SubsystemBase {
+  public static final double MAX_EXTENSION = 53075;
+
   private TalonFX leftArm;
   private TalonFX rightArm; 
 
@@ -96,7 +100,7 @@ public class ArmSub extends SubsystemBase {
     armPID.setTolerance(0);
     armPID.enableContinuousInput(0, 360);
 
-    TrapezoidProfile.Constraints m_constraints = new TrapezoidProfile.Constraints(30, 15); // TODO: TEST THIS SHIT:: MAKE IT GOOD:: YAY :)
+    TrapezoidProfile.Constraints m_constraints = new TrapezoidProfile.Constraints(30, 15); // TODO: LOW PRIORITY -> MESS WITH THIS -> SEE IF ARM CAN GET SMOOTHER RESULTS -> I DOUBT IT BUT WHO KNOWS????????
     pArmPID = new ProfiledPIDController(0.012, 0.000, 0.000, m_constraints);
     pArmPID.setTolerance(0.1);
     pArmPID.enableContinuousInput(0, 360);
@@ -210,7 +214,7 @@ public class ArmSub extends SubsystemBase {
   
   final double maxGravityFFRet = 0.04007; //FORCE REQUIRED TO KEEP ARM AT HORIZONTAL WITH ARM RETRACTED, DETERMINE WITH testFF
   final double maxGravityFFExt = 0.0436;  // ^ BUT EXTENDED                  //MAX EXTENSION VALUE
-  double endFF = maxGravityFFRet + (telescopeArm.getSelectedSensorPosition() / 53075 * (maxGravityFFExt - maxGravityFFRet)) * cosineScalar;
+  double endFF = maxGravityFFRet + (telescopeArm.getSelectedSensorPosition() / MAX_EXTENSION * (maxGravityFFExt - maxGravityFFRet)) * cosineScalar;
 
   leftArm.set(ControlMode.PercentOutput, armPID.calculate(testCanCoder.getAbsolutePosition(), degrees), DemandType.ArbitraryFeedForward, endFF);
   armRotGoal = degrees;
@@ -317,6 +321,10 @@ public void homeGripperJointPos(){
 
   public double getGripperJointPos(){
     return gripperJointFalcon.getSelectedSensorPosition();
+  }
+
+  public CommandBase manualMoveGripper(DoubleSupplier sup) {
+    return this.runEnd(()->moveGripperJointPercentOutput(sup.getAsDouble()), ()->moveGripperJointPercentOutput(0));
   }
 
   @Override
