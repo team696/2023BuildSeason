@@ -96,7 +96,7 @@ public class ArmSub extends SubsystemBase {
     armPID.setTolerance(0);
     armPID.enableContinuousInput(0, 360);
 
-    TrapezoidProfile.Constraints m_constraints = new TrapezoidProfile.Constraints(1, 1); // TODO: TEST THIS SHIT:: MAKE IT GOOD:: YAY :)
+    TrapezoidProfile.Constraints m_constraints = new TrapezoidProfile.Constraints(30, 15); // TODO: TEST THIS SHIT:: MAKE IT GOOD:: YAY :)
     pArmPID = new ProfiledPIDController(0.012, 0.000, 0.000, m_constraints);
     pArmPID.setTolerance(0.1);
     pArmPID.enableContinuousInput(0, 360);
@@ -212,7 +212,7 @@ public class ArmSub extends SubsystemBase {
   final double maxGravityFFExt = 0.0436;  // ^ BUT EXTENDED                  //MAX EXTENSION VALUE
   double endFF = maxGravityFFRet + (telescopeArm.getSelectedSensorPosition() / 53075 * (maxGravityFFExt - maxGravityFFRet)) * cosineScalar;
 
-  leftArm.set(ControlMode.PercentOutput, pArmPID.calculate(testCanCoder.getAbsolutePosition(), degrees), DemandType.ArbitraryFeedForward, endFF);
+  leftArm.set(ControlMode.PercentOutput, armPID.calculate(testCanCoder.getAbsolutePosition(), degrees), DemandType.ArbitraryFeedForward, endFF);
   armRotGoal = degrees;
  }
 
@@ -320,7 +320,9 @@ public void homeGripperJointPos(){
   }
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+    
+  }
 
   @Override
   public void initSendable(SendableBuilder builder) {

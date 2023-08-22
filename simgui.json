@@ -168,12 +168,18 @@
       }
     },
     "transitory": {
+      "FMSInfo": {
+        "open": true
+      },
       "Shuffleboard": {
         "CUM RED": {
           "open": true
         }
       },
       "SmartDashboard": {
+        "Auto Selector": {
+          "open": true
+        },
         "Autos": {
           "Auto Selector": {
             "open": true

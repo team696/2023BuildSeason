@@ -35,6 +35,8 @@ public class Gripper extends SubsystemBase {
       distanceSensor.setDistanceUnits(Unit.kMillimeters);
     }
 
+    this.setDefaultCommand(this.slowIntake());
+
     SmartDashboard.putData(this);
   }
 
@@ -51,12 +53,21 @@ public class Gripper extends SubsystemBase {
     return RobotBase.isReal() ? distanceSensor.getRange() / 1000 : 0;
  }
 
- public CommandBase defaultCommand() {
+ public CommandBase slowIntake() {
   return this.runEnd(() -> {if (ArmSub.gamePiece == 0) moveGripper(-0.075); else moveGripper(0.07);}, ()->moveGripper(0));
+ }
+
+ public CommandBase spit() {
+  return this.runEnd(()->{if (ArmSub.gamePiece == 0) moveGripper(0.5); else moveGripper(-0.6);}, ()->moveGripper(0));
+ }
+
+ public CommandBase intake() {
+  return this.runEnd(() -> {if (ArmSub.gamePiece == 0) moveGripper(-1); else moveGripper(1);}, ()->moveGripper(0));
  }
 
   @Override
   public void periodic() {    
+    if (gripperFalcon.getSupplyCurrent() > 30) CANdleSub.override = true;
   }
 
   public void initSendable(SendableBuilder builder) {

@@ -93,8 +93,7 @@ public class TeleopSwerve extends CommandBase {
         } else {
             rAxis = pidController.calculate(s_Swerve.db_getYaw(), Math.abs(s_Swerve.db_getYaw()) < 90 ? 0 : 180);
         }
-        // TODO: TEST THIS AS WELL, POTENTIALLY INCREASE MAX SPEED, NOW THAT STICKS WORK RIGHT!
-        Rotation2d theta = new Rotation2d(xAxis, yAxis);
+        Rotation2d theta = new Rotation2d(yAxis, xAxis);
         double magnitude = Math.min(Math.sqrt((xAxis * xAxis) + (yAxis * yAxis)),1);
         if (magnitude < Constants.stickDeadband) magnitude = 0;
        // translation = new Translation2d(yAxis, xAxis);

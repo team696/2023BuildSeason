@@ -76,7 +76,10 @@ public class Robot extends TimedRobot {
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    autos.openSubs();
+    CommandScheduler.getInstance().cancelAll();
+  }
 
   @Override
   public void disabledPeriodic() {
@@ -92,7 +95,10 @@ public class Robot extends TimedRobot {
       m_robotContainer.armSub.homeGripperJointPos();
       m_robotContainer.armSub.homeTelescopePosition();
     }
-    autos.setTraj();
+    
+    if (autos.hasUpdated()) 
+      autos.setTraj();
+    
     if (autos.getFullTraj().getTotalTimeSeconds() != 0 && robotNum == -1)
       m_robotContainer.s_Swerve.m_fieldSim.setRobotPose((autos.getFullTraj().sample((Timer.getFPGATimestamp() - simAutoTimer)%autos.getFullTraj().getTotalTimeSeconds())).poseMeters);
   }
@@ -106,6 +112,7 @@ public class Robot extends TimedRobot {
     }
     m_robotContainer.armSub.ArmBrakeMode(NeutralMode.Brake);
     simAutoTimer = Timer.getFPGATimestamp();
+    autos.closeSubs();
   }
 
   /** This function is called periodically during autonomous. */
@@ -123,7 +130,9 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    autos.clearTraj();
     m_robotContainer.s_Swerve.zeroGyro(); 
+    autos.closeSubs();
   }
 
   /** This function is called periodically during operator control. */

@@ -7,15 +7,21 @@ import java.util.List;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.Trajectory.State;
+import edu.wpi.first.networktables.BooleanSubscriber;
+import edu.wpi.first.networktables.BooleanTopic;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringSubscriber;
 import edu.wpi.first.networktables.StringTopic;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -41,7 +47,13 @@ public class Autos {
 
     private NetworkTableInstance inst = NetworkTableInstance.getDefault();
     private StringTopic dblTopic = inst.getStringTopic("/Dashboard/auto selected");
-    private StringSubscriber sub = dblTopic.subscribe("none");  
+    private StringSubscriber sub;
+
+    private StringTopic chooserSelected = inst.getStringTopic("/SmartDashboard/Auto Selector/active");
+    private StringSubscriber chooserSub;
+
+    private BooleanTopic allianceSelected = inst.getBooleanTopic("/FMSInfo/IsRedAlliance");
+    private BooleanSubscriber allianceSub = allianceSelected.subscribe(false);
 
     private SendableChooser<String> backup;
 
@@ -50,15 +62,18 @@ public class Autos {
     class autoshit {
       public String name = "";
       public List<PathPlannerTrajectory> traj = new ArrayList<PathPlannerTrajectory>();
-      public Command command = new WaitCommand(0);
-      public Trajectory fulltraj = new PathPlannerTrajectory();
+      public Command commandB = new WaitCommand(0);
+      public Command commandR = new WaitCommand(0);
+      public Trajectory fulltrajB = new PathPlannerTrajectory();
+      public Trajectory fulltrajR = new PathPlannerTrajectory();
       public boolean DoPath = true;
       public autoshit(String name) {
         this.name = name;
       }
       public autoshit build(String hname, PathConstraints constraint, PathConstraints... constraints) {
         this.traj = PathPlanner.loadPathGroup(hname, false, constraint, constraints);
-        this.command = this.command.andThen(autoBuilder.fullAuto(this.traj));
+        this.commandB = this.commandB.andThen(autoBuilder.fullAuto(this.traj));
+        this.commandR = this.commandR.andThen(autoBuilder.fullAuto(flipList(this.traj)));
         return this;
       } 
 
@@ -72,12 +87,14 @@ public class Autos {
           return this;
         }
         this.traj = PathPlanner.loadPathGroup(hname, false, pc);
-        this.command = this.command.andThen(autoBuilder.fullAuto(this.traj));
+        this.commandB = autoBuilder.fullAuto(this.traj);
+        this.commandR = autoBuilder.fullAuto(flipList(this.traj));
         return this;
       }
 
       public autoshit add (Command end) {
-        this.command = this.command.andThen(end);
+        this.commandB = this.commandB.andThen(end);
+        this.commandR = this.commandR.andThen(end);
         return this;
       }
 
@@ -85,9 +102,9 @@ public class Autos {
         if (!DoPath) return;
 
         for (int i = 0; i < traj.size(); ++i) {
-            fulltraj = concat(fulltraj, traj.get(i));         
+            fulltrajB = concat(fulltrajB, traj.get(i));         
         }
-
+        fulltrajR = flip(fulltrajB);
         autos.add(this);
       }
 
@@ -118,8 +135,55 @@ public class Autos {
           }
           return new Trajectory(States);
         }
-      }
+        
+        private Trajectory flip (Trajectory blue) {
+          if (blue.getStates().size() == 0) return blue;
 
+          List<State> states = new ArrayList<State>();
+
+          for (int i = 0; i < blue.getStates().size(); ++i) {
+            State current = blue.getStates().get(i);
+            Pose2d newPose = new Pose2d(new Translation2d((current.poseMeters.getTranslation().getX()) * -1 + 16.5, current.poseMeters.getTranslation().getY()), new Rotation2d(current.poseMeters.getRotation().getRadians() * -1 + Math.PI));
+            states.add (
+              new State(
+                current.timeSeconds,
+                current.velocityMetersPerSecond,
+                current.accelerationMetersPerSecondSq,
+                newPose,
+                current.curvatureRadPerMeter
+              )
+            );
+          }
+          return new Trajectory(states);
+        }
+
+        private List<PathPlannerTrajectory> flipList(List<PathPlannerTrajectory> list) {
+          List<PathPlannerTrajectory> end = new ArrayList<PathPlannerTrajectory>(list.size());
+          for (PathPlannerTrajectory traj : list){
+            List<State> states = new ArrayList<State>(traj.getStates().size());
+            for (int i = 0; i < traj.getStates().size(); ++i) {
+              PathPlannerState current = (PathPlannerState)traj.getStates().get(i);
+              PathPlannerState b = new PathPlannerState();
+              b.accelerationMetersPerSecondSq = current.accelerationMetersPerSecondSq;
+              b.angularVelocityRadPerSec = current.angularVelocityRadPerSec;
+              b.curvatureRadPerMeter = current.curvatureRadPerMeter;
+              b.holonomicAngularVelocityRadPerSec = current.holonomicAngularVelocityRadPerSec;
+              b.holonomicRotation = current.holonomicRotation.plus(new Rotation2d(Math.PI));
+              b.poseMeters = new Pose2d(new Translation2d((current.poseMeters.getTranslation().getX()) * -1 + 16.5, current.poseMeters.getTranslation().getY()), new Rotation2d(current.poseMeters.getRotation().getRadians() * -1 + Math.PI));
+              b.timeSeconds = current.timeSeconds;
+              b.velocityMetersPerSecond = current.velocityMetersPerSecond;
+
+          states.add(b);
+
+        }
+        PathPlannerTrajectory p = new PathPlannerTrajectory (states, traj.getMarkers(), traj.getStartStopEvent(), traj.getEndStopEvent(), traj.fromGUI);
+        end.add(p);
+      }
+      return end;
+        }
+
+        
+    }
     public autoshit getAuto() {
         if (useShuffleBoard)
           return autoMap.get(backup.getSelected()); 
@@ -128,17 +192,72 @@ public class Autos {
     }
 
     public Command get() {
-        return getAuto().command;
+        return DriverStation.getAlliance() == DriverStation.Alliance.Blue ? getAuto().commandB : getAuto().commandR;
     }
 
     public Trajectory getFullTraj() {
-      return getAuto().fulltraj;
+      return DriverStation.getAlliance() == DriverStation.Alliance.Blue ? getAuto().fulltrajB : getAuto().fulltrajR;
     }
 
     public void setTraj() {
         container.s_Swerve.m_fieldSim.getObject("traj").setTrajectory(getFullTraj());
     }
 
+    public void clearTraj() {
+      container.s_Swerve.m_fieldSim.getObject("traj").setTrajectory(new Trajectory());
+    }
+
+    public boolean hasUpdated() {
+      if (useShuffleBoard) {
+        if (chooserSub.readQueueValues().length > 0) return true;
+      } else {
+        if(sub.readQueueValues().length > 0) return true;
+      }
+      if (allianceSub.readQueueValues().length > 0) return true;
+      return false;
+    }
+
+    public void closeSubs() {
+      if (chooserSub!=null)
+        chooserSub.close();
+      if (sub!=null)
+        sub.close();
+      if(allianceSub != null)
+        allianceSub.close();
+    }
+
+    public void openSubs() {
+      allianceSub = allianceSelected.subscribe(false);
+      if (useShuffleBoard) 
+        chooserSub = chooserSelected.subscribe("hi");
+      else
+        sub = dblTopic.subscribe("none");  
+    }
+
+    private void empty(Pose2d pose) {
+
+    }
+    private List<PathPlannerTrajectory> flipList(List<PathPlannerTrajectory> list) {
+      List<PathPlannerTrajectory> end = new ArrayList<PathPlannerTrajectory>(list.size());
+      for (PathPlannerTrajectory traj : list){
+        List<State> states = new ArrayList<State>(traj.getStates().size());
+        for (int i = 0; i < traj.getStates().size(); ++i) {
+          State current = traj.getStates().get(i);
+
+          states.add(new State(
+            current.timeSeconds,
+            current.velocityMetersPerSecond,
+            current.accelerationMetersPerSecondSq,
+            new Pose2d(new Translation2d((current.poseMeters.getTranslation().getX()) * -1 + 16.5, current.poseMeters.getTranslation().getY()), new Rotation2d(current.poseMeters.getRotation().getRadians() * -1 + Math.PI)),
+            current.curvatureRadPerMeter
+          ));
+
+        }
+        PathPlannerTrajectory p = new PathPlannerTrajectory (states, traj.getMarkers(), traj.getStartStopEvent(), traj.getEndStopEvent(), traj.fromGUI);
+        end.add(p);
+      }
+      return end;
+    }
     public Autos(RobotContainer container){
         this.container = container;
         HashMap<String, Command> eventMap = new HashMap<>();
@@ -158,13 +277,13 @@ public class Autos {
 
         autoBuilder = new SwerveAutoBuilder(
             container.s_Swerve::getPose, // Pose2d supplier
-            container.s_Swerve::resetOdometry, // Pose2d consumer, used to reset odometry at the beginning of auto
+            this::empty, // Pose2d consumer, used to reset odometry at the beginning of auto
             Constants.Swerve.swerveKinematics, // SwerveDriveKinematics
             new PIDConstants(5.0, 0.0, 0.0), // PID constants to correct for translation error (used to create the X and Y PID controllers)
             new PIDConstants(1.5, 0.0, 0.0), // PID constants to correct for rotation error (used to create the rotation controller)
             container.s_Swerve::setModuleStates, // Module states consumer used to output to the drive subsystem
             eventMap, // Event Map for adding commands.
-            true, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
+            false, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
             container.s_Swerve // The drive subsystem. Used to properly set the requirements of path following commands
         );
 
@@ -176,11 +295,14 @@ public class Autos {
         new autoshit("Middle Two Piece").build("MiddleTwoPiece",new PathConstraints(2, 2)).end();
         new autoshit("Cable Protector Climb").build("CableProtectorCharge",new PathConstraints(3  , 3), new PathConstraints(0.5, 1),new PathConstraints(3  , 3)).end();
         new autoshit("Cable Protector Double High").build("CableProtectorDoubleHigh",new PathConstraints(3.5  , 3), new PathConstraints(0.5, 1),new PathConstraints(3.5, 3),new PathConstraints(3.3  , 3.3),new PathConstraints(0.5, 1),new PathConstraints(3.0  , 3.0)).end();
-        //new autoshit("Test Path").build("Patha").end();
-        //new autoshit("Test").build("Test").end();
+        new autoshit("Test Path").build("Patha").end();
+        new autoshit("Test").build("Test").end();
 
-        if (useShuffleBoard)
+        if (useShuffleBoard) {
           backup = new SendableChooser<String>();
+          chooserSub = chooserSelected.subscribe("hi");
+        } else
+          sub = dblTopic.subscribe("none");  
 
         String[] names = new String[autos.size()];
 
@@ -199,5 +321,13 @@ public class Autos {
         } else {
           SmartDashboard.putStringArray("Auto List", names);
         }
+
+
+        //List<PathPlannerTrajectory> list = flipList(PathPlanner.loadPathGroup("Test", false, new PathConstraints(1, 1)));
+        //for (int i = 0; i < list.size(); ++i) {
+        //  container.s_Swerve.m_fieldSim.getObject("traj" + i).setTrajectory(list.get(i));
+
+        //}
+
     }
 }

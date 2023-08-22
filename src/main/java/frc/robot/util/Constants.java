@@ -102,7 +102,7 @@ public final class Constants {
 
     public static final class ArmRotationValues {
 
-    public static final double armRotStow = 5;
+    public static final double armRotStow = 2;
 
     public static final double armRotForHighCone = 70;
     public static final double armRotForHighCube = 50;

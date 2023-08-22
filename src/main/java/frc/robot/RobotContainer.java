@@ -54,21 +54,20 @@ public class RobotContainer {
 
   public RobotContainer() {    
     armSub.setDefaultCommand(new AdaptiveArmMovement(armSub, ArmPositions.STOWED_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-    gripper.setDefaultCommand(gripper.defaultCommand()); //TODO:: TEST THIS -> CLEANER CODE     //TODO: Move to Gripper Sub Constructor!
     configureButtonBindings();
   }
   
   private void configureButtonBindings() {
     s_Swerve.setDefaultCommand(new TeleopSwerve(s_Swerve, joystickPanel, translationAxis, strafeAxis, rotationAxis, true, true).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
-
+    
     panelHigh.whileTrue(new AdaptiveArmMovement(armSub, ArmPositions.HIGH_SCORE_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelMid.whileTrue(new AdaptiveArmMovement(armSub, ArmPositions.MID_SCORE_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelLow.whileTrue(new AdaptiveArmMovement(armSub, ArmPositions.GROUND_SCORE_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelStow.onTrue(new AutoPlaceGamePiece(armSub, gripper, ArmPositions.MID_SCORE_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelGround.whileTrue(new GroundIntake(armSub, gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelShelf.whileTrue(new ShelfIntake(armSub, gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-    panelRelease.whileTrue(new AdaptiveOuttake(gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-    panelRollers.whileTrue(new ManualRollers(gripper, candle).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    panelRelease.whileTrue(gripper.spit().withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    panelRollers.whileTrue(gripper.intake().withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelEmptyRight.whileTrue(new UprightConeIntake(armSub, gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelEmptyLeft.whileTrue(new SingleSubstationIntake(armSub, gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelLED3.onTrue(new InstantCommand(() -> armSub.homeTelescopePosition()));
