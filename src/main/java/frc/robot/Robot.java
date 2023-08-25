@@ -126,7 +126,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     m_robotContainer.armSub.ArmBrakeMode(NeutralMode.Brake);
-
+    CommandScheduler.getInstance().cancelAll(); // MAKING SURE COMMANDS AREN'T CONTINUED IF WE HAD TO DISABLE -> SAFETY!
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }

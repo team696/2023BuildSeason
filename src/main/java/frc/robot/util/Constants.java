@@ -229,7 +229,10 @@ public final class Constants {
         MID_SCORE_ADAPTIVE,
         HIGH_SCORE_ADAPTIVE,
         CONE_UPRIGHT,
-        FRAME_PERIMETER
+        FRAME_PERIMETER,
+        SINGLE_INTAKE,
+        UPRIGHT_CONE,
+        SHOOT
     }
 
 

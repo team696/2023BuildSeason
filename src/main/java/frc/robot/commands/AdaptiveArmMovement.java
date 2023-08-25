@@ -12,11 +12,19 @@ public class AdaptiveArmMovement extends CommandBase {
   /** Creates a new AdaptiveArmMovement. */
   ArmSub armSub;
   ArmPositions armPosition;
+  int gamepiece_override = -1;
   public AdaptiveArmMovement(ArmSub armSub, ArmPositions armPosition) {
     this.armSub = armSub;
     this.armPosition = armPosition;
+    gamepiece_override = -1;
     addRequirements(armSub);
-    // Use addRequirements() here to declare subsystem dependencies.
+  }
+
+  public AdaptiveArmMovement(ArmSub armSub, ArmPositions armPosition, int gamepiece_o) {
+    this.armSub = armSub;
+    this.armPosition = armPosition;
+    gamepiece_override = gamepiece_o;
+    addRequirements(armSub);
   }
 
   // Called when the command is initially scheduled.
@@ -25,29 +33,22 @@ public class AdaptiveArmMovement extends CommandBase {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() { // TODO:: MAKE SURE THIS WORKS!! -> ADAPT OTHER POSITIONS INTO THIS -> STUPID THEY ARE IN OTHER FILES
-   // if(armPosition == ArmPositions.STOWED_ADAPTIVE){
-     // armSub.armExtendPresetPositions(armPosition);
-     // armSub.jointRotPresetPositions(armPosition);
-     // if(armSub.getTelescopePos() <= 10000 && armSub.getGripperJointPos() <= 5000){
-     //   armSub.armRotPresetPositions(armPosition);
-     // }
-    //} else {
-      if (armSub.armRotGoal > armSub.getArmEncoderPosition()) { // GOING UP
+  public void execute() { 
+      if (gamepiece_override != -1)
+        ArmSub.gamePiece = gamepiece_override;
+      if (armSub.getArmRotGoal(armPosition) > armSub.getArmEncoderPosition()) { // GOING UP
         armSub.armRotPresetPositions(armPosition);
-        if (armSub.getArmEncoderPosition() / armSub.armRotGoal > 0.7){ 
-        // if(armSub.getArmEncoderPosition() >= armSub.armRotGoal*0.15)
+        if (armSub.getArmEncoderPosition() / armSub.getArmRotGoal(armPosition) > 0.7 || Math.abs(armSub.getArmEncoderPosition() - armSub.getArmRotGoal(armPosition)) < 7){ 
           armSub.jointRotPresetPositions(armPosition);
           armSub.armExtendPresetPositions(armPosition);
         } 
       } else {
         armSub.jointRotPresetPositions(armPosition);
         armSub.armExtendPresetPositions(armPosition);
-        if (Math.abs(armSub.getTelescopePos() - armSub.armExtendGoal) < ArmSub.MAX_EXTENSION * 0.3){ 
+        if (Math.abs(armSub.getTelescopePos() - armSub.getArmExtendGoal(armPosition)) < ArmSub.MAX_EXTENSION * 0.05){ 
           armSub.armRotPresetPositions(armPosition);
         } 
       }
-   // }
   }
 
   // Called once the command ends or is interrupted.

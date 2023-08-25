@@ -65,6 +65,10 @@ public class Gripper extends SubsystemBase {
   return this.runEnd(() -> {if (ArmSub.gamePiece == 0) moveGripper(-1); else moveGripper(1);}, ()->moveGripper(0));
  }
 
+ public void cancel() {
+    this.getCurrentCommand().cancel();
+ }
+
   @Override
   public void periodic() {    
     if (gripperFalcon.getSupplyCurrent() > 30) CANdleSub.override = true;

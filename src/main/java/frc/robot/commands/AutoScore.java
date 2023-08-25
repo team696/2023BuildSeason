@@ -34,7 +34,6 @@ import frc.robot.util.Constants;
 import frc.robot.util.Constants.ArmPositions;
 
 public class AutoScore extends CommandBase {
-  /** Creates a new AutoScore. */
   HolonomicDriveController cont = new HolonomicDriveController(new PIDController(5, 0, 0) , new PIDController(5, 0, 0), new ProfiledPIDController(3, 0, 0, new TrapezoidProfile.Constraints(Math.PI * 6, Math.PI * 4)));
   Swerve s;
   ArmSub a;
@@ -51,7 +50,6 @@ public class AutoScore extends CommandBase {
   Rotation2d r;
   double of;
   ArmPositions pp = ArmPositions.HIGH_SCORE_ADAPTIVE;
-  int gp = 0;
 
   Trigger hvm = new JoystickButton(new Joystick(2), 2);
 
@@ -78,15 +76,12 @@ public class AutoScore extends CommandBase {
     switch ((int)Math.floor(getSelected() / 9)) {
       case 0:
         pp = ArmPositions.GROUND_SCORE_ADAPTIVE; //LOW
-        gp = ArmSub.gamePiece;
         break; 
       case 1:
         pp = ArmPositions.MID_SCORE_ADAPTIVE; //MID
-        gp = ((getSelected() %9)%3 == 1) ? 1 : 0;
         break;
       case 2: 
         pp = ArmPositions.HIGH_SCORE_ADAPTIVE; //HIGH
-        gp = ((getSelected() %9)%3 == 1) ? 1 : 0;
         break;
       default:
         throw new IllegalArgumentException(); // HOW TF DID WE GET THAT
@@ -103,7 +98,7 @@ public class AutoScore extends CommandBase {
 
     traj = TrajectoryGenerator.generateTrajectory(List.of(newPose, new Pose2d(x, y, r)), config);
     s.m_fieldSim.getObject("traj").setTrajectory(traj);
-    ap = new AutoPlace(a, g, pp, gp);
+    ap = new AutoPlace(a, g, pp);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

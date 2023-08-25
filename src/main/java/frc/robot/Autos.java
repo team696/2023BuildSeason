@@ -29,10 +29,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.AdaptiveArmMovement;
-import frc.robot.commands.AutoAdaptiveArmMovement;
 import frc.robot.commands.AutoBalanceStation;
-import frc.robot.commands.AutoGroundIntake;
-import frc.robot.commands.AutoPlaceGamePiece;
+import frc.robot.commands.AutoPlace;
 import frc.robot.commands.AutoShootCone;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.util.Constants;
@@ -244,16 +242,16 @@ public class Autos {
         HashMap<String, Command> eventMap = new HashMap<>();
         eventMap.put("marker1", new PrintCommand("Passed marker 1"));
         eventMap.put("goarm", new AdaptiveArmMovement(container.armSub, ArmPositions.MID_SCORE_ADAPTIVE));
-        eventMap.put("stowarm", new AutoAdaptiveArmMovement(container.armSub, ArmPositions.STOWED_ADAPTIVE)); // TODO: THIS IS REDUNDANT -> DEFAULT COMMANDS ARE RUN DURING AUTO -> FIX OTHER COMMANDS TO REMOVE THIS!
-        eventMap.put("placehigh", new AutoPlaceGamePiece(container.armSub, container.gripper, ArmPositions.HIGH_SCORE_ADAPTIVE));
+        eventMap.put("stowarm", new InstantCommand(()->{container.armSub.cancel();container.gripper.cancel();})); // TODO: THIS IS REDUNDANT -> DEFAULT COMMANDS ARE RUN DURING AUTO -> FIX OTHER COMMANDS TO REMOVE THIS!
+        eventMap.put("placehigh", new AutoPlace(container.armSub, container.gripper, ArmPositions.HIGH_SCORE_ADAPTIVE));
         eventMap.put("switchcone", new InstantCommand(() -> ArmSub.gamePiece = 0));
         eventMap.put("switchcube", new InstantCommand(() -> ArmSub.gamePiece = 1));
-        eventMap.put("cubepickup", new AutoGroundIntake(container.armSub, container.gripper, 1) );
-        eventMap.put("conepickup", new AutoGroundIntake(container.armSub, container.gripper, 0) );
-        eventMap.put("placemid", new AutoPlaceGamePiece(container.armSub, container.gripper, ArmPositions.MID_SCORE_ADAPTIVE));
+        eventMap.put("cubepickup", new AdaptiveArmMovement(container.armSub, ArmPositions.GROUND_PICKUP_ADAPTIVE, 1).alongWith(container.gripper.intake()) );
+        eventMap.put("conepickup", new AdaptiveArmMovement(container.armSub, ArmPositions.GROUND_PICKUP_ADAPTIVE, 0).alongWith(container.gripper.intake()) );
+        eventMap.put("placemid", new AutoPlace(container.armSub, container.gripper, ArmPositions.MID_SCORE_ADAPTIVE));
         eventMap.put("holdstow", new AdaptiveArmMovement(container.armSub, ArmPositions.STOWED_ADAPTIVE));
         eventMap.put("balance", new AutoBalanceStation(container.s_Swerve));
-        eventMap.put("placelow", new AutoPlaceGamePiece(container.armSub, container.gripper, ArmPositions.GROUND_SCORE_ADAPTIVE));
+        eventMap.put("placelow", new AutoPlace(container.armSub, container.gripper, ArmPositions.GROUND_SCORE_ADAPTIVE));
         eventMap.put("shootcone", new AutoShootCone(container.armSub, container.gripper));
 
         autoBuilder = new SwerveAutoBuilder(

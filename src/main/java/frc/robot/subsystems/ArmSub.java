@@ -90,13 +90,13 @@ public class ArmSub extends SubsystemBase {
   /** Creates a new ArmSub. */
   public ArmSub() {
     testCanCoder = new CANCoder(14, "Karen");
-    testCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
+    testCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);// AbsoluteSensorRange.Signed_PlusMinus180 <- Potentially A Better Solution, Can't Go Past 180 Anyway, Can Make 0 horizontal. Not Necessary But Cool
     testCanCoder.configSensorDirection(true);
-    testCanCoder.configMagnetOffset(148);
+    testCanCoder.configMagnetOffset(140);
     
     limit = new SupplyCurrentLimitConfiguration(true, 30, 30, 0);
 
-    armPID = new PIDController(0.012, 0.000, 0.000);
+    armPID = new PIDController(0.009, 0.000, 0.0);
     armPID.setTolerance(0);
     armPID.enableContinuousInput(0, 360);
 
@@ -169,15 +169,15 @@ public class ArmSub extends SubsystemBase {
       
       gripperJointFalcon.configSupplyCurrentLimit(limit);
 
-      addPostoShoulder(ArmPositions.GROUND_PICKUP_ADAPTIVE, Constants.ArmRotationValues.armRotForConePickup, Constants.ArmRotationValues.armRotForCubePickup, Constants.ArmRotationValues.armRotForConePickup, Constants.ArmRotationValues.armRotForCubePickup);
+      addPostoShoulder(ArmPositions.GROUND_PICKUP_ADAPTIVE, -11, -11, -11, -11);
       addPostoShoulder(ArmPositions.STOWED_ADAPTIVE, Constants.ArmRotationValues.armRotStow, Constants.ArmRotationValues.armRotStow, Constants.ArmRotationValues.armRotStow, Constants.ArmRotationValues.armRotStow);
       addPostoShoulder(ArmPositions.GROUND_SCORE_ADAPTIVE, Constants.ArmRotationValues.armRotForLowCone, Constants.ArmRotationValues.armRotForLowCube,Constants.ArmRotationValues.armRotRevLowCone,Constants.ArmRotationValues.armRotRevLowCube);
-      addPostoShoulder(ArmPositions.SHELF_PICKUP_ADAPTIVE,  Constants.ArmRotationValues.armRotForShelfCone, Constants.ArmRotationValues.armRotForShelfCube, Constants.ArmRotationValues.armRotRevShelfCone, Constants.ArmRotationValues.armRotRevShelfCube);
+      addPostoShoulder(ArmPositions.SHELF_PICKUP_ADAPTIVE,  Constants.ArmRotationValues.armRotForShelfCone - 11, Constants.ArmRotationValues.armRotForShelfCube - 11, Constants.ArmRotationValues.armRotRevShelfCone - 11, Constants.ArmRotationValues.armRotRevShelfCube - 11);
       addPostoShoulder(ArmPositions.MID_SCORE_ADAPTIVE ,Constants.ArmRotationValues.armRotForMidCone ,Constants.ArmRotationValues.armRotForMidCube ,Constants.ArmRotationValues.armRotRevMidCone ,Constants.ArmRotationValues.armRotRevMidCube );
       addPostoShoulder(ArmPositions.HIGH_SCORE_ADAPTIVE ,Constants.ArmRotationValues.armRotForHighCone, Constants.ArmRotationValues.armRotForHighCube, Constants.ArmRotationValues.armRotRevHighCone, Constants.ArmRotationValues.armRotRevHighCube);
       addPostoShoulder(ArmPositions.FRAME_PERIMETER ,Constants.ArmRotationValues.framePerimeter ,Constants.ArmRotationValues.framePerimeter ,Constants.ArmRotationValues.framePerimeter ,Constants.ArmRotationValues.framePerimeter );  
 
-      addPostoExtend  (ArmPositions.GROUND_PICKUP_ADAPTIVE, Constants.ArmExtendValues.armExtendConePickup, Constants.ArmExtendValues.armExtendCubePickup, Constants.ArmExtendValues.armExtendConePickup, Constants.ArmExtendValues.armExtendCubePickup);
+      addPostoExtend  (ArmPositions.GROUND_PICKUP_ADAPTIVE,8000, 8000, 8000, 8000);
       addPostoExtend  (ArmPositions.STOWED_ADAPTIVE, Constants.ArmExtendValues.armExtendStow, Constants.ArmExtendValues.armExtendStow, Constants.ArmExtendValues.armExtendStow, Constants.ArmExtendValues.armExtendStow);
       addPostoExtend  (ArmPositions.GROUND_SCORE_ADAPTIVE, Constants.ArmExtendValues.armExtendForLowCone, Constants.ArmExtendValues.armExtendForLowCube, Constants.ArmExtendValues.armExtendRevLowCone, Constants.ArmExtendValues.armExtendRevLowCube);
       addPostoExtend  (ArmPositions.SHELF_PICKUP_ADAPTIVE, Constants.ArmExtendValues.armExtendForShelfCone, Constants.ArmExtendValues.armExtendForShelfCube, Constants.ArmExtendValues.armExtendRevShelfCone, Constants.ArmExtendValues.armExtendRevShelfCube);
@@ -185,14 +185,26 @@ public class ArmSub extends SubsystemBase {
       addPostoExtend  (ArmPositions.HIGH_SCORE_ADAPTIVE, Constants.ArmExtendValues.armExtendForHighCone, Constants.ArmExtendValues.armExtendForHighCube, Constants.ArmExtendValues.armExtendRevHighCone, Constants.ArmExtendValues.armExtendRevHighCube);
       addPostoExtend  (ArmPositions.FRAME_PERIMETER, Constants.ArmExtendValues.framePerimeter, Constants.ArmExtendValues.framePerimeter, Constants.ArmExtendValues.framePerimeter, Constants.ArmExtendValues.framePerimeter);
       
-      addPostoJoint   (ArmPositions.GROUND_PICKUP_ADAPTIVE, Constants.JointRotationValues.JointRotConePickup, Constants.JointRotationValues.JointRotCubePickup, Constants.JointRotationValues.JointRotConePickup, Constants.JointRotationValues.JointRotCubePickup);
+      addPostoJoint   (ArmPositions.GROUND_PICKUP_ADAPTIVE, 28000, 19932, 28000, 19932);
       addPostoJoint   (ArmPositions.STOWED_ADAPTIVE, Constants.JointRotationValues.JointRotStowCone, Constants.JointRotationValues.JointRotStowCube, Constants.JointRotationValues.JointRotStowCone, Constants.JointRotationValues.JointRotStowCube);
       addPostoJoint   (ArmPositions.GROUND_SCORE_ADAPTIVE, Constants.JointRotationValues.JointRotForLowCone, Constants.JointRotationValues.JointRotForLowCube, Constants.JointRotationValues.JointRotRevLowCone, Constants.JointRotationValues.JointRotRevLowCube);
-      addPostoJoint   (ArmPositions.SHELF_PICKUP_ADAPTIVE, Constants.JointRotationValues.JointRotForShelfCone, Constants.JointRotationValues.JointRotForShelfCube, Constants.JointRotationValues.JointRotRevShelfCone, Constants.JointRotationValues.JointRotRevShelfCube);
+      addPostoJoint   (ArmPositions.SHELF_PICKUP_ADAPTIVE, Constants.JointRotationValues.JointRotForShelfCone / multiplier, Constants.JointRotationValues.JointRotForShelfCube / multiplier, Constants.JointRotationValues.JointRotRevShelfCone / multiplier, Constants.JointRotationValues.JointRotRevShelfCube / multiplier);
       addPostoJoint   (ArmPositions.MID_SCORE_ADAPTIVE, Constants.JointRotationValues.JointRotForMidCone, Constants.JointRotationValues.JointRotForMidCube, Constants.JointRotationValues.JointRotRevMidCone, Constants.JointRotationValues.JointRotRevMidCube);
       addPostoJoint   (ArmPositions.HIGH_SCORE_ADAPTIVE, Constants.JointRotationValues.JointRotForHighCone, Constants.JointRotationValues.JointRotForHighCube, Constants.JointRotationValues.JointRotRevHighCone, Constants.JointRotationValues.JointRotRevHighCube);
       addPostoJoint   (ArmPositions.FRAME_PERIMETER, Constants.JointRotationValues.framePerimeter, Constants.JointRotationValues.framePerimeter, Constants.JointRotationValues.framePerimeter, Constants.JointRotationValues.framePerimeter);
   
+      addPostoShoulder(ArmPositions.UPRIGHT_CONE, 38,38,38,38);
+      addPostoExtend(ArmPositions.UPRIGHT_CONE,0,0,0,0);
+      addPostoJoint(ArmPositions.UPRIGHT_CONE, 47000,47000,47000,47000);
+
+      addPostoShoulder(ArmPositions.SINGLE_INTAKE, 35,35,35,35);
+      addPostoExtend(ArmPositions.SINGLE_INTAKE,0,0,0,0);
+      addPostoJoint(ArmPositions.SINGLE_INTAKE, 24000,12000,24000,12000);
+
+      addPostoShoulder(ArmPositions.SHOOT, 0,0,0,0); //TODO: INPUT VALUES FOR SHOOTING
+      addPostoExtend(ArmPositions.SHOOT, 0,0,0,0);
+      addPostoJoint(ArmPositions.SHOOT, 0,0,0,0);
+
       SmartDashboard.putData(this);
   }
 
@@ -279,18 +291,28 @@ public void homeGripperJointPos(){
  * Moves the arm to a dedicated preset positions
  * @param position The dedicated position enum    
   */
+  public double getArmRotGoal(ArmPositions position) {
+    return ShoulderPos.get(position)[robotDirection][gamePiece]+11;
+  }
+
   public void armRotPresetPositions(ArmPositions position){
-    moveRotArmPosition(ShoulderPos.get(position)[robotDirection][gamePiece]+3);
+    moveRotArmPosition(getArmRotGoal(position));
+  }
+
+  public double getArmExtendGoal(ArmPositions position) {
+    return ExtendPos.get(position)[robotDirection][gamePiece];
   }
 
   public void armExtendPresetPositions(ArmPositions position){
+    moveTelescopeArmPosition(getArmExtendGoal(position));
+  }
 
-    moveTelescopeArmPosition(ExtendPos.get(position)[robotDirection][gamePiece]);
-  
+  public double getJointRotGoal(ArmPositions position) {
+    return JointPos.get(position)[robotDirection][gamePiece] * multiplier;
   }
 
   public void jointRotPresetPositions(ArmPositions position){
-    moveGripperJointPosition(JointPos.get(position)[robotDirection][gamePiece] * multiplier);
+    moveGripperJointPosition(getJointRotGoal(position));
   }
   
 /**
@@ -326,6 +348,10 @@ public void homeGripperJointPos(){
   public CommandBase manualMoveGripper(DoubleSupplier sup) {
     return this.runEnd(()->moveGripperJointPercentOutput(sup.getAsDouble()), ()->moveGripperJointPercentOutput(0));
   }
+
+  public void cancel() {
+    this.getCurrentCommand().cancel();
+ }
 
   @Override
   public void periodic() {

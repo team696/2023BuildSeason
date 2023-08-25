@@ -63,20 +63,23 @@ public class RobotContainer {
     panelHigh.whileTrue(new AdaptiveArmMovement(armSub, ArmPositions.HIGH_SCORE_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelMid.whileTrue(new AdaptiveArmMovement(armSub, ArmPositions.MID_SCORE_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelLow.whileTrue(new AdaptiveArmMovement(armSub, ArmPositions.GROUND_SCORE_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-    panelStow.onTrue(new AutoPlaceGamePiece(armSub, gripper, ArmPositions.MID_SCORE_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-    panelGround.whileTrue(new GroundIntake(armSub, gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-    panelShelf.whileTrue(new ShelfIntake(armSub, gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    panelGround.whileTrue(new AdaptiveArmMovement(armSub, ArmPositions.GROUND_PICKUP_ADAPTIVE).alongWith(gripper.intake()).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)); 
+    panelShelf.whileTrue(new AdaptiveArmMovement(armSub, ArmPositions.SHELF_PICKUP_ADAPTIVE).alongWith(gripper.intake()).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelRelease.whileTrue(gripper.spit().withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelRollers.whileTrue(gripper.intake().withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-    panelEmptyRight.whileTrue(new UprightConeIntake(armSub, gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-    panelEmptyLeft.whileTrue(new SingleSubstationIntake(armSub, gripper).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    panelEmptyRight.whileTrue(new AdaptiveArmMovement(armSub, ArmPositions.UPRIGHT_CONE).alongWith(gripper.intake()).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)); 
+    panelEmptyLeft.whileTrue(new AdaptiveArmMovement(armSub, ArmPositions.SINGLE_INTAKE).alongWith(gripper.intake()).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)); 
+
     panelLED3.onTrue(new InstantCommand(() -> armSub.homeTelescopePosition()));
     panelLED4.onTrue(new InstantCommand(() -> armSub.homeGripperJointPos()));
-    panelLock.whileTrue(armSub.manualMoveGripper(()->operatorPanel.getRawAxis(0)).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)); //TODO : TEST ME old: new MoveJointTemp(armSub, operatorPanel) IF I WORK DELETE MoveJointTemp Command File
-    panelLED5.whileTrue(new AdaptiveArmMovement(armSub, ArmPositions.FRAME_PERIMETER).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-    
+    panelLock.whileTrue(armSub.manualMoveGripper(()->operatorPanel.getRawAxis(0)).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)); 
+      
     rightJoy.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));    
     panelLED1.onTrue(new AutoScore(s_Swerve, armSub, gripper));
+
+    //TODO: TEST BINDS -> REMOVE FOR COMP
+    panelLED2.onTrue(new AutoPlace(armSub, gripper, ArmPositions.SHOOT)); // IF THIS WORKS WELL -> REMOVE AutoShootCone.java -> 
+    panelLED2.onTrue(new AutoShootCone(armSub, gripper)); 
 
     operatorPanel.setOutputs(Integer.MAX_VALUE);
   }

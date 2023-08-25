@@ -50,7 +50,6 @@ public class AutoBalanceStation extends CommandBase {
     }
     @Override
   public boolean isFinished() {
-    // return pidController.atSetpoint();
     return false;
   }
 }
