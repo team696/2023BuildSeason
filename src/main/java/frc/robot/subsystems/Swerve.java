@@ -54,8 +54,6 @@ public class Swerve extends SubsystemBase {
     private PhotonCamera cams[];
     private PhotonPoseEstimator estimators[];
 
-    private boolean[] doCamOdometry = {true, true, true};
-
     public double gyroOffset = 0;
 
     public Swerve() {
@@ -192,12 +190,6 @@ public class Swerve extends SubsystemBase {
         m_poseEstimator.update(getYaw(), SwervePositions);
         
         for (int i = 0; i < 3; i ++) {
-            if (!cams[i].isConnected()) {
-                if (doCamOdometry[i]) 
-                    System.out.println("Couldn't Find Cam " + i + "!");
-                doCamOdometry[i] = false;
-                continue;
-            }
             PhotonPoseEstimator estimator = estimators[i];
             final Optional<EstimatedRobotPose> est = estimator.update();
             if (est.isPresent()) {
@@ -223,10 +215,6 @@ public class Swerve extends SubsystemBase {
     public void initSendable(SendableBuilder builder) {
         for(SwerveModule mod : mSwerveMods){
             builder.addDoubleProperty("Mod " + mod.moduleNumber + " Cancoder", ()->mod.db_getCanCoder(), null);
-        }
-        for (int i = 0; i < 3; i ++) {
-            final int index = i;
-            builder.addBooleanProperty("^Cam " + i, ()->doCamOdometry[index], (a) -> doCamOdometry[index] = a);
         }
         builder.addDoubleProperty("Gyro", ()->db_getYaw(), null);
         SmartDashboard.putData("Field", m_fieldSim);
