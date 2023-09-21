@@ -256,17 +256,18 @@
         "window": {
           "visible": true
         }
-      },
-      "/SmartDashboard/Field": {
-        "window": {
-          "visible": true
-        }
       }
     }
   },
   "NetworkTables": {
     "retained": {
       "Dashboard": {
+        "open": true
+      },
+      "SmartDashboard": {
+        "arm": {
+          "open": true
+        },
         "open": true
       }
     },
@@ -280,9 +281,6 @@
         }
       },
       "SmartDashboard": {
-        "AutoScore": {
-          "open": true
-        },
         "Autos": {
           "Auto Selector": {
             "open": true
@@ -291,8 +289,7 @@
         },
         "PPSwerveControllerCommand": {
           "open": true
-        },
-        "open": true
+        }
       }
     }
   },

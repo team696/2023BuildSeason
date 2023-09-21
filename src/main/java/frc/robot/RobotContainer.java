@@ -77,10 +77,6 @@ public class RobotContainer {
     rightJoy.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));    
     panelLED1.onTrue(new AutoScore(s_Swerve, armSub, gripper));
 
-    //TODO: TEST BINDS -> REMOVE FOR COMP
-    panelLED2.onTrue(new AutoPlace(armSub, gripper, ArmPositions.SHOOT)); // IF THIS WORKS WELL -> REMOVE AutoShootCone.java -> 
-    panelLED2.onTrue(new AutoShootCone(armSub, gripper)); 
-
     operatorPanel.setOutputs(Integer.MAX_VALUE);
   }
 }

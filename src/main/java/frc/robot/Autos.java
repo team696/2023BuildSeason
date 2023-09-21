@@ -31,7 +31,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.AdaptiveArmMovement;
 import frc.robot.commands.AutoBalanceStation;
 import frc.robot.commands.AutoPlace;
-import frc.robot.commands.AutoShootCone;
+import frc.robot.commands.AutoStow;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.util.Constants;
 import frc.robot.util.Constants.ArmPositions;
@@ -103,6 +103,7 @@ public class Autos {
             fulltrajB = concat(fulltrajB, traj.get(i));         
         }
         fulltrajR = flip(fulltrajB);
+        this.commandR.getRequirements();
         autos.add(this);
       }
 
@@ -166,12 +167,12 @@ public class Autos {
               b.angularVelocityRadPerSec = current.angularVelocityRadPerSec;
               b.curvatureRadPerMeter = current.curvatureRadPerMeter;
               b.holonomicAngularVelocityRadPerSec = current.holonomicAngularVelocityRadPerSec;
-              b.holonomicRotation = current.holonomicRotation.plus(new Rotation2d(Math.PI));
+              b.holonomicRotation = current.holonomicRotation.times(-1).plus(new Rotation2d(Math.PI));
               b.poseMeters = new Pose2d(new Translation2d((current.poseMeters.getTranslation().getX()) * -1 + 16.5, current.poseMeters.getTranslation().getY()), new Rotation2d(current.poseMeters.getRotation().getRadians() * -1 + Math.PI));
               b.timeSeconds = current.timeSeconds;
               b.velocityMetersPerSecond = current.velocityMetersPerSecond;
 
-          states.add(b);
+          states.add(b);  
 
         }
         PathPlannerTrajectory p = new PathPlannerTrajectory (states, traj.getMarkers(), traj.getStartStopEvent(), traj.getEndStopEvent(), traj.fromGUI);
@@ -242,7 +243,7 @@ public class Autos {
         HashMap<String, Command> eventMap = new HashMap<>();
         eventMap.put("marker1", new PrintCommand("Passed marker 1"));
         eventMap.put("goarm", new AdaptiveArmMovement(container.armSub, ArmPositions.MID_SCORE_ADAPTIVE));
-        eventMap.put("stowarm", new InstantCommand(()->{container.armSub.cancel();container.gripper.cancel();})); // TODO: THIS IS REDUNDANT -> DEFAULT COMMANDS ARE RUN DURING AUTO -> FIX OTHER COMMANDS TO REMOVE THIS!
+        eventMap.put("stowarm", new AutoStow(container.armSub, container.gripper)); 
         eventMap.put("placehigh", new AutoPlace(container.armSub, container.gripper, ArmPositions.HIGH_SCORE_ADAPTIVE));
         eventMap.put("switchcone", new InstantCommand(() -> ArmSub.gamePiece = 0));
         eventMap.put("switchcube", new InstantCommand(() -> ArmSub.gamePiece = 1));
@@ -252,7 +253,7 @@ public class Autos {
         eventMap.put("holdstow", new AdaptiveArmMovement(container.armSub, ArmPositions.STOWED_ADAPTIVE));
         eventMap.put("balance", new AutoBalanceStation(container.s_Swerve));
         eventMap.put("placelow", new AutoPlace(container.armSub, container.gripper, ArmPositions.GROUND_SCORE_ADAPTIVE));
-        eventMap.put("shootcone", new AutoShootCone(container.armSub, container.gripper));
+        eventMap.put("shootcone", new AutoPlace(container.armSub, container.gripper, ArmPositions.SHOOT));
 
         autoBuilder = new SwerveAutoBuilder(
             container.s_Swerve::getPose, // Pose2d supplier
@@ -267,13 +268,13 @@ public class Autos {
         );
 
         new autoshit("none").end();
-        new autoshit("Cable Protector Shoot 3").build("CableProtector", new PathConstraints(3, 3), new PathConstraints(0.5, 1),new PathConstraints(3, 3)).end();
+        new autoshit("Cable Protector Shoot 3").build("CableProtector", new PathConstraints(3, 3),new PathConstraints(3, 3)).end();
         new autoshit("Three Piece").build("ThreePieceCone",new PathConstraints(3, 3)).end();
         new autoshit("Two Piece Climb").build("FullAuto",new PathConstraints(3, 3),new PathConstraints(3, 3),new PathConstraints(3, 3),new PathConstraints(3, 3), new PathConstraints(2, 2)).end();
         new autoshit("Middle One Piece").build("MiddleOnePiece",new PathConstraints(2, 2)).end();
         new autoshit("Middle Two Piece").build("MiddleTwoPiece",new PathConstraints(2, 2)).end();
-        new autoshit("Cable Protector Climb").build("CableProtectorCharge",new PathConstraints(3  , 3), new PathConstraints(0.5, 1),new PathConstraints(3  , 3)).end();
-        new autoshit("Cable Protector Double High").build("CableProtectorDoubleHigh",new PathConstraints(3.5  , 3), new PathConstraints(0.5, 1),new PathConstraints(3.5, 3),new PathConstraints(3.3  , 3.3),new PathConstraints(0.5, 1),new PathConstraints(3.0  , 3.0)).end();
+        new autoshit("Cable Protector Climb").build("CableProtectorCharge",new PathConstraints(3, 3)).end();
+        new autoshit("Cable Protector Double High").build("CableProtectorDoubleHigh",new PathConstraints(3, 3)).end();
         new autoshit("Test Path").build("Patha").end();
         new autoshit("Test").build("Test").end();
 

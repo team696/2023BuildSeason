@@ -188,8 +188,7 @@ public final class Constants {
         public static final double JointRotForHighCube = 17000;
 
         public static final double JointRotForMidCone = 43000;
-        public static final double JointRotForMidCube = 17000
-        ;
+        public static final double JointRotForMidCube = 17000;
 
         public static final double JointRotForLowCone = 20000;
         public static final double JointRotForLowCube = 12000;
@@ -201,7 +200,7 @@ public final class Constants {
         public static final double JointRotForShelfCube = 9000;
 
 
-        public static final double JointRotRevHighCone = 12000;
+        public static final double JointRotRevHighCone = 13000;
         public static final double JointRotRevHighCube = 2000;
 
         public static final double JointRotRevMidCone = 7500;
@@ -235,9 +234,6 @@ public final class Constants {
         SHOOT
     }
 
-
-    
-    
     public static class CANdle {
         public static final int id = 19;
     }

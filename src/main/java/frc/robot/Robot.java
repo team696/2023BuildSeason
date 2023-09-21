@@ -19,12 +19,14 @@ import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.lib.common.narwhaldashboard.NarwhalDashboard;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.util.Constants;
 
@@ -60,6 +62,8 @@ public class Robot extends TimedRobot {
     DriverStation.silenceJoystickConnectionWarning(true);
 
     autos = new Autos(m_robotContainer);
+
+    NarwhalDashboard.startServer();
   }
 
   @Override
@@ -70,19 +74,26 @@ public class Robot extends TimedRobot {
     } else {
       m_robotContainer.armSub.robotDirection = 1;
     }  
+    
     SmartDashboard.putData("PDH",pdh);
     SmartDashboard.putNumber("Timer", DriverStation.getMatchTime());
+
+    NarwhalDashboard.put("time", Timer.getMatchTime());
+    NarwhalDashboard.put("voltage", RobotController.getBatteryVoltage());
+
 }
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
     autos.openSubs();
-    CommandScheduler.getInstance().cancelAll();
+    CommandScheduler.getInstance().cancelAll(); //SAFETY
   }
 
   @Override
   public void disabledPeriodic() {
+    m_robotContainer.armSub.hasReset = false; //PROFILEDPID SAFETY??? I THINK IT'S NECESSARY, MAYBE NOT. BETTER TO HAVE THEN NOT. PREVENTS SUDDEN JERKS AND HIGH SPEEDS WHEN FIRST CALCUTING SETPOINT.
+
     if(input.get()){
       m_robotContainer.armSub.ArmBrakeMode(NeutralMode.Coast);
     }
