@@ -55,16 +55,16 @@
     },
     {
       "anchorPoint": {
-        "x": 1.8983607197983627,
-        "y": 4.4077989010678875
+        "x": 1.8429369715882291,
+        "y": 4.423255560796836
       },
       "prevControl": {
-        "x": 3.531301763458228,
-        "y": 5.013014812354411
+        "x": 3.634115059438911,
+        "y": 4.624803878423386
       },
       "nextControl": {
-        "x": 3.531301763458228,
-        "y": 5.013014812354411
+        "x": 3.634115059438911,
+        "y": 4.624803878423386
       },
       "holonomicAngle": 0,
       "isReversal": true,
@@ -83,22 +83,22 @@
     },
     {
       "anchorPoint": {
-        "x": 6.5231238154784,
-        "y": 3.5627804588942515
+        "x": 5.206901556660257,
+        "y": 4.537773504118437
       },
       "prevControl": {
-        "x": 5.792297054679579,
-        "y": 4.396379732930407
+        "x": 4.30507275300265,
+        "y": 4.852697848252839
       },
       "nextControl": {
-        "x": 5.792297054679579,
-        "y": 4.396379732930407
+        "x": 5.986767349554022,
+        "y": 4.26543941771109
       },
-      "holonomicAngle": -24.443954780416572,
-      "isReversal": true,
+      "holonomicAngle": -65.77225468204577,
+      "isReversal": false,
       "velOverride": null,
       "isLocked": false,
-      "isStopPoint": true,
+      "isStopPoint": false,
       "stopEvent": {
         "names": [
           "stowarm"
@@ -110,26 +110,22 @@
     },
     {
       "anchorPoint": {
-        "x": 2.594929976184739,
-        "y": 4.4077989010678875
+        "x": 6.89604122065387,
+        "y": 3.5071120142240284
       },
       "prevControl": {
-        "x": 4.022325993369936,
-        "y": 4.430637237342851
+        "x": 6.480913676113066,
+        "y": 3.9794985304256327
       },
       "nextControl": null,
-      "holonomicAngle": -167.73522627210778,
+      "holonomicAngle": -48.01278750418336,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
-        "names": [
-          "switchcube",
-          "placelow",
-          "stowarm"
-        ],
-        "executionBehavior": "sequential",
+        "names": [],
+        "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0
       }

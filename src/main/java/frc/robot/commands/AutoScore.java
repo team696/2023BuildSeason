@@ -99,6 +99,8 @@ public class AutoScore extends CommandBase {
     traj = TrajectoryGenerator.generateTrajectory(List.of(newPose, new Pose2d(x, y, r)), config);
     s.m_fieldSim.getObject("traj").setTrajectory(traj);
     ap = new AutoPlace(a, g, pp);
+
+    a.resetPID();
   }
 
   // Called every time the scheduler runs while the command is scheduled.

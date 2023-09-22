@@ -64,6 +64,7 @@ public class Robot extends TimedRobot {
     autos = new Autos(m_robotContainer);
 
     NarwhalDashboard.startServer();
+
   }
 
   @Override

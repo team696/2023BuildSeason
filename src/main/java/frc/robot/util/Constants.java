@@ -184,7 +184,7 @@ public final class Constants {
         public static final double JointRotCubePickup = 10000;
         
 
-        public static final double JointRotForHighCone = 16000;
+        public static final double JointRotForHighCone = 14000;
         public static final double JointRotForHighCube = 17000;
 
         public static final double JointRotForMidCone = 43000;

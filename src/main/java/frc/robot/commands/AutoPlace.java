@@ -30,7 +30,7 @@ public class AutoPlace extends CommandBase {
   public void initialize() {
     finished = false;
     timer = 0;
-
+    armSub.resetPID();
   }
 
   // Called every time the scheduler runs while the command is scheduled.

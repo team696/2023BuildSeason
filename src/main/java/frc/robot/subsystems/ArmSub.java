@@ -13,16 +13,15 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -46,7 +45,6 @@ public class ArmSub extends SubsystemBase {
   private CANCoder testCanCoder;
 
   private ProfiledPIDController pArmPID;
-  private ArmFeedforward armFF;
 
   private SupplyCurrentLimitConfiguration limit;
 
@@ -63,8 +61,6 @@ public class ArmSub extends SubsystemBase {
   public double wristRotGoal = 0;
 
   public int robotDirection = 0;
-
-  private double test = 0;
 
   public boolean hasReset = false; // SUPER IMPORTANT!!! MAKES ProfiledPIDController NOT SHIT THE BED on startup. ALWAYS USE WITH PROFILEDPIDCONTROLLER
 
@@ -108,17 +104,15 @@ public class ArmSub extends SubsystemBase {
     armPID.setTolerance(0);
     //armPID.enableContinuousInput(0, 360);
 
-    TrapezoidProfile.Constraints m_constraints = new TrapezoidProfile.Constraints(360, 720); 
-    pArmPID = new ProfiledPIDController(0.016, 0.000, 0.000, m_constraints,0.02);
-    pArmPID.disableContinuousInput();
+    TrapezoidProfile.Constraints m_constraints = new TrapezoidProfile.Constraints(240, 720); 
+    pArmPID = new ProfiledPIDController(0.12, 0.000, 0.000, m_constraints,0.02);
+    pArmPID.disableContinuousInput(); //0.144
 
-    armFF = new ArmFeedforward(gamePiece, 0.5, 1.04, 0.03);
-
-    leftArm = new WPI_TalonFX(20, "Karen");
-    rightArm = new WPI_TalonFX(21, "Karen");
-    middleArm = new WPI_TalonFX(23, "Karen");
-    telescopeArm = new WPI_TalonFX(22, "Karen");
-    gripperJointFalcon = new WPI_TalonFX(40, "Karen");
+    leftArm = new TalonFX(20, "Karen");
+    rightArm = new TalonFX(21, "Karen");
+    middleArm = new TalonFX(23, "Karen");
+    telescopeArm = new TalonFX(22, "Karen");
+    gripperJointFalcon = new TalonFX(40, "Karen");
 
     leftArm.configFactoryDefault();
       leftArm.setNeutralMode(NeutralMode.Brake);
@@ -244,6 +238,15 @@ public class ArmSub extends SubsystemBase {
   double lastTime = 0;
   double lastSpeed = 0;
 
+  private double armFeedForwardCalc(double ks, double kg, double kv, double ka, double positionDeg, double velocityDegPerSec, double accelDegPerSecSquared) { // USE THIS TO EDIT kG. Taken from WPI's ArmFeedForward
+    double velocityRadPerSec = Math.toDegrees(velocityDegPerSec);
+    double accelRadPerSecSquared = Math.toDegrees(accelDegPerSecSquared);
+    return ks * Math.signum(velocityRadPerSec)
+        + kg * Math.cos(Math.toRadians(positionDeg))
+        + kv * velocityRadPerSec
+        + ka * accelRadPerSecSquared;
+  }
+
  public void moveRotArmPosition(double degrees){
   /* 
   final int kMeasuredPosHorizontal = 0;  // HORIZONTAL VALUE
@@ -262,18 +265,26 @@ public class ArmSub extends SubsystemBase {
   */
 
   if (hasReset == false) {
-    pArmPID.reset(testCanCoder.getAbsolutePosition()); //DO NOT REMOVE!!! check hasReset for reason
     hasReset = true;
+    resetPID();
   }
+
+  double kG = Math.min(0.8 + (telescopeArm.getSelectedSensorPosition() / MAX_EXTENSION * (0.9 - 0.8)), 0.9);
 
   double pidVal = pArmPID.calculate(testCanCoder.getAbsolutePosition(), degrees);
   double acceleration = (pArmPID.getSetpoint().velocity - lastSpeed) / (Timer.getFPGATimestamp() - lastTime);
-  double setPoint = (pidVal + armFF.calculate(testCanCoder.getAbsolutePosition(), pArmPID.getSetpoint().velocity, acceleration)) / 12;
+  double setPoint = (pidVal + armFeedForwardCalc(1.2318, kG, 0/* .00837*/, 0/* .016656*/, testCanCoder.getAbsolutePosition(), pArmPID.getSetpoint().velocity, acceleration)) / RobotController.getBatteryVoltage();
   leftArm.set(ControlMode.PercentOutput, setPoint);
   lastSpeed = pArmPID.getSetpoint().velocity;
   lastTime = Timer.getFPGATimestamp();
 
   armRotGoal = degrees;
+ }
+
+ public void resetPID() {
+    pArmPID.reset(testCanCoder.getAbsolutePosition());
+    lastTime = Timer.getFPGATimestamp();
+    lastSpeed = 0;
  }
 
   public void moveRotArmPercentOutput(double percent){
@@ -357,16 +368,14 @@ public void homeGripperJointPos(){
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.addDoubleProperty("^Arm Rotation Goal", ()->{return armRotGoal;}, null);
-    builder.addDoubleProperty("^Arm Extension Goal", ()-> {return armExtendGoal;}, null);
-    builder.addDoubleProperty("^Wrist Rotation Goal", ()-> {return wristRotGoal;}, null);
+    builder.addDoubleProperty("Arm Rotation Goal", ()->{return armRotGoal;}, null);
+    builder.addDoubleProperty("Arm Extension Goal", ()-> {return armExtendGoal;}, null);
+    builder.addDoubleProperty("Wrist Rotation Goal", ()-> {return wristRotGoal;}, null);
 
-    builder.addDoubleProperty("^Arm Rotation Position", ()->testCanCoder.getAbsolutePosition(), null);
-    builder.addDoubleProperty("^Arm Extension Position", ()->telescopeArm.getSelectedSensorPosition(), null);
-    builder.addDoubleProperty("^Wrist Rotation Position", ()->getGripperJointPos(), null);
+    builder.addDoubleProperty("Arm Rotation Position", ()->testCanCoder.getAbsolutePosition(), null);
+    builder.addDoubleProperty("Arm Extension Position", ()->telescopeArm.getSelectedSensorPosition(), null);
+    builder.addDoubleProperty("Wrist Rotation Position", ()->getGripperJointPos(), null);
 
-    builder.addIntegerProperty("Arm Encoder Status", ()->testCanCoder.getMagnetFieldStrength().value, null);
-    builder.addDoubleProperty("Test FF", null, (t)->test=t);
-    SmartDashboard.putNumber("ArmSub/Test FF", 0);   
+    builder.addIntegerProperty("zArm Encoder Status", ()->testCanCoder.getMagnetFieldStrength().value, null);
   }
 } 
