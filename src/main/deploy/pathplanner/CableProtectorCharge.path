@@ -28,56 +28,6 @@
     },
     {
       "anchorPoint": {
-        "x": 3.4,
-        "y": 0.7
-      },
-      "prevControl": {
-        "x": 2.2457598839377724,
-        "y": 0.7
-      },
-      "nextControl": {
-        "x": 4.505066359960422,
-        "y": 0.7
-      },
-      "holonomicAngle": 0,
-      "isReversal": false,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": true,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 4.524769391419125,
-        "y": 0.7
-      },
-      "prevControl": {
-        "x": 3.9750315240726595,
-        "y": 0.7
-      },
-      "nextControl": {
-        "x": 5.074507258765594,
-        "y": 0.7
-      },
-      "holonomicAngle": 0,
-      "isReversal": false,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": true,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
         "x": 6.5231238154784,
         "y": 1.073401804923269
       },
@@ -105,16 +55,16 @@
     },
     {
       "anchorPoint": {
-        "x": 4.49051188700668,
-        "y": 0.9249526191360088
+        "x": 4.033092637613847,
+        "y": 0.7873108603360066
       },
       "prevControl": {
-        "x": 4.684637745343868,
-        "y": 0.8650019864142308
+        "x": 4.2272184959510355,
+        "y": 0.7273602276142286
       },
       "nextControl": {
-        "x": 4.296386028669493,
-        "y": 0.9849032518577867
+        "x": 3.8389667792766593,
+        "y": 0.8472614930577845
       },
       "holonomicAngle": 0,
       "isReversal": false,
@@ -180,11 +130,20 @@
       }
     }
   ],
+  "maxVelocity": 3.0,
+  "maxAcceleration": null,
+  "isReversed": null,
   "markers": [
     {
       "position": 0.01,
       "names": [
         "holdstow"
+      ]
+    },
+    {
+      "position": 0.009999999999999787,
+      "names": [
+        "conepickup"
       ]
     },
     {
@@ -194,25 +153,19 @@
       ]
     },
     {
-      "position": 4.01,
-      "names": [
-        "conepickup"
-      ]
-    },
-    {
-      "position": 3.02,
+      "position": 1.02,
       "names": [
         "shootcone"
       ]
     },
     {
-      "position": 4.01,
+      "position": 2.01,
       "names": [
         "conepickup"
       ]
     },
     {
-      "position": 5.01,
+      "position": 3.01,
       "names": [
         "holdstow"
       ]

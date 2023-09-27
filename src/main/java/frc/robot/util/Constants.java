@@ -185,9 +185,9 @@ public final class Constants {
         
 
         public static final double JointRotForHighCone = 14000;
-        public static final double JointRotForHighCube = 17000;
+        public static final double JointRotForHighCube = 15000;
 
-        public static final double JointRotForMidCone = 43000;
+        public static final double JointRotForMidCone = 40000;
         public static final double JointRotForMidCube = 17000;
 
         public static final double JointRotForLowCone = 20000;
@@ -196,20 +196,20 @@ public final class Constants {
         public static final double JointRotForConePickup = 13000;
         public static final double JointRotForCubePickup = 8000;
 
-        public static final double JointRotForShelfCone = 6500;//1500;
+        public static final double JointRotForShelfCone = 5500;//1500;
         public static final double JointRotForShelfCube = 9000;
 
 
-        public static final double JointRotRevHighCone = 13000;
+        public static final double JointRotRevHighCone = 11000;
         public static final double JointRotRevHighCube = 2000;
 
-        public static final double JointRotRevMidCone = 7500;
+        public static final double JointRotRevMidCone = 6000;
         public static final double JointRotRevMidCube = 4000;
   
         public static final double JointRotRevLowCone = 1000;
         public static final double JointRotRevLowCube = 0;
 
-        public static final double JointRotRevShelfCone = 43200;//46000;
+        public static final double JointRotRevShelfCone = 40000;//46000;
         public static final double JointRotRevShelfCube = 0;
 
         public static final double framePerimeter = 0;

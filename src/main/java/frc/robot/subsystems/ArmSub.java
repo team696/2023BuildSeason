@@ -64,6 +64,8 @@ public class ArmSub extends SubsystemBase {
 
   public boolean hasReset = false; // SUPER IMPORTANT!!! MAKES ProfiledPIDController NOT SHIT THE BED on startup. ALWAYS USE WITH PROFILEDPIDCONTROLLER
 
+  double outputValue = 0;
+
   public static int gamePiece = 0;
                               //frd/rev, cone/cube
   private HashMap<ArmPositions, double[][]> ShoulderPos = new HashMap<>();
@@ -96,7 +98,7 @@ public class ArmSub extends SubsystemBase {
     testCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
     testCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
     testCanCoder.configSensorDirection(true);
-    testCanCoder.configMagnetOffset(26);
+    testCanCoder.configMagnetOffset(23);
     
     limit = new SupplyCurrentLimitConfiguration(true, 30, 30, 0);
 
@@ -104,9 +106,9 @@ public class ArmSub extends SubsystemBase {
     armPID.setTolerance(0);
     //armPID.enableContinuousInput(0, 360);
 
-    TrapezoidProfile.Constraints m_constraints = new TrapezoidProfile.Constraints(240, 720); 
-    pArmPID = new ProfiledPIDController(0.12, 0.000, 0.000, m_constraints,0.02);
-    pArmPID.disableContinuousInput(); //0.144
+    TrapezoidProfile.Constraints m_constraints = new TrapezoidProfile.Constraints(330, 900); 
+    pArmPID = new ProfiledPIDController(0.18, 0.0, 0.0, m_constraints,0.02);
+    pArmPID.disableContinuousInput(); 
 
     leftArm = new TalonFX(20, "Karen");
     rightArm = new TalonFX(21, "Karen");
@@ -204,12 +206,12 @@ public class ArmSub extends SubsystemBase {
       addPostoJoint   (ArmPositions.GROUND_PICKUP_ADAPTIVE, 31000, 20000, 31000, 20000);
       addPostoJoint   (ArmPositions.STOWED_ADAPTIVE, Constants.JointRotationValues.JointRotStowCone, Constants.JointRotationValues.JointRotStowCube, Constants.JointRotationValues.JointRotStowCone, Constants.JointRotationValues.JointRotStowCube);
       addPostoJoint   (ArmPositions.GROUND_SCORE_ADAPTIVE, Constants.JointRotationValues.JointRotForLowCone, Constants.JointRotationValues.JointRotForLowCube, Constants.JointRotationValues.JointRotRevLowCone, Constants.JointRotationValues.JointRotRevLowCube);
-      addPostoJoint   (ArmPositions.SHELF_PICKUP_ADAPTIVE, Constants.JointRotationValues.JointRotForShelfCone / 0.667, Constants.JointRotationValues.JointRotForShelfCube / 0.667, 42000, Constants.JointRotationValues.JointRotRevShelfCube / 0.667);
+      addPostoJoint   (ArmPositions.SHELF_PICKUP_ADAPTIVE, Constants.JointRotationValues.JointRotForShelfCone / 0.667, Constants.JointRotationValues.JointRotForShelfCube / 0.667, 40000, Constants.JointRotationValues.JointRotRevShelfCube / 0.667);
       addPostoJoint   (ArmPositions.MID_SCORE_ADAPTIVE, 45000, Constants.JointRotationValues.JointRotForMidCube, 8500, Constants.JointRotationValues.JointRotRevMidCube);
       addPostoJoint   (ArmPositions.HIGH_SCORE_ADAPTIVE, 0, Constants.JointRotationValues.JointRotForHighCube, Constants.JointRotationValues.JointRotRevHighCone, Constants.JointRotationValues.JointRotRevHighCube);
       addPostoJoint   (ArmPositions.FRAME_PERIMETER, Constants.JointRotationValues.framePerimeter, Constants.JointRotationValues.framePerimeter, Constants.JointRotationValues.framePerimeter, Constants.JointRotationValues.framePerimeter);
   
-      addPostoShoulder(ArmPositions.UPRIGHT_CONE, 38,38,38,38);
+      addPostoShoulder(ArmPositions.UPRIGHT_CONE, 41,41,41,41);
       addPostoExtend(ArmPositions.UPRIGHT_CONE,0,0,0,0);
       addPostoJoint(ArmPositions.UPRIGHT_CONE, 47000,47000,47000,47000);
 
@@ -269,12 +271,13 @@ public class ArmSub extends SubsystemBase {
     resetPID();
   }
 
-  double kG = Math.min(0.8 + (telescopeArm.getSelectedSensorPosition() / MAX_EXTENSION * (0.9 - 0.8)), 0.9);
+  double kG = Math.min(0.9 + (telescopeArm.getSelectedSensorPosition() / MAX_EXTENSION * (1.2 - 0.9)), 0.9);
 
   double pidVal = pArmPID.calculate(testCanCoder.getAbsolutePosition(), degrees);
   double acceleration = (pArmPID.getSetpoint().velocity - lastSpeed) / (Timer.getFPGATimestamp() - lastTime);
-  double setPoint = (pidVal + armFeedForwardCalc(1.2318, kG, 0/* .00837*/, 0/* .016656*/, testCanCoder.getAbsolutePosition(), pArmPID.getSetpoint().velocity, acceleration)) / RobotController.getBatteryVoltage();
+  double setPoint = (pidVal+ armFeedForwardCalc(1.2318, kG, 0/* .00837*/, 0/* .016656*/, testCanCoder.getAbsolutePosition(), pArmPID.getSetpoint().velocity, acceleration)) / RobotController.getBatteryVoltage(); // 
   leftArm.set(ControlMode.PercentOutput, setPoint);
+  outputValue = setPoint;
   lastSpeed = pArmPID.getSetpoint().velocity;
   lastTime = Timer.getFPGATimestamp();
 
@@ -338,7 +341,7 @@ public void homeGripperJointPos(){
   }
 
   public double getJointRotGoal(ArmPositions position) {
-    return JointPos.get(position)[robotDirection][gamePiece] * multiplier;
+    return JointPos.get(position)[robotDirection][gamePiece] * multiplier + 1615;
   }
 
   public void jointRotPresetPositions(ArmPositions position){
@@ -377,5 +380,7 @@ public void homeGripperJointPos(){
     builder.addDoubleProperty("Wrist Rotation Position", ()->getGripperJointPos(), null);
 
     builder.addIntegerProperty("zArm Encoder Status", ()->testCanCoder.getMagnetFieldStrength().value, null);
+
+    builder.addDoubleProperty("Arm Output", ()->outputValue, null);
   }
 } 

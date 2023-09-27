@@ -89,7 +89,17 @@ public class AutoScore extends CommandBase {
     t = Timer.getFPGATimestamp();       
     Pose2d curPose = s.getPose();
     Alliance al = DriverStation.getAlliance();
-    of = (0.3/2 - 0.055 - g.getDistanceSensorM()) * (al == DriverStation.Alliance.Red ? -1 : 1);
+    of = 0;//(0.3/2 - 0.055 - g.getDistanceSensorM()) * (al == DriverStation.Alliance.Red ? -1 : 1);
+    if (ArmSub.gamePiece == 0) {
+      if (g.getDistanceSensorM() > 0) {
+        if (g.getDistanceSensorM() > 0.3) {
+          of = -0.125;
+        } else if (g.getDistanceSensorM() < 0.1) {
+          of = 0.125;
+        }
+      }
+    }
+    of *= (al == DriverStation.Alliance.Red ? -1 : 1);
     x = (al == DriverStation.Alliance.Red ? 14.82 : 1.5); 
     y = ppp[al==DriverStation.Alliance.Red ? 8-(int)((getSelected())%9) : (int)((getSelected())%9)];
     r = new Rotation2d(al == DriverStation.Alliance.Red ? 0 : Math.PI);
