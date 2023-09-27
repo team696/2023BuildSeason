@@ -1,8 +1,10 @@
 package frc.robot;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Scanner;
 
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
@@ -271,15 +273,7 @@ public class Autos {
         );
 
         new autoshit("none").end();
-        new autoshit("Cable Protector Shoot 3").build("CableProtector", new PathConstraints(3, 3),new PathConstraints(3, 3)).end();
-        new autoshit("Three Piece").build("ThreePieceCone",new PathConstraints(3, 3)).end();
-        new autoshit("Two Piece Climb").build("FullAuto",new PathConstraints(3, 3),new PathConstraints(3, 3),new PathConstraints(3, 3),new PathConstraints(3, 3), new PathConstraints(2, 2)).end();
-        new autoshit("Middle One Piece").build("MiddleOnePiece",new PathConstraints(2, 2)).end();
-        new autoshit("Middle Two Piece").build("MiddleTwoPiece",new PathConstraints(2, 2)).end();
-        new autoshit("Cable Protector Climb").build("CableProtectorCharge",new PathConstraints(3, 3)).end();
-        new autoshit("Cable Protector Double High").build("CableProtectorDoubleHigh",new PathConstraints(3, 3)).end();
-        new autoshit("Test Path").build("Patha").end();
-        new autoshit("Test").build("Test").end();
+        autoImportAutos();
 
         if (useShuffleBoard) {
           backup = new SendableChooser<String>();
@@ -304,5 +298,46 @@ public class Autos {
         } else {
           SmartDashboard.putStringArray("Auto List", names);
         }
+
+        autoImportAutos();
+    }
+    public void autoImportAutos() {
+      //System.out.println("Working Directory = " + System.getProperty("user.dir"));
+      File[] files = new File("src/main/deploy/pathplanner/").listFiles(); // Simulation
+      //File[] files = new File("home/lvuser/deploy").listFiles(); //Real Robot
+      for (File f : files) {
+        boolean vel = false;
+        boolean accel = false;
+        String pathname = f.getName().substring(0, f.getName().length() - 5);
+        try (Scanner scanner = new Scanner(f)) {
+          while (scanner.hasNextLine()) {
+            final String lineFromFile = scanner.nextLine();
+            if(lineFromFile.contains("maxVelocity") == true && lineFromFile.contains("null") == false) 
+              vel = true;
+            if (lineFromFile.contains("maxAcceleration") == true && lineFromFile.contains("null") == false)
+              accel = true;
+            if (vel && accel) break;
+          }
+          if (vel == false || accel == false)
+            new autoshit(pathname).build(pathname, new PathConstraints(3, 3),new PathConstraints(3, 3)).end();
+          else
+            new autoshit(pathname).build(pathname).end();
+        } catch (Exception e) {
+          System.out.println(f.getName());
+          System.out.println(e);
+        } 
+      } 
+    }
+
+    public void manuallyImportAutos() {
+      new autoshit("Cable Protector Shoot 3").build("CableProtector", new PathConstraints(3, 3),new PathConstraints(3, 3)).end();
+      new autoshit("Three Piece").build("ThreePieceCone",new PathConstraints(3, 3)).end();
+      new autoshit("Two Piece Climb").build("FullAuto",new PathConstraints(3, 3),new PathConstraints(3, 3),new PathConstraints(3, 3),new PathConstraints(3, 3), new PathConstraints(2, 2)).end();
+      new autoshit("Middle One Piece").build("MiddleOnePiece",new PathConstraints(2, 2)).end();
+      new autoshit("Middle Two Piece").build("MiddleTwoPiece",new PathConstraints(2, 2)).end();
+      new autoshit("Cable Protector Climb").build("CableProtectorCharge",new PathConstraints(3, 3)).end();
+      new autoshit("Cable Protector Double High").build("CableProtectorDoubleHigh",new PathConstraints(3, 3)).end();
+      new autoshit("Test Path").build("Patha").end();
+      new autoshit("Test").build("Test").end();
     }
 }

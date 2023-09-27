@@ -278,9 +278,13 @@
       "Shuffleboard": {
         "CUM RED": {
           "open": true
-        }
+        },
+        "open": true
       },
       "SmartDashboard": {
+        "Auto Selector": {
+          "open": true
+        },
         "Autos": {
           "Auto Selector": {
             "open": true
@@ -289,7 +293,8 @@
         },
         "PPSwerveControllerCommand": {
           "open": true
-        }
+        },
+        "open": true
       }
     }
   },

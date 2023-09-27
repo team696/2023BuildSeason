@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.Rev2mDistanceSensor;
 import com.revrobotics.Rev2mDistanceSensor.Port;
+import com.revrobotics.Rev2mDistanceSensor.RangeProfile;
 import com.revrobotics.Rev2mDistanceSensor.Unit;
 
 public class Gripper extends SubsystemBase {
@@ -30,9 +31,8 @@ public class Gripper extends SubsystemBase {
     gripperFalcon.setNeutralMode(NeutralMode.Brake);
 
     if (RobotBase.isReal()){
-      distanceSensor = new Rev2mDistanceSensor(Port.kOnboard); 
+      distanceSensor = new Rev2mDistanceSensor(Port.kOnboard, Unit.kMillimeters, RangeProfile.kHighAccuracy); 
       distanceSensor.setAutomaticMode(true);
-      distanceSensor.setDistanceUnits(Unit.kMillimeters);
     }
 
     this.setDefaultCommand(this.slowIntake());
@@ -50,7 +50,7 @@ public class Gripper extends SubsystemBase {
   }
 
   public double getDistanceSensorM(){
-    return RobotBase.isReal() ? distanceSensor.getRange() / 1000 : 0;
+    return RobotBase.isReal() ? distanceSensor.getRange() / 1000 : -1;
  }
 
  public CommandBase slowIntake() {
@@ -72,6 +72,11 @@ public class Gripper extends SubsystemBase {
   @Override
   public void periodic() {    
     if (gripperFalcon.getSupplyCurrent() > 30) CANdleSub.override = true;
+    if (distanceSensor.getRange() <= 0) { // Reinitialize on loss of connection?
+      distanceSensor = new Rev2mDistanceSensor(Port.kOnboard, Unit.kMillimeters, RangeProfile.kHighAccuracy); 
+      distanceSensor.setAutomaticMode(true);
+      distanceSensor.setEnabled(true);
+    }
   }
 
   public void initSendable(SendableBuilder builder) {
