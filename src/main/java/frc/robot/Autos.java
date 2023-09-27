@@ -234,8 +234,11 @@ public class Autos {
     }
 
     private void setToBegin(Pose2d pose) {
-      // We Don't Want To Reset Our Pose if we have camera odometry -> 
-      //container.s_Swerve.resetOdometry(pose); If We don't have odometry run this to run autos properly!
+      container.s_Swerve.zeroGyro();
+      if (container.s_Swerve.getPose().getTranslation().getDistance(pose.getTranslation()) > 2)
+        container.s_Swerve.resetOdometry(pose);
+
+      //If Our Pose is off, reset Pose to at least run it a little correct. If cams don't work, this will save the auto!
     }
 
     public Autos(RobotContainer container){
@@ -259,8 +262,8 @@ public class Autos {
             container.s_Swerve::getPose, // Pose2d supplier
             this::setToBegin, // Pose2d consumer, used to reset odometry at the beginning of auto
             Constants.Swerve.swerveKinematics, // SwerveDriveKinematics
-            new PIDConstants(5.0, 0.0, 0.0), // PID constants to correct for translation error (used to create the X and Y PID controllers)
-            new PIDConstants(1.5, 0.0, 0.0), // PID constants to correct for rotation error (used to create the rotation controller)
+            new PIDConstants(4, 0.0, 0.0), // PID constants to correct for translation error (used to create the X and Y PID controllers)
+            new PIDConstants(3, 0.0, 0.0), // PID constants to correct for rotation error (used to create the rotation controller)
             container.s_Swerve::setModuleStates, // Module states consumer used to output to the drive subsystem
             eventMap, // Event Map for adding commands.
             false, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
