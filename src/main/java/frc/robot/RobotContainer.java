@@ -70,13 +70,15 @@ public class RobotContainer {
     panelEmptyRight.whileTrue(new AdaptiveArmMovement(armSub, ArmPositions.UPRIGHT_CONE).alongWith(gripper.intake()).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)); 
     panelEmptyLeft.whileTrue(new AdaptiveArmMovement(armSub, ArmPositions.SINGLE_INTAKE).alongWith(gripper.intake()).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)); 
 
-    panelLED3.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));    
-    //panelLED3.onTrue(new InstantCommand(() -> armSub.homeTelescopePosition()));
-    // panelLED4.onTrue(new InstantCommand(() -> armSub.homeGripperJointPos()));
+    //panelLED3.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));    
+    //panelLED4.onTrue(new InstantCommand(() -> armSub.homeTelescopePosition()));
+    //panelLED5.onTrue(new InstantCommand(() -> armSub.homeGripperJointPos()));
     panelLock.whileTrue(armSub.manualMoveGripper(()->operatorPanel.getRawAxis(0)).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)); 
       
     rightJoy.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));    
-    panelLED1.onTrue(new AutoScore(s_Swerve, armSub, gripper));
+    panelLED3.onTrue(new AutoScore(s_Swerve, armSub, gripper, 0));
+    panelLED4.onTrue(new AutoScore(s_Swerve, armSub, gripper, 1));
+    panelLED5.onTrue(new AutoScore(s_Swerve, armSub, gripper, 2));
 
     operatorPanel.setOutputs(Integer.MAX_VALUE);
   }

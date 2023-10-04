@@ -188,13 +188,13 @@ public class Swerve extends SubsystemBase {
         }
 
         m_poseEstimator.update(getYaw(), SwervePositions);
-        
+        /* 
         for (int i = 0; i < 3; i ++) {
             PhotonPoseEstimator estimator = estimators[i];
             final Optional<EstimatedRobotPose> est = estimator.update();
             if (est.isPresent()) {
                 boolean checkAmb = true;
-                final EstimatedRobotPose estimatedPoseA = est.get();
+                final EstimatedRobotPos e estimatedPoseA = est.get();
                 for (PhotonTrackedTarget t : estimatedPoseA.targetsUsed) {
                     if (t.getPoseAmbiguity() == -1 || t.getPoseAmbiguity() > 0.15  )
                         checkAmb = false;
@@ -206,6 +206,7 @@ public class Swerve extends SubsystemBase {
                     m_poseEstimator.addVisionMeasurement(estimatedPoseA.estimatedPose.toPose2d(), estimatedPoseA.timestampSeconds); 
             }
         } 
+        */
         if (Robot.robotNum != -1) {
             m_fieldSim.setRobotPose(getPose());
         } 

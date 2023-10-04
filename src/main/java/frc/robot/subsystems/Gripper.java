@@ -72,12 +72,12 @@ public class Gripper extends SubsystemBase {
   @Override
   public void periodic() {    
     if (gripperFalcon.getSupplyCurrent() > 30) CANdleSub.override = true;
-    if (!RobotBase.isReal()) return;
-    if (distanceSensor.getRange() <= 0) { // Reinitialize on loss of connection?
-      distanceSensor = new Rev2mDistanceSensor(Port.kOnboard, Unit.kMillimeters, RangeProfile.kHighAccuracy); 
-      distanceSensor.setAutomaticMode(true);
-      distanceSensor.setEnabled(true);
-    }
+    //if (!RobotBase.isReal()) return;
+    //if (distanceSensor.getRange() <= 0) { // Reinitialize on loss of connection?
+    //  distanceSensor = new Rev2mDistanceSensor(Port.kOnboard, Unit.kMillimeters, RangeProfile.kHighAccuracy); 
+    //  distanceSensor.setAutomaticMode(true);
+    //  distanceSensor.setEnabled(true);
+    //}
   }
 
   public void initSendable(SendableBuilder builder) {

@@ -30,7 +30,7 @@ import frc.robot.util.Constants;
 import frc.robot.util.Constants.ArmPositions;
 
 public class ArmSub extends SubsystemBase {
-  public static final double MAX_EXTENSION = 53075;
+  public static final double MAX_EXTENSION = 51000;
 
   private TalonFX leftArm;
   private TalonFX rightArm; 
@@ -100,15 +100,15 @@ public class ArmSub extends SubsystemBase {
     testCanCoder.configSensorDirection(true);
     testCanCoder.configMagnetOffset(23);
     
-    limit = new SupplyCurrentLimitConfiguration(true, 30, 30, 0);
+    limit = new SupplyCurrentLimitConfiguration(true, 35, 10, 0.1);
 
-    armPID = new PIDController(0.007, 0.000, 0.0);
+    armPID = new PIDController(0.01, 0.000, 0.0);
     armPID.setTolerance(0);
     //armPID.enableContinuousInput(0, 360);
 
-    TrapezoidProfile.Constraints m_constraints = new TrapezoidProfile.Constraints(330, 900); 
+    TrapezoidProfile.Constraints m_constraints = new TrapezoidProfile.Constraints(360, 820); 
     pArmPID = new ProfiledPIDController(0.18, 0.0, 0.0, m_constraints,0.02);
-    pArmPID.disableContinuousInput(); 
+    pArmPID.disableContinuousInput();   // 0.18
 
     leftArm = new TalonFX(20, "Karen");
     rightArm = new TalonFX(21, "Karen");
@@ -164,7 +164,7 @@ public class ArmSub extends SubsystemBase {
       telescopeArm.config_kF(0, 0.0);
       telescopeArm.setNeutralMode(NeutralMode.Brake);
       telescopeArm.configNeutralDeadband(0.1);
-      telescopeArm.configMotionAcceleration(45000);
+      telescopeArm.configMotionAcceleration(60000);
       telescopeArm.configMotionCruiseVelocity(300000);
       telescopeArm.setSelectedSensorPosition(0);
       telescopeArm.configSupplyCurrentLimit(limit);
@@ -192,7 +192,7 @@ public class ArmSub extends SubsystemBase {
       addPostoShoulder(ArmPositions.GROUND_SCORE_ADAPTIVE, Constants.ArmRotationValues.armRotForLowCone, 5,Constants.ArmRotationValues.armRotRevLowCone,Constants.ArmRotationValues.armRotRevLowCube);
       addPostoShoulder(ArmPositions.SHELF_PICKUP_ADAPTIVE,  Constants.ArmRotationValues.armRotForShelfCone - 11, Constants.ArmRotationValues.armRotForShelfCube - 11, Constants.ArmRotationValues.armRotRevShelfCone - 11, Constants.ArmRotationValues.armRotRevShelfCube - 11);
       addPostoShoulder(ArmPositions.MID_SCORE_ADAPTIVE ,Constants.ArmRotationValues.armRotForMidCone , 36 ,Constants.ArmRotationValues.armRotRevMidCone ,Constants.ArmRotationValues.armRotRevMidCube );
-      addPostoShoulder(ArmPositions.HIGH_SCORE_ADAPTIVE , 0, 47, 133, Constants.ArmRotationValues.armRotRevHighCube);
+      addPostoShoulder(ArmPositions.HIGH_SCORE_ADAPTIVE , 0, 47, 128, Constants.ArmRotationValues.armRotRevHighCube);
       addPostoShoulder(ArmPositions.FRAME_PERIMETER ,Constants.ArmRotationValues.framePerimeter ,Constants.ArmRotationValues.framePerimeter ,Constants.ArmRotationValues.framePerimeter ,Constants.ArmRotationValues.framePerimeter );  
 
       addPostoExtend  (ArmPositions.GROUND_PICKUP_ADAPTIVE,8000, 8000, 8000, 8000);
@@ -274,8 +274,9 @@ public class ArmSub extends SubsystemBase {
   double kG = Math.min(0.9 + (telescopeArm.getSelectedSensorPosition() / MAX_EXTENSION * (1.2 - 0.9)), 0.9);
 
   double pidVal = pArmPID.calculate(testCanCoder.getAbsolutePosition(), degrees);
+  // + armFeedForwardCalc(1.2318, kG, 0/* .00837*/, 0/* .016656*/, testCanCoder.getAbsolutePosition(), pArmPID.getSetpoint().velocity, acceleration)
   double acceleration = (pArmPID.getSetpoint().velocity - lastSpeed) / (Timer.getFPGATimestamp() - lastTime);
-  double setPoint = (pidVal+ armFeedForwardCalc(1.2318, kG, 0/* .00837*/, 0/* .016656*/, testCanCoder.getAbsolutePosition(), pArmPID.getSetpoint().velocity, acceleration)) / RobotController.getBatteryVoltage(); // 
+  double setPoint = (pidVal + armFeedForwardCalc(1.2318, kG, 0/* .00837*/, 0/* .016656*/, testCanCoder.getAbsolutePosition(), pArmPID.getSetpoint().velocity, acceleration)) / RobotController.getBatteryVoltage(); // 
   leftArm.set(ControlMode.PercentOutput, setPoint);
   outputValue = setPoint;
   lastSpeed = pArmPID.getSetpoint().velocity;

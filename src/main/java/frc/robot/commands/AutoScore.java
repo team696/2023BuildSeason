@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.lib.common.narwhaldashboard.NarwhalDashboard;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.subsystems.Gripper;
 import frc.robot.subsystems.Swerve;
@@ -54,17 +55,18 @@ public class AutoScore extends CommandBase {
   Trigger hvm = new JoystickButton(new Joystick(2), 2);
 
   NetworkTableInstance inst = NetworkTableInstance.getDefault();
-  DoubleTopic dblTopic = inst.getDoubleTopic("/Dashboard/cock");
+  DoubleTopic dblTopic = inst.getDoubleTopic("AutoScore/Score Position Setter");
   DoubleSubscriber sub = dblTopic.subscribe(1);
 
   double tv = 0;
+  int offfffff = 0;
+  double[] ppp = {5.025,4.45,3.9,3.35,2.85,2.25,1.7,1.15,0.5}; // GLOBAL OFFSET S ABU
 
-  double[] ppp = {5,4.4,3.8,3.25,2.75,2.15,1.6,1.05,0.5};
-
-  public AutoScore(Swerve swerve, ArmSub armSub, Gripper gripper) {
+  public AutoScore(Swerve swerve, ArmSub armSub, Gripper gripper, int off) {
     s = swerve;
     a = armSub;
     g = gripper;
+    offfffff = off;
     addRequirements(swerve);
 
     SmartDashboard.putData(this);
@@ -91,13 +93,19 @@ public class AutoScore extends CommandBase {
     Alliance al = DriverStation.getAlliance();
     of = 0;//(0.3/2 - 0.055 - g.getDistanceSensorM()) * (al == DriverStation.Alliance.Red ? -1 : 1);
     if (ArmSub.gamePiece == 0) {
-      if (g.getDistanceSensorM() > 0) {
+    /*   if (g.getDistanceSensorM() > 0) {
         if (g.getDistanceSensorM() > 0.3) {
-          of = -0.125;
+          of = -0.08;
         } else if (g.getDistanceSensorM() < 0.1) {
-          of = 0.125;
+          of = 0.08;
         }
-      }
+      } else { */
+        if (offfffff == 0) {
+          of = -0.08; // HERE ABU
+        } else if (offfffff == 2) {
+          of = 0.07; // HERE ABU THE RIGHT BUTTON
+        }
+      //}
     }
     of *= (al == DriverStation.Alliance.Red ? -1 : 1);
     x = (al == DriverStation.Alliance.Red ? 14.82 : 1.5); 
@@ -106,7 +114,7 @@ public class AutoScore extends CommandBase {
     Rotation2d nr = new Rotation2d(Math.abs(curPose.getX() - x) < 2 ? ((y > curPose.getY() ? Math.PI/2 : Math.PI/2 * 3)) : (r.getRadians()));
     Pose2d newPose = new Pose2d(curPose.getTranslation(), nr);
 
-    traj = TrajectoryGenerator.generateTrajectory(List.of(newPose, new Pose2d(x, y, r)), config);
+    traj = TrajectoryGenerator.generateTrajectory(List.of(newPose, new Pose2d(x, y + of, r)), config);
     s.m_fieldSim.getObject("traj").setTrajectory(traj);
     ap = new AutoPlace(a, g, pp);
 
@@ -141,11 +149,11 @@ public class AutoScore extends CommandBase {
   @Override
   public void initSendable(SendableBuilder builder) {
     builder.addDoubleProperty("Score Position", this::getSelected, null);
-    builder.addIntegerProperty("Score Position Setter", null, (t)->tv = t);
+    //builder.addIntegerProperty("Score Position Setter", null, (t)->tv = t);
     SmartDashboard.putNumber("AutoScore/Score Position Setter", 1);
   }
 
   private double getSelected() {
-    return tv;//sub.get();
+    return NarwhalDashboard.selected;
   }
 }

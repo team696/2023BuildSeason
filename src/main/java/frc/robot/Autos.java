@@ -237,8 +237,8 @@ public class Autos {
 
     private void setToBegin(Pose2d pose) {
       container.s_Swerve.zeroGyro();
-      if (container.s_Swerve.getPose().getTranslation().getDistance(pose.getTranslation()) > 2)
-        container.s_Swerve.resetOdometry(pose);
+      //if (container.s_Swerve.getPose().getTranslation().getDistance(pose.getTranslation()) > 2)
+         container.s_Swerve.resetOdometry(pose);
 
       //If Our Pose is off, reset Pose to at least run it a little correct. If cams don't work, this will save the auto!
     }
@@ -274,6 +274,7 @@ public class Autos {
 
         new autoshit("none").end();
         autoImportAutos();
+        //new autoshit("Place High").add(eventMap.get("placehigh")).end();
 
         if (useShuffleBoard) {
           backup = new SendableChooser<String>();
@@ -298,13 +299,11 @@ public class Autos {
         } else {
           SmartDashboard.putStringArray("Auto List", names);
         }
-
-        autoImportAutos();
     }
     public void autoImportAutos() {
       //System.out.println("Working Directory = " + System.getProperty("user.dir"));
-      File[] files = new File("src/main/deploy/pathplanner/").listFiles(); // Simulation
-      //File[] files = new File("home/lvuser/deploy").listFiles(); //Real Robot
+      //File[] files = new File("src/main/deploy/pathplanner/").listFiles(); // Simulation
+      File[] files = new File("home/lvuser/deploy/pathplanner/").listFiles(); //Real Robot
       for (File f : files) {
         boolean vel = false;
         boolean accel = false;

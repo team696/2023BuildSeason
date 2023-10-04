@@ -26,9 +26,12 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.lib.common.narwhaldashboard.NarwhalDashboard;
+import frc.robot.commands.AutoPlace;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.util.Constants;
+import frc.robot.util.Constants.ArmPositions;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -117,7 +120,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = autos.get();
+    m_autonomousCommand = autos.get();//new InstantCommand(() -> ArmSub.gamePiece = 0).andThen(new AutoPlace(m_robotContainer.armSub, m_robotContainer.gripper, ArmPositions.HIGH_SCORE_ADAPTIVE));//
     autos.setTraj();
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();

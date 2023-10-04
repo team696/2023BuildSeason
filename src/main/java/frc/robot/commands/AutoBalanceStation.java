@@ -20,7 +20,7 @@ public class AutoBalanceStation extends CommandBase {
     public AutoBalanceStation(Swerve s_Swerve) {
         this.s_Swerve = s_Swerve ;
         addRequirements(s_Swerve);
-        pidController = new PIDController(0.1 , 0, 0);
+        pidController = new PIDController(0.0975, 0, 0);
     }
     
     @Override

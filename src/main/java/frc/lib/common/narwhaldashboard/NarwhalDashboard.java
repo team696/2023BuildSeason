@@ -21,7 +21,7 @@ public class NarwhalDashboard extends WebSocketServer {
     public static Boolean gridSelected = false;
     private static final int PORT = 5805;
     private final static int UPDATE_WAVELENGTH = 100;
-
+    public static double selected = 0;
     public static int getUpdateWavelength() {
         return UPDATE_WAVELENGTH;
     }
@@ -223,7 +223,8 @@ public class NarwhalDashboard extends WebSocketServer {
         // Receive limelight selection (could be consolidated with pipeline)
         } else if (parts[0].equals("grid")) {
             Log.info("NarwhalDashboard", "Set Grid To" + parts[1]);
-            SmartDashboard.putNumber("AutoScore/Score Position Setter", Integer.parseInt(parts[1]));
+            //SmartDashboard.putNumber("AutoScore/Score Position Setter", Integer.parseInt(parts[1]));
+            selected = Integer.parseInt(parts[1]);
         } else {
             Log.info("NarwhalDashboard", "Message recieved: " + message);
         }

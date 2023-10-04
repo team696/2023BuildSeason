@@ -7,8 +7,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.692815693323695,
-        "y": 1.0391443005108238
+        "x": 5.521825900794659,
+        "y": 0.8588845749120075
       },
       "holonomicAngle": 0,
       "isReversal": false,
@@ -23,74 +23,22 @@
           "switchcone"
         ],
         "executionBehavior": "sequential",
-        "waitBehavior": "deadline",
+        "waitBehavior": "none",
         "waitTime": 1.5
       }
     },
     {
       "anchorPoint": {
-        "x": 3.4,
-        "y": 0.7
+        "x": 6.767208534417069,
+        "y": 0.48670125911680434
       },
       "prevControl": {
-        "x": 2.2457598839377724,
-        "y": 0.7
+        "x": 6.424633490292621,
+        "y": 0.5723450201479152
       },
       "nextControl": {
-        "x": 4.505066359960422,
-        "y": 0.7
-      },
-      "holonomicAngle": 0,
-      "isReversal": false,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": true,
-      "stopEvent": {
-        "names": [
-          "switchcone"
-        ],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 4.524769391419125,
-        "y": 0.7
-      },
-      "prevControl": {
-        "x": 3.9750315240726595,
-        "y": 0.7
-      },
-      "nextControl": {
-        "x": 5.074507258765594,
-        "y": 0.7
-      },
-      "holonomicAngle": 0,
-      "isReversal": false,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": true,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 6.534542983615882,
-        "y": 0.8678567784486001
-      },
-      "prevControl": {
-        "x": 6.191967939491434,
-        "y": 0.9535005394797109
-      },
-      "nextControl": {
-        "x": 6.191967939491434,
-        "y": 0.9535005394797109
+        "x": 6.424633490292621,
+        "y": 0.5723450201479152
       },
       "holonomicAngle": 0,
       "isReversal": true,
@@ -108,64 +56,12 @@
     },
     {
       "anchorPoint": {
-        "x": 4.5361885595566065,
-        "y": 0.8107609377611926
+        "x": 1.6425305707754276,
+        "y": 0.40081280162560373
       },
       "prevControl": {
-        "x": 4.730314417893793,
-        "y": 0.7508103050394148
-      },
-      "nextControl": {
-        "x": 4.34206270121942,
-        "y": 0.8707115704829705
-      },
-      "holonomicAngle": 0,
-      "isReversal": false,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": true,
-      "stopEvent": {
-        "names": [
-          "stowarm"
-        ],
-        "executionBehavior": "sequential",
-        "waitBehavior": "deadline",
-        "waitTime": 0.1
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 3.3828525776709673,
-        "y": 0.7993417696237097
-      },
-      "prevControl": {
-        "x": 3.2857896485023743,
-        "y": 0.8293170859845989
-      },
-      "nextControl": {
-        "x": 3.4799155068395606,
-        "y": 0.7693664532628208
-      },
-      "holonomicAngle": 0,
-      "isReversal": false,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": true,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 1.85,
-        "y": 0.55
-      },
-      "prevControl": {
-        "x": 2.6950184421736356,
-        "y": 0.515742495587556
+        "x": 2.4875490129490636,
+        "y": 0.3665552972131597
       },
       "nextControl": null,
       "holonomicAngle": 0.0,
@@ -193,21 +89,21 @@
       ]
     },
     {
-      "position": 3.01,
+      "position": 1.0099999999999998,
       "names": [
         "holdstow"
       ]
     },
     {
-      "position": 2.01,
+      "position": 0.009999999999999787,
       "names": [
         "conepickup"
       ]
     },
     {
-      "position": 5.95,
+      "position": 0.2,
       "names": [
-        "goarm"
+        "conepickup"
       ]
     }
   ]

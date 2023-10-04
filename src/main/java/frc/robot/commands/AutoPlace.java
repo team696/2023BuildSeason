@@ -42,7 +42,8 @@ public class AutoPlace extends CommandBase {
       armSub.armExtendPresetPositions(armPosition);
       if (Math.abs(armSub.getTelescopePos() - armSub.getArmExtendGoal(armPosition)) <= 500 && Math.abs(armSub.getArmEncoderPosition() - armSub.getArmRotGoal(armPosition)) < 4) {
       timer++;
-      if(timer>=0) {
+      if(timer>=10
+      ) {
         if(ArmSub.gamePiece == 0){
           gripper.moveGripper(0.7);
         } else {

@@ -82,7 +82,7 @@ public final class Constants {
 
     }
 
-    public static final double stickDeadband = 0.06;
+    public static final double stickDeadband = 0.03;
 
     public static final double stowedPosValue = 196;
     public static final double grndIntakePosValue = 180;
@@ -120,7 +120,7 @@ public final class Constants {
     public static final double armRotForShelfCube = 110;
 
     public static final double armRotRevHighCone = 141;
-    public static final double armRotRevHighCube = 145;
+    public static final double armRotRevHighCube = 141;
 
     public static final double armRotRevMidCone = 135;
     public static final double armRotRevMidCube = 150;
@@ -138,7 +138,7 @@ public final class Constants {
     }
 
     public static final class ArmExtendValues {
-        public static final double armExtendStow = 1000;
+        public static final double armExtendStow = 2500;
 
         public static final double armExtendConePickup = 7000;
         public static final double armExtendCubePickup = 7000;
@@ -160,8 +160,8 @@ public final class Constants {
         public static final double armExtendForShelfCube = 41000;
 
 
-        public static final double armExtendRevHighCone = 52000;
-        public static final double armExtendRevHighCube = 39000;
+        public static final double armExtendRevHighCone = 50500;
+        public static final double armExtendRevHighCube = 42000;
 
         public static final double armExtendRevMidCone = 22000;
         public static final double armExtendRevMidCube = 0;

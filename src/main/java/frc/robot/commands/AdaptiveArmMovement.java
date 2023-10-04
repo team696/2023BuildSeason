@@ -47,7 +47,7 @@ public class AdaptiveArmMovement extends CommandBase {
       } else {
         armSub.jointRotPresetPositions(armPosition);
         armSub.armExtendPresetPositions(armPosition);
-        if (Math.abs(armSub.getTelescopePos() - armSub.getArmExtendGoal(armPosition)) < ArmSub.MAX_EXTENSION * 0.05){ 
+        if (Math.abs(armSub.getTelescopePos() - armSub.getArmExtendGoal(armPosition)) < ArmSub.MAX_EXTENSION * 0.1){ 
           armSub.armRotPresetPositions(armPosition);
         } 
       }
