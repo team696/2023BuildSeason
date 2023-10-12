@@ -39,8 +39,8 @@ public class AutoBalanceStation extends CommandBase {
         if (s_Swerve.getRoll() < -2.5) {
             xvalue = 1;
         }
-        double yAxis = pidController.calculate(yvalue , 0);
-        double xAxis = pidController.calculate(xvalue, 0);
+        double yAxis = pidController.calculate(s_Swerve.getPitch()/10 , 0);
+        double xAxis = pidController.calculate(-1 * s_Swerve.getRoll()/10, 0);
         double rAxis = 0;
     
 

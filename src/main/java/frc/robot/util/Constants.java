@@ -14,8 +14,8 @@ public final class Constants {
         public static final double driveKA = (0.27 / 12);
 
         /* Swerve Profiling Values */
-        public static final double maxSpeed = 10; //meters per second
-        public static final double maxAngularVelocity = 16;
+        public static final double maxSpeed = 5.16; //meters per second
+        public static final double maxAngularVelocity = 9.5;
 
         public static final double driveGearRatio = (6.12 / 1.0);
         public static final double angleGearRatio = (12.8 / 1.0); 
@@ -82,7 +82,7 @@ public final class Constants {
 
     }
 
-    public static final double stickDeadband = 0.03;
+    public static final double stickDeadband = 0.05;
 
     public static final double stowedPosValue = 196;
     public static final double grndIntakePosValue = 180;
@@ -144,7 +144,7 @@ public final class Constants {
         public static final double armExtendCubePickup = 7000;
 
 
-        public static final double armExtendForHighCone = 48000;
+        public static final double armExtendForHighCone = 50000;
         public static final double armExtendForHighCube = 48000;
 
         public static final double armExtendForMidCone = 44000;
@@ -200,7 +200,7 @@ public final class Constants {
         public static final double JointRotForShelfCube = 9000;
 
 
-        public static final double JointRotRevHighCone = 11000;
+        public static final double JointRotRevHighCone = 12000;
         public static final double JointRotRevHighCube = 2000;
 
         public static final double JointRotRevMidCone = 6000;

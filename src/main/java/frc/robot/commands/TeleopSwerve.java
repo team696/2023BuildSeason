@@ -28,7 +28,7 @@ public class TeleopSwerve extends CommandBase {
         return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     }
 
-    PIDController pidController = new PIDController(0.017  , 0.00, 0);
+    PIDController pidController = new PIDController(0.02  , 0.00, 0);
 
     private Trigger leftJoy;
     /**

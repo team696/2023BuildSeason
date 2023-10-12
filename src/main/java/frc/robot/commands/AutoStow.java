@@ -35,7 +35,7 @@ public class AutoStow extends CommandBase {
   public void execute() {
     armSub.jointRotPresetPositions(armPosition);
     armSub.armExtendPresetPositions(armPosition);
-    if(armSub.getTelescopePos() <= ArmSub.MAX_EXTENSION*0.15){
+    if(armSub.getTelescopePos() <= ArmSub.MAX_EXTENSION*0.5){
       armSub.armRotPresetPositions(armPosition);
     }
 
@@ -48,6 +48,6 @@ public class AutoStow extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return Math.abs(armSub.getArmEncoderPosition() - armSub.getArmRotGoal(armPosition)) <= 25;
+    return Math.abs(armSub.getArmEncoderPosition() - armSub.getArmRotGoal(armPosition)) <= 60;
   }
 }

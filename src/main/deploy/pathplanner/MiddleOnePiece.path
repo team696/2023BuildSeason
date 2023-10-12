@@ -45,10 +45,8 @@
       "isLocked": false,
       "isStopPoint": true,
       "stopEvent": {
-        "names": [
-          "holdstow"
-        ],
-        "executionBehavior": "parallel",
+        "names": [],
+        "executionBehavior": "sequential",
         "waitBehavior": "before",
         "waitTime": 2.0
       }
@@ -82,6 +80,12 @@
   "markers": [
     {
       "position": 0.01,
+      "names": [
+        "holdstow"
+      ]
+    },
+    {
+      "position": 1.01,
       "names": [
         "holdstow"
       ]

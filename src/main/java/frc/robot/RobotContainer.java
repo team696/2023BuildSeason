@@ -56,6 +56,10 @@ public class RobotContainer {
     armSub.setDefaultCommand(new AdaptiveArmMovement(armSub, ArmPositions.STOWED_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
     configureButtonBindings();
   }
+
+  private void configureControllerBindings() {
+    s_Swerve.setDefaultCommand(new TeleopSwerve(s_Swerve, driver, 1, 0, 4, true, true).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+  }
   
   private void configureButtonBindings() {
     s_Swerve.setDefaultCommand(new TeleopSwerve(s_Swerve, joystickPanel, translationAxis, strafeAxis, rotationAxis, true, true).withInterruptBehavior(InterruptionBehavior.kCancelSelf));

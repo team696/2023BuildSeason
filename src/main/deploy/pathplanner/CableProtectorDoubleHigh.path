@@ -7,8 +7,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.521825900794659,
-        "y": 0.8588845749120075
+        "x": 2.8735984614826378,
+        "y": 0.386498058710404
       },
       "holonomicAngle": 0,
       "isReversal": false,
@@ -29,16 +29,16 @@
     },
     {
       "anchorPoint": {
-        "x": 6.767208534417069,
-        "y": 0.48670125911680434
+        "x": 6.8101527631626695,
+        "y": 0.9018288036576078
       },
       "prevControl": {
-        "x": 6.424633490292621,
-        "y": 0.5723450201479152
+        "x": 6.467577719038221,
+        "y": 0.9874725646887186
       },
       "nextControl": {
-        "x": 6.424633490292621,
-        "y": 0.5723450201479152
+        "x": 6.467577719038221,
+        "y": 0.9874725646887186
       },
       "holonomicAngle": 0,
       "isReversal": true,
@@ -56,25 +56,50 @@
     },
     {
       "anchorPoint": {
-        "x": 1.6425305707754276,
-        "y": 0.40081280162560373
+        "x": 1.7141042853514281,
+        "y": 0.572589716608005
       },
       "prevControl": {
-        "x": 2.4875490129490636,
-        "y": 0.3665552972131597
+        "x": 2.5591227275250645,
+        "y": 0.5383322121955609
       },
-      "nextControl": null,
+      "nextControl": {
+        "x": 2.5591227275250645,
+        "y": 0.5383322121955609
+      },
       "holonomicAngle": 0.0,
-      "isReversal": false,
+      "isReversal": true,
       "velOverride": null,
       "isLocked": false,
-      "isStopPoint": false,
+      "isStopPoint": true,
       "stopEvent": {
         "names": [
           "placemid",
           "stowarm"
         ],
         "executionBehavior": "sequential",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 7.440001451431474,
+        "y": 0.9734025182336087
+      },
+      "prevControl": {
+        "x": 7.003177487429456,
+        "y": 0.9690591560670306
+      },
+      "nextControl": null,
+      "holonomicAngle": 0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
         "waitBehavior": "none",
         "waitTime": 0
       }
@@ -104,6 +129,12 @@
       "position": 0.2,
       "names": [
         "conepickup"
+      ]
+    },
+    {
+      "position": 2.01,
+      "names": [
+        "holdstow"
       ]
     }
   ]

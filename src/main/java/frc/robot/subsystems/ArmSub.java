@@ -192,7 +192,7 @@ public class ArmSub extends SubsystemBase {
       addPostoShoulder(ArmPositions.GROUND_SCORE_ADAPTIVE, Constants.ArmRotationValues.armRotForLowCone, 5,Constants.ArmRotationValues.armRotRevLowCone,Constants.ArmRotationValues.armRotRevLowCube);
       addPostoShoulder(ArmPositions.SHELF_PICKUP_ADAPTIVE,  Constants.ArmRotationValues.armRotForShelfCone - 11, Constants.ArmRotationValues.armRotForShelfCube - 11, Constants.ArmRotationValues.armRotRevShelfCone - 11, Constants.ArmRotationValues.armRotRevShelfCube - 11);
       addPostoShoulder(ArmPositions.MID_SCORE_ADAPTIVE ,Constants.ArmRotationValues.armRotForMidCone , 36 ,Constants.ArmRotationValues.armRotRevMidCone ,Constants.ArmRotationValues.armRotRevMidCube );
-      addPostoShoulder(ArmPositions.HIGH_SCORE_ADAPTIVE , 0, 47, 128, Constants.ArmRotationValues.armRotRevHighCube);
+      addPostoShoulder(ArmPositions.HIGH_SCORE_ADAPTIVE , 0, 47, 130, Constants.ArmRotationValues.armRotRevHighCube);
       addPostoShoulder(ArmPositions.FRAME_PERIMETER ,Constants.ArmRotationValues.framePerimeter ,Constants.ArmRotationValues.framePerimeter ,Constants.ArmRotationValues.framePerimeter ,Constants.ArmRotationValues.framePerimeter );  
 
       addPostoExtend  (ArmPositions.GROUND_PICKUP_ADAPTIVE,8000, 8000, 8000, 8000);
