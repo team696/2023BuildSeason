@@ -21,6 +21,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -51,10 +52,12 @@ public class Swerve extends SubsystemBase {
     private SwerveModulePosition[] SwervePositions = new SwerveModulePosition[4];
     private SwerveDrivePoseEstimator m_poseEstimator;
 
-    private PhotonCamera cams[];
+    private PhotonCamera cams[]; // Next Time Move Cams into seperate class, use threads to split load??????????
     private PhotonPoseEstimator estimators[];
 
     public double gyroOffset = 0;
+
+    public boolean UseCameras = true;
 
     public Swerve() {
         gyro  = new AHRS();
@@ -72,7 +75,7 @@ public class Swerve extends SubsystemBase {
             SwervePositions[i] = mSwerveMods[i].getPosition();
         }
 
-        m_poseEstimator = new SwerveDrivePoseEstimator( Constants.Swerve.swerveKinematics, getYaw(), SwervePositions, new Pose2d(1.0, 1.0, getYaw()), VecBuilder.fill(0.1, 0.1, 0.05), VecBuilder.fill(0.9, 0.9, 0.9));
+        m_poseEstimator = new SwerveDrivePoseEstimator( Constants.Swerve.swerveKinematics, getYaw(), SwervePositions, new Pose2d(1.0, 1.0, getYaw()), VecBuilder.fill(0.1, 0.1, 0.05), VecBuilder.fill(0.7, 0.7, 0.6));
             
         AprilTagFieldLayout aprilTagFieldLayout;
         try {
@@ -107,7 +110,7 @@ public class Swerve extends SubsystemBase {
                                     translation.getX(), 
                                     translation.getY(), 
                                     rotation, 
-                                    getYaw()
+                                    getPose().getRotation().plus(new Rotation2d((DriverStation.getAlliance() == DriverStation.Alliance.Red ? Math.PI : 0)))
                                 ) : new ChassisSpeeds(
                                     translation.getX(), 
                                     translation.getY(), 
@@ -161,6 +164,7 @@ public class Swerve extends SubsystemBase {
 
     public void zeroGyro(){
         gyro.zeroYaw();
+        resetOdometry(new Pose2d(getPose().getTranslation(), new Rotation2d((DriverStation.getAlliance() == DriverStation.Alliance.Red ? Math.PI : 0))));
         gyroOffset = 0;
     }
 
@@ -188,25 +192,26 @@ public class Swerve extends SubsystemBase {
         }
 
         m_poseEstimator.update(getYaw(), SwervePositions);
-        /* 
-        for (int i = 0; i < 3; i ++) {
-            PhotonPoseEstimator estimator = estimators[i];
-            final Optional<EstimatedRobotPose> est = estimator.update();
-            if (est.isPresent()) {
-                boolean checkAmb = true;
-                final EstimatedRobotPos e estimatedPoseA = est.get();
-                for (PhotonTrackedTarget t : estimatedPoseA.targetsUsed) {
-                    if (t.getPoseAmbiguity() == -1 || t.getPoseAmbiguity() > 0.15  )
-                        checkAmb = false;
-                    Transform3d offsetFromTarget = t.getBestCameraToTarget();
-                    if (Math.sqrt(Math.pow(offsetFromTarget.getX(),2) + Math.pow(offsetFromTarget.getY(),2)) > 4)
-                        checkAmb = false;
+        
+        if (UseCameras) {
+            for (int i = 0; i < 3; i ++) {
+                PhotonPoseEstimator estimator = estimators[i];
+                final Optional<EstimatedRobotPose> est = estimator.update();
+                if (est.isPresent()) {
+                    boolean checkAmb = true;
+                    final EstimatedRobotPose estimatedPoseA = est.get();
+                    for (PhotonTrackedTarget t : estimatedPoseA.targetsUsed) {
+                        if (t.getPoseAmbiguity() == -1 || t.getPoseAmbiguity() > 0.2  )
+                            checkAmb = false;
+                        //Transform3d offsetFromTarget = t.getBestCameraToTarget();
+                        //if (Math.sqrt(Math.pow(offsetFromTarget.getX(),2) + Math.pow(offsetFromTarget.getY(),2)) > 4)
+                            //checkAmb = false;
+                    }
+                    if(checkAmb)
+                        m_poseEstimator.addVisionMeasurement(estimatedPoseA.estimatedPose.toPose2d(), estimatedPoseA.timestampSeconds); 
                 }
-                if(checkAmb)
-                    m_poseEstimator.addVisionMeasurement(estimatedPoseA.estimatedPose.toPose2d(), estimatedPoseA.timestampSeconds); 
-            }
-        } 
-        */
+            } 
+        }
         if (Robot.robotNum != -1) {
             m_fieldSim.setRobotPose(getPose());
         } 

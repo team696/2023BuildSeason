@@ -138,6 +138,8 @@ public class SwerveModule {
         mDriveMotor.setInverted(Constants.Swerve.driveMotorInvert);
         mDriveMotor.setNeutralMode(NeutralMode.Brake);
         mDriveMotor.setSelectedSensorPosition(0);
+        mDriveMotor.enableVoltageCompensation(true);
+        mDriveMotor.configVoltageCompSaturation(12);
     }
 
     public Rotation2d getCanCoder(){

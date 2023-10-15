@@ -69,7 +69,7 @@ public class AutoScore extends CommandBase {
     offfffff = off;
     addRequirements(swerve);
 
-    SmartDashboard.putData(this);
+    //SmartDashboard.putData(this);
   }
 
   // Called when the command is initially scheduled.

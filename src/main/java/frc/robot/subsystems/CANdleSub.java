@@ -38,6 +38,10 @@ public class CANdleSub extends SubsystemBase {
     m_candle.animate(new SingleFadeAnimation(230, 10, 10, 0, 0.7, numLed, ledOffset));
   }
 
+  public void autoLed(double in) {
+    m_candle.animate(new SingleFadeAnimation((int)(255 * in * in),(int)(255 * (1 - in * in)),0, 0, 0.6, numLed, ledOffset), 0);
+  }
+
   @Override
   public void periodic() {
     if (!RobotBase.isReal()) return;
@@ -51,9 +55,7 @@ public class CANdleSub extends SubsystemBase {
       if (override)
         m_candle.setLEDs(0,255,0,0,ledOffset, numLed);
       
-    } else if (DriverStation.isDisabled()) {
-      disabledLed();
-    }  else if (DriverStation.isAutonomousEnabled()) {
+    } else if (DriverStation.isAutonomousEnabled()) {
       enabledLed();
     }
     override = false;

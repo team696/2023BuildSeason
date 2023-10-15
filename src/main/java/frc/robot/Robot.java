@@ -66,25 +66,30 @@ public class Robot extends TimedRobot {
 
     autos = new Autos(m_robotContainer);
 
-    NarwhalDashboard.startServer();
-
+    //NarwhalDashboard.startServer(); For Autoscoring / Custom Dashboard Integration
   }
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-    if(Math.abs(m_robotContainer.s_Swerve.db_getYaw())>=90){
-      m_robotContainer.armSub.robotDirection = 0;
+      if (DriverStation.getAlliance() == DriverStation.Alliance.Blue) {
+      if(Math.abs(m_robotContainer.s_Swerve.getPose().getRotation().getDegrees())>=90){
+        m_robotContainer.armSub.robotDirection = 0;
+      } else {
+        m_robotContainer.armSub.robotDirection = 1;
+      }  
     } else {
-      m_robotContainer.armSub.robotDirection = 1;
-    }  
+      if(Math.abs(m_robotContainer.s_Swerve.getPose().getRotation().getDegrees()) <= 90){
+        m_robotContainer.armSub.robotDirection = 0;
+      } else {
+        m_robotContainer.armSub.robotDirection = 1;
+      }  
+    }
     
     SmartDashboard.putData("PDH",pdh);
-    SmartDashboard.putNumber("Timer", DriverStation.getMatchTime());
 
     NarwhalDashboard.put("time", Timer.getMatchTime());
     NarwhalDashboard.put("voltage", RobotController.getBatteryVoltage());
-
 }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -92,6 +97,12 @@ public class Robot extends TimedRobot {
   public void disabledInit() {
     autos.openSubs();
     CommandScheduler.getInstance().cancelAll(); //SAFETY
+    m_robotContainer.s_Swerve.UseCameras = true;
+  }
+
+  @Override
+  public void disabledExit() {
+    m_robotContainer.s_Swerve.UseCameras = false;
   }
 
   @Override
@@ -110,12 +121,16 @@ public class Robot extends TimedRobot {
       m_robotContainer.armSub.homeGripperJointPos();
       m_robotContainer.armSub.homeTelescopePosition();
     }
+
     
     if (autos.hasUpdated()) 
       autos.setTraj();
     
-    if (autos.getFullTraj().getTotalTimeSeconds() != 0 && robotNum == -1)
-      m_robotContainer.s_Swerve.m_fieldSim.setRobotPose((autos.getFullTraj().sample((Timer.getFPGATimestamp() - simAutoTimer)%autos.getFullTraj().getTotalTimeSeconds())).poseMeters);
+    if (autos.getFullTraj().getTotalTimeSeconds() != 0) {
+      if (robotNum == -1)
+        m_robotContainer.s_Swerve.m_fieldSim.setRobotPose((autos.getFullTraj().sample((Timer.getFPGATimestamp() - simAutoTimer)%autos.getFullTraj().getTotalTimeSeconds())).poseMeters);
+      m_robotContainer.candle.autoLed(autos.getFullTraj().getInitialPose().getTranslation().getDistance(m_robotContainer.s_Swerve.getPose().getTranslation()) * 5);
+    }
   }
 
   @Override
@@ -146,7 +161,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     autos.clearTraj();
-    m_robotContainer.s_Swerve.zeroGyro(); 
+    //m_robotContainer.s_Swerve.zeroGyro(); 
     autos.closeSubs();
   }
 
@@ -169,6 +184,8 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {}
+
+  //Stuff to findle with for different bots. Ex: Comp Bot, Prac Bot, Simulation...
 
   private static List<byte[]> getMacAddresses() throws IOException {
 		List<byte[]> macAddresses = new ArrayList<>();

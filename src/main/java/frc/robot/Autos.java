@@ -236,8 +236,8 @@ public class Autos {
     }
 
     private void setToBegin(Pose2d pose) {
-      container.s_Swerve.zeroGyro();
-      //if (container.s_Swerve.getPose().getTranslation().getDistance(pose.getTranslation()) > 2)
+      //container.s_Swerve.zeroGyro();
+      if (container.s_Swerve.getPose().getTranslation().getDistance(pose.getTranslation()) > 2)
          container.s_Swerve.resetOdometry(pose);
 
       //If Our Pose is off, reset Pose to at least run it a little correct. If cams don't work, this will save the auto!

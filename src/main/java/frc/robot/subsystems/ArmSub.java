@@ -381,7 +381,5 @@ public void homeGripperJointPos(){
     builder.addDoubleProperty("Wrist Rotation Position", ()->getGripperJointPos(), null);
 
     builder.addIntegerProperty("zArm Encoder Status", ()->testCanCoder.getMagnetFieldStrength().value, null);
-
-    builder.addDoubleProperty("Arm Output", ()->outputValue, null);
   }
 } 
