@@ -36,6 +36,7 @@ import frc.robot.commands.AutoPlace;
 import frc.robot.commands.AutoStow;
 import frc.robot.subsystems.ArmSub;
 import frc.robot.util.Constants;
+import frc.robot.util.Log;
 import frc.robot.util.Constants.ArmPositions;
 
 public class Autos {
@@ -247,18 +248,18 @@ public class Autos {
         this.container = container;
         HashMap<String, Command> eventMap = new HashMap<>();
         eventMap.put("marker1", new PrintCommand("Passed marker 1"));
-        eventMap.put("goarm", new AdaptiveArmMovement(container.armSub, ArmPositions.MID_SCORE_ADAPTIVE));
-        eventMap.put("stowarm", new AutoStow(container.armSub, container.gripper)); 
-        eventMap.put("placehigh", new AutoPlace(container.armSub, container.gripper, ArmPositions.HIGH_SCORE_ADAPTIVE));
+        eventMap.put("goarm", new AdaptiveArmMovement(container.armSub, ArmPositions.MID_SCORE_ADAPTIVE).asProxy());
+        eventMap.put("stowarm", new AutoStow(container.armSub, container.gripper).asProxy()); 
+        eventMap.put("placehigh", new AutoPlace(container.armSub, container.gripper, ArmPositions.HIGH_SCORE_ADAPTIVE).asProxy());
         eventMap.put("switchcone", new InstantCommand(() -> ArmSub.gamePiece = 0));
         eventMap.put("switchcube", new InstantCommand(() -> ArmSub.gamePiece = 1));
-        eventMap.put("cubepickup", new AdaptiveArmMovement(container.armSub, ArmPositions.GROUND_PICKUP_ADAPTIVE, 1).alongWith(container.gripper.intake()) );
-        eventMap.put("conepickup", new AdaptiveArmMovement(container.armSub, ArmPositions.GROUND_PICKUP_ADAPTIVE, 0).alongWith(container.gripper.intake()) );
-        eventMap.put("placemid", new AutoPlace(container.armSub, container.gripper, ArmPositions.MID_SCORE_ADAPTIVE));
-        eventMap.put("holdstow", new AdaptiveArmMovement(container.armSub, ArmPositions.STOWED_ADAPTIVE));
+        eventMap.put("cubepickup", new AdaptiveArmMovement(container.armSub, ArmPositions.GROUND_PICKUP_ADAPTIVE, 1).alongWith(container.gripper.intake()).asProxy() );
+        eventMap.put("conepickup", new AdaptiveArmMovement(container.armSub, ArmPositions.GROUND_PICKUP_ADAPTIVE, 0).alongWith(container.gripper.intake()).asProxy() );
+        eventMap.put("placemid", new AutoPlace(container.armSub, container.gripper, ArmPositions.MID_SCORE_ADAPTIVE).asProxy()); 
+        eventMap.put("holdstow", new AdaptiveArmMovement(container.armSub, ArmPositions.STOWED_ADAPTIVE).asProxy());
         eventMap.put("balance", new AutoBalanceStation(container.s_Swerve));
-        eventMap.put("placelow", new AutoPlace(container.armSub, container.gripper, ArmPositions.GROUND_SCORE_ADAPTIVE));
-        eventMap.put("shootcone", new AutoPlace(container.armSub, container.gripper, ArmPositions.SHOOT));
+        eventMap.put("placelow", new AutoPlace(container.armSub, container.gripper, ArmPositions.GROUND_SCORE_ADAPTIVE).asProxy());
+        eventMap.put("shootcone", new AutoPlace(container.armSub, container.gripper, ArmPositions.SHOOT).asProxy());
 
         autoBuilder = new SwerveAutoBuilder(
             container.s_Swerve::getPose, // Pose2d supplier
@@ -304,6 +305,10 @@ public class Autos {
       //System.out.println("Working Directory = " + System.getProperty("user.dir"));
       //File[] files = new File("src/main/deploy/pathplanner/").listFiles(); // Simulation
       File[] files = new File("home/lvuser/deploy/pathplanner/").listFiles(); //Real Robot
+      if (files == null) {
+        Log.recoverable("AUTOS", "Failed to locate auto directory/files.");
+        return;
+      }
       for (File f : files) {
         boolean vel = false;
         boolean accel = false;

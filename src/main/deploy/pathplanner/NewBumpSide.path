@@ -187,12 +187,6 @@
   "isReversed": null,
   "markers": [
     {
-      "position": 0.01,
-      "names": [
-        "holdstow"
-      ]
-    },
-    {
       "position": 0.2,
       "names": [
         "cubepickup"
@@ -214,18 +208,6 @@
       "position": 2.2,
       "names": [
         "cubepickup"
-      ]
-    },
-    {
-      "position": 2.01,
-      "names": [
-        "holdstow"
-      ]
-    },
-    {
-      "position": 5.01,
-      "names": [
-        "holdstow"
       ]
     }
   ]

@@ -249,7 +249,8 @@
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/PID ERROR ": "PIDController",
       "/SmartDashboard/SendableChooser[0]": "String Chooser",
-      "/SmartDashboard/SendableChooser[1]": "String Chooser"
+      "/SmartDashboard/SendableChooser[1]": "String Chooser",
+      "/SmartDashboard/Swerve": "Subsystem"
     },
     "windows": {
       "/SmartDashboard/AUTOS": {
@@ -282,6 +283,9 @@
         "open": true
       },
       "SmartDashboard": {
+        "ArmSub": {
+          "open": true
+        },
         "Auto Selector": {
           "open": true
         },

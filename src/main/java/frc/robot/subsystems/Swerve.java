@@ -75,7 +75,7 @@ public class Swerve extends SubsystemBase {
             SwervePositions[i] = mSwerveMods[i].getPosition();
         }
 
-        m_poseEstimator = new SwerveDrivePoseEstimator( Constants.Swerve.swerveKinematics, getYaw(), SwervePositions, new Pose2d(1.0, 1.0, getYaw()), VecBuilder.fill(0.1, 0.1, 0.05), VecBuilder.fill(0.7, 0.7, 0.6));
+        m_poseEstimator = new SwerveDrivePoseEstimator( Constants.Swerve.swerveKinematics, getYaw(), SwervePositions, new Pose2d(10, 5.0, getYaw()), VecBuilder.fill(0.1, 0.1, 0.05), VecBuilder.fill(0.7, 0.7, 0.6));
             
         AprilTagFieldLayout aprilTagFieldLayout;
         try {

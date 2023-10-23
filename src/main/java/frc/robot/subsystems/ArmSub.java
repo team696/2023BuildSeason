@@ -96,9 +96,9 @@ public class ArmSub extends SubsystemBase {
     testCanCoder = new CANCoder(14, "Karen");
     testCanCoder.configFactoryDefault(); 
     testCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
-    testCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
+    testCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
     testCanCoder.configSensorDirection(true);
-    testCanCoder.configMagnetOffset(23);
+    testCanCoder.configMagnetOffset(3);
     
     limit = new SupplyCurrentLimitConfiguration(true, 35, 10, 0.1);
 
@@ -192,7 +192,7 @@ public class ArmSub extends SubsystemBase {
       addPostoShoulder(ArmPositions.GROUND_SCORE_ADAPTIVE, Constants.ArmRotationValues.armRotForLowCone, 5,Constants.ArmRotationValues.armRotRevLowCone,Constants.ArmRotationValues.armRotRevLowCube);
       addPostoShoulder(ArmPositions.SHELF_PICKUP_ADAPTIVE,  Constants.ArmRotationValues.armRotForShelfCone - 11, Constants.ArmRotationValues.armRotForShelfCube - 11, Constants.ArmRotationValues.armRotRevShelfCone - 11, Constants.ArmRotationValues.armRotRevShelfCube - 11);
       addPostoShoulder(ArmPositions.MID_SCORE_ADAPTIVE ,Constants.ArmRotationValues.armRotForMidCone , 36 ,Constants.ArmRotationValues.armRotRevMidCone ,Constants.ArmRotationValues.armRotRevMidCube );
-      addPostoShoulder(ArmPositions.HIGH_SCORE_ADAPTIVE , 0, 47, 130, Constants.ArmRotationValues.armRotRevHighCube);
+      addPostoShoulder(ArmPositions.HIGH_SCORE_ADAPTIVE , 0, 47, 131, Constants.ArmRotationValues.armRotRevHighCube);
       addPostoShoulder(ArmPositions.FRAME_PERIMETER ,Constants.ArmRotationValues.framePerimeter ,Constants.ArmRotationValues.framePerimeter ,Constants.ArmRotationValues.framePerimeter ,Constants.ArmRotationValues.framePerimeter );  
 
       addPostoExtend  (ArmPositions.GROUND_PICKUP_ADAPTIVE,8000, 8000, 8000, 8000);
@@ -211,7 +211,7 @@ public class ArmSub extends SubsystemBase {
       addPostoJoint   (ArmPositions.HIGH_SCORE_ADAPTIVE, 0, Constants.JointRotationValues.JointRotForHighCube, Constants.JointRotationValues.JointRotRevHighCone, Constants.JointRotationValues.JointRotRevHighCube);
       addPostoJoint   (ArmPositions.FRAME_PERIMETER, Constants.JointRotationValues.framePerimeter, Constants.JointRotationValues.framePerimeter, Constants.JointRotationValues.framePerimeter, Constants.JointRotationValues.framePerimeter);
   
-      addPostoShoulder(ArmPositions.UPRIGHT_CONE, 41,41,41,41);
+      addPostoShoulder(ArmPositions.UPRIGHT_CONE, 49,49,49, 49);
       addPostoExtend(ArmPositions.UPRIGHT_CONE,0,0,0,0);
       addPostoJoint(ArmPositions.UPRIGHT_CONE, 47000,47000,47000,47000);
 
@@ -326,7 +326,7 @@ public void homeGripperJointPos(){
 }
 
   public double getArmRotGoal(ArmPositions position) {
-    return ShoulderPos.get(position)[robotDirection][gamePiece]-11;
+    return ShoulderPos.get(position)[robotDirection][gamePiece]-11 + 20;
   }
 
   public void armRotPresetPositions(ArmPositions position){
