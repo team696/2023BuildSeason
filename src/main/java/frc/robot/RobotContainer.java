@@ -51,18 +51,27 @@ public class RobotContainer {
   private final Trigger panelLED4 = new JoystickButton(operatorPanel, 6);
   private final Trigger panelLED5 = new JoystickButton(operatorPanel, 1);
   private final Trigger panelLock = new JoystickButton(operatorPanel, 8);
+  private final Trigger threebars = new JoystickButton(driver, 8);
+  private final Trigger controllerY = new JoystickButton(driver, 4);
+  private final Trigger controllerB = new JoystickButton(driver, 2);
+
 
   public RobotContainer() {    
     armSub.setDefaultCommand(new AdaptiveArmMovement(armSub, ArmPositions.STOWED_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+    controllerY.whileTrue(new AdaptiveArmMovement(armSub, ArmPositions.HIGH_SCORE_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    controllerB.whileTrue(new AdaptiveArmMovement(armSub, ArmPositions.MID_SCORE_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     configureButtonBindings();
   }
 
   private void configureControllerBindings() {
     s_Swerve.setDefaultCommand(new TeleopSwerve(s_Swerve, driver, 1, 0, 4, true, true).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+    threebars.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro())); 
   }
   
   private void configureButtonBindings() {
     s_Swerve.setDefaultCommand(new TeleopSwerve(s_Swerve, joystickPanel, translationAxis, strafeAxis, rotationAxis, true, true).withInterruptBehavior(InterruptionBehavior.kCancelSelf));
+    
+
     
     panelHigh.whileTrue(new AdaptiveArmMovement(armSub, ArmPositions.HIGH_SCORE_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     panelMid.whileTrue(new AdaptiveArmMovement(armSub, ArmPositions.MID_SCORE_ADAPTIVE).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
@@ -79,11 +88,13 @@ public class RobotContainer {
     //panelLED5.onTrue(new InstantCommand(() -> armSub.homeGripperJointPos()));
     panelLock.whileTrue(armSub.manualMoveGripper(()->operatorPanel.getRawAxis(0)).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)); 
       
-    rightJoy.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro()));    
-    panelLED3.onTrue(new AutoScore(s_Swerve, armSub, gripper, 0));
-    panelLED4.onTrue(new AutoScore(s_Swerve, armSub, gripper, 1));
-    panelLED5.onTrue(new AutoScore(s_Swerve, armSub, gripper, 2));
-
+    panelLED3.onTrue(new InstantCommand(() -> s_Swerve.zeroGyro())); 
+    panelLED4.whileTrue(new AdaptiveArmMovement(armSub, ArmPositions.FLAT_HIGH).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    rightJoy.whileTrue(gripper.spit().withInterruptBehavior(InterruptionBehavior.kCancelIncoming));   
+    //panelLED3.onTrue(new AutoScore(s_Swerve, armSub, gripper, 0));
+    //panelLED4.onTrue(new AutoScore(s_Swerve, armSub, gripper, 1));
+    //panelLED5.onTrue(new AutoScore(s_Swerve, armSub, gripper, 2));
+    
     operatorPanel.setOutputs(Integer.MAX_VALUE);
   }
 }

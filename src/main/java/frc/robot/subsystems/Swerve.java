@@ -4,6 +4,7 @@ import com.kauailabs.navx.frc.AHRS;
 
 import frc.robot.Robot;
 import frc.robot.util.Constants;
+import frc.robot.util.Log;
 import frc.robot.util.SwerveModule;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -22,6 +23,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -57,10 +60,10 @@ public class Swerve extends SubsystemBase {
 
     public double gyroOffset = 0;
 
-    public boolean UseCameras = true;
+    public boolean UseCameras = false;
 
     public Swerve() {
-        gyro  = new AHRS();
+        gyro = new AHRS(SPI.Port.kMXP, (byte)66);
         aimPID = new PIDController(0.05, 0, 0);
         aimPID.setTolerance(0.5);
 
@@ -99,8 +102,9 @@ public class Swerve extends SubsystemBase {
         } catch (Exception e) {
             System.out.println(e);
         }
-
-        SmartDashboard.putData(this);
+        
+        if (Constants.useShuffleboard)
+            SmartDashboard.putData(this);
     }
 
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
@@ -187,6 +191,9 @@ public class Swerve extends SubsystemBase {
 
     @Override
     public void periodic(){
+        if (!gyro.isConnected())
+            Log.recoverable("Swerve", "Gyro Is Not Connected");
+
         for (int i = 0; i < 4; ++i) {
             SwervePositions[i] = mSwerveMods[i].getPosition();
         }

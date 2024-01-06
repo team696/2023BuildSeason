@@ -39,16 +39,18 @@ public class AdaptiveArmMovement extends CommandBase {
       if (gamepiece_override != -1)
         ArmSub.gamePiece = gamepiece_override;
       if (armSub.getArmRotGoal(armPosition) > armSub.getArmEncoderPosition()) { // GOING UP
-        armSub.armRotPresetPositions(armPosition);
+        armSub.armRotPresetPositions(armPosition);        
         if (armSub.getArmEncoderPosition() / armSub.getArmRotGoal(armPosition) > 0.7 || Math.abs(armSub.getArmEncoderPosition() - armSub.getArmRotGoal(armPosition)) < 7){ 
           armSub.jointRotPresetPositions(armPosition);
-          armSub.armExtendPresetPositions(armPosition);
+          if (Math.abs(armSub.getGripperJointPos() - armSub.getJointRotGoal(armPosition)) < 4000)
+            armSub.armExtendPresetPositions(armPosition);
         } 
       } else {
-        armSub.jointRotPresetPositions(armPosition);
+        
         armSub.armExtendPresetPositions(armPosition);
-        if (Math.abs(armSub.getTelescopePos() - armSub.getArmExtendGoal(armPosition)) < ArmSub.MAX_EXTENSION * 0.1){ 
+        if (Math.abs(armSub.getTelescopePos() - armSub.getArmExtendGoal(armPosition)) < ArmSub.MAX_EXTENSION * 0.1 ){ 
           armSub.armRotPresetPositions(armPosition);
+          armSub.jointRotPresetPositions(armPosition);
         } 
       }
   }

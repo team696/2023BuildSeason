@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.Constants;
 
 import com.revrobotics.Rev2mDistanceSensor;
 import com.revrobotics.Rev2mDistanceSensor.Port;
@@ -22,7 +23,7 @@ import com.revrobotics.Rev2mDistanceSensor.Unit;
 public class Gripper extends SubsystemBase {
 
   private TalonFX gripperFalcon;
-  private Rev2mDistanceSensor distanceSensor;
+  //private Rev2mDistanceSensor distanceSensor;
 
   /** Creates a new Gripper. */
   public Gripper() {
@@ -30,14 +31,15 @@ public class Gripper extends SubsystemBase {
     gripperFalcon.configFactoryDefault();
     gripperFalcon.setNeutralMode(NeutralMode.Brake);
 
-    if (RobotBase.isReal()){
-      distanceSensor = new Rev2mDistanceSensor(Port.kOnboard, Unit.kMillimeters, RangeProfile.kHighAccuracy); 
-      distanceSensor.setAutomaticMode(true);
-    }
+    //if (RobotBase.isReal()){
+    //  distanceSensor = new Rev2mDistanceSensor(Port.kOnboard, Unit.kMillimeters, RangeProfile.kHighAccuracy); 
+    //  distanceSensor.setAutomaticMode(true);
+    //}
 
     this.setDefaultCommand(this.slowIntake());
 
-    SmartDashboard.putData(this);
+    if (Constants.useShuffleboard)
+      SmartDashboard.putData(this);
   }
 
   
@@ -50,7 +52,7 @@ public class Gripper extends SubsystemBase {
   }
 
   public double getDistanceSensorM(){
-    return RobotBase.isReal() ? distanceSensor.getRange() / 1000 : -1;
+    return -1;//RobotBase.isReal() ? distanceSensor.getRange() / 1000 : -1;
  }
 
  public CommandBase slowIntake() {
@@ -58,7 +60,7 @@ public class Gripper extends SubsystemBase {
  }
 
  public CommandBase spit() {
-  return this.runEnd(()->{if (ArmSub.gamePiece == 0) moveGripper(0.5); else moveGripper(-0.6);}, ()->moveGripper(0));
+  return this.runEnd(()->{if (ArmSub.gamePiece == 0) moveGripper(0.65); else moveGripper(-0.6);}, ()->moveGripper(0));
  }
 
  public CommandBase intake() {

@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -66,12 +67,15 @@ public class Robot extends TimedRobot {
 
     autos = new Autos(m_robotContainer);
 
+    LiveWindow.disableAllTelemetry();
+
     //NarwhalDashboard.startServer(); For Autoscoring / Custom Dashboard Integration
   }
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+    /* 
       if (DriverStation.getAlliance() == DriverStation.Alliance.Blue) {
       if(Math.abs(m_robotContainer.s_Swerve.getPose().getRotation().getDegrees())>=90){
         m_robotContainer.armSub.robotDirection = 0;
@@ -85,11 +89,14 @@ public class Robot extends TimedRobot {
         m_robotContainer.armSub.robotDirection = 1;
       }  
     }
-    
-    SmartDashboard.putData("PDH",pdh);
+    */
+    m_robotContainer.armSub.robotDirection = 1;
+    if (Constants.useShuffleboard) {
+      SmartDashboard.putData("PDH",pdh);
 
-    NarwhalDashboard.put("time", Timer.getMatchTime());
-    NarwhalDashboard.put("voltage", RobotController.getBatteryVoltage());
+      //NarwhalDashboard.put("time", Timer.getMatchTime());
+      //NarwhalDashboard.put("voltage", RobotController.getBatteryVoltage());
+    }
 }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -97,12 +104,10 @@ public class Robot extends TimedRobot {
   public void disabledInit() {
     autos.openSubs();
     CommandScheduler.getInstance().cancelAll(); //SAFETY
-    m_robotContainer.s_Swerve.UseCameras = true;
   }
 
   @Override
   public void disabledExit() {
-    m_robotContainer.s_Swerve.UseCameras = false;
   }
 
   @Override
@@ -123,20 +128,24 @@ public class Robot extends TimedRobot {
     }
 
     
-    if (autos.hasUpdated()) 
+    if (autos.getFullTraj().getTotalTimeSeconds() != 0 && autos.hasUpdated()) 
       autos.setTraj();
     
     if (autos.getFullTraj().getTotalTimeSeconds() != 0) {
       if (robotNum == -1)
         m_robotContainer.s_Swerve.m_fieldSim.setRobotPose((autos.getFullTraj().sample((Timer.getFPGATimestamp() - simAutoTimer)%autos.getFullTraj().getTotalTimeSeconds())).poseMeters);
       m_robotContainer.candle.autoLed(autos.getFullTraj().getInitialPose().getTranslation().getDistance(m_robotContainer.s_Swerve.getPose().getTranslation()) * 5);
+    } else {
+      m_robotContainer.candle.disabledLed();
+
     }
   }
 
   @Override
   public void autonomousInit() {
     m_autonomousCommand = autos.get();//new InstantCommand(() -> ArmSub.gamePiece = 0).andThen(new AutoPlace(m_robotContainer.armSub, m_robotContainer.gripper, ArmPositions.HIGH_SCORE_ADAPTIVE));//
-    autos.setTraj();
+    if (Constants.useShuffleboard)
+      autos.setTraj();
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
@@ -168,11 +177,12 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    if(m_robotContainer.panelGPSwitch.getAsBoolean()) {
-      ArmSub.gamePiece = 0;
-    } else {
-      ArmSub.gamePiece = 1;
-    }
+    //if(m_robotContainer.panelGPSwitch.getAsBoolean()) {
+    //  ArmSub.gamePiece = 0;
+    //} else {
+    //  ArmSub.gamePiece = 1;
+    //}
+    ArmSub.gamePiece = 0;
   }
 
   @Override

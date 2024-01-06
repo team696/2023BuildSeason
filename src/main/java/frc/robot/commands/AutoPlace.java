@@ -22,6 +22,7 @@ public class AutoPlace extends CommandBase {
     this.gripper = gripper;
     addRequirements(armSub, gripper);
     finished = false;
+    timer = 0;
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -41,9 +42,9 @@ public class AutoPlace extends CommandBase {
   public void execute() {
     armSub.armRotPresetPositions(armPosition);
     armSub.jointRotPresetPositions(armPosition);
-    if(armSub.getArmEncoderPosition() >= armSub.armRotGoal*0.75){
+    if(Math.abs(armSub.getArmEncoderPosition() - armSub.getArmRotGoal(armPosition)) < 20){
       armSub.armExtendPresetPositions(armPosition);
-      if (Math.abs(armSub.getTelescopePos() - armSub.getArmExtendGoal(armPosition)) <= 500 && Math.abs(armSub.getArmEncoderPosition() - armSub.getArmRotGoal(armPosition)) < 4) {
+      if (Math.abs(armSub.getTelescopePos() - armSub.getArmExtendGoal(armPosition)) <= 1000 && Math.abs(armSub.getArmEncoderPosition() - armSub.getArmRotGoal(armPosition)) < 8) {
       timer++;
       if(timer>=10) {
         if(ArmSub.gamePiece == 0){

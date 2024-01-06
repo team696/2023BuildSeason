@@ -63,7 +63,7 @@ public class SwerveModule {
         swerveDriveFXConfig.slot0.kF = 0.0;        
         swerveDriveFXConfig.supplyCurrLimit = driveSupplyLimit;
         swerveDriveFXConfig.initializationStrategy = SensorInitializationStrategy.BootToZero;
-        swerveDriveFXConfig.openloopRamp = 0.05;
+        swerveDriveFXConfig.openloopRamp = 0.15;
         swerveDriveFXConfig.closedloopRamp = 0.1;
         swerveDriveFXConfig.nominalOutputForward = 0.03;
         swerveDriveFXConfig.nominalOutputReverse = -0.03;

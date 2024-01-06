@@ -98,7 +98,7 @@ public class ArmSub extends SubsystemBase {
     testCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
     testCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
     testCanCoder.configSensorDirection(true);
-    testCanCoder.configMagnetOffset(3);
+    testCanCoder.configMagnetOffset(1);
     
     limit = new SupplyCurrentLimitConfiguration(true, 35, 10, 0.1);
 
@@ -174,7 +174,7 @@ public class ArmSub extends SubsystemBase {
       gripperJointFalcon.configPeakOutputReverse(-telMaxSpeedRev);
       gripperJointFalcon.setSensorPhase(true);
       gripperJointFalcon.setInverted(InvertType.InvertMotorOutput);
-      gripperJointFalcon.config_kP(0, 0.6);
+      gripperJointFalcon.config_kP(0, 0.8);
       gripperJointFalcon.config_kI(0, 0.0);
       gripperJointFalcon.config_kD(0, 0.0);
       gripperJointFalcon.config_kF(0, 0.0);
@@ -192,7 +192,7 @@ public class ArmSub extends SubsystemBase {
       addPostoShoulder(ArmPositions.GROUND_SCORE_ADAPTIVE, Constants.ArmRotationValues.armRotForLowCone, 5,Constants.ArmRotationValues.armRotRevLowCone,Constants.ArmRotationValues.armRotRevLowCube);
       addPostoShoulder(ArmPositions.SHELF_PICKUP_ADAPTIVE,  Constants.ArmRotationValues.armRotForShelfCone - 11, Constants.ArmRotationValues.armRotForShelfCube - 11, Constants.ArmRotationValues.armRotRevShelfCone - 11, Constants.ArmRotationValues.armRotRevShelfCube - 11);
       addPostoShoulder(ArmPositions.MID_SCORE_ADAPTIVE ,Constants.ArmRotationValues.armRotForMidCone , 36 ,Constants.ArmRotationValues.armRotRevMidCone ,Constants.ArmRotationValues.armRotRevMidCube );
-      addPostoShoulder(ArmPositions.HIGH_SCORE_ADAPTIVE , 0, 47, 131, Constants.ArmRotationValues.armRotRevHighCube);
+      addPostoShoulder(ArmPositions.HIGH_SCORE_ADAPTIVE , 0, 51, 140, Constants.ArmRotationValues.armRotRevHighCube);
       addPostoShoulder(ArmPositions.FRAME_PERIMETER ,Constants.ArmRotationValues.framePerimeter ,Constants.ArmRotationValues.framePerimeter ,Constants.ArmRotationValues.framePerimeter ,Constants.ArmRotationValues.framePerimeter );  
 
       addPostoExtend  (ArmPositions.GROUND_PICKUP_ADAPTIVE,8000, 8000, 8000, 8000);
@@ -211,7 +211,7 @@ public class ArmSub extends SubsystemBase {
       addPostoJoint   (ArmPositions.HIGH_SCORE_ADAPTIVE, 0, Constants.JointRotationValues.JointRotForHighCube, Constants.JointRotationValues.JointRotRevHighCone, Constants.JointRotationValues.JointRotRevHighCube);
       addPostoJoint   (ArmPositions.FRAME_PERIMETER, Constants.JointRotationValues.framePerimeter, Constants.JointRotationValues.framePerimeter, Constants.JointRotationValues.framePerimeter, Constants.JointRotationValues.framePerimeter);
   
-      addPostoShoulder(ArmPositions.UPRIGHT_CONE, 49,49,49, 49);
+      addPostoShoulder(ArmPositions.UPRIGHT_CONE, 38.5,38.5,38.5, 38.5);
       addPostoExtend(ArmPositions.UPRIGHT_CONE,0,0,0,0);
       addPostoJoint(ArmPositions.UPRIGHT_CONE, 47000,47000,47000,47000);
 
@@ -223,7 +223,12 @@ public class ArmSub extends SubsystemBase {
       addPostoExtend(ArmPositions.SHOOT, 0,0,0,0);
       addPostoJoint(ArmPositions.SHOOT, 9750,0,9750,0);
 
-      SmartDashboard.putData(this);
+      addPostoShoulder(ArmPositions.FLAT_HIGH,10,10,150,10);
+      addPostoExtend(ArmPositions.FLAT_HIGH, 0,0,47000,0);
+      addPostoJoint(ArmPositions.FLAT_HIGH, 0,0,19000,0);
+
+      if (Constants.useShuffleboard)
+        SmartDashboard.putData(this);
   }
 
   public CommandBase armForward() {
@@ -276,7 +281,7 @@ public class ArmSub extends SubsystemBase {
   double pidVal = pArmPID.calculate(testCanCoder.getAbsolutePosition(), degrees);
   // + armFeedForwardCalc(1.2318, kG, 0/* .00837*/, 0/* .016656*/, testCanCoder.getAbsolutePosition(), pArmPID.getSetpoint().velocity, acceleration)
   double acceleration = (pArmPID.getSetpoint().velocity - lastSpeed) / (Timer.getFPGATimestamp() - lastTime);
-  double setPoint = (pidVal + armFeedForwardCalc(1.2318, kG, 0/* .00837*/, 0/* .016656*/, testCanCoder.getAbsolutePosition(), pArmPID.getSetpoint().velocity, acceleration)) / RobotController.getBatteryVoltage(); // 
+  double setPoint = (pidVal + armFeedForwardCalc(1.2318, kG, 0/* .00837*/, 0/* .016656*/, testCanCoder.getAbsolutePosition()-13, pArmPID.getSetpoint().velocity, acceleration)) / RobotController.getBatteryVoltage(); // 
   leftArm.set(ControlMode.PercentOutput, setPoint);
   outputValue = setPoint;
   lastSpeed = pArmPID.getSetpoint().velocity;

@@ -5,6 +5,9 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.led.CANdle.*;
+import com.ctre.phoenix.led.TwinkleAnimation.TwinklePercent;
+import com.ctre.phoenix.led.TwinkleOffAnimation.TwinkleOffPercent;
+import com.ctre.phoenix.led.TwinkleAnimation;
 import com.ctre.phoenix.led.*;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -47,13 +50,17 @@ public class CANdleSub extends SubsystemBase {
     if (!RobotBase.isReal()) return;
 
     if (DriverStation.isTeleopEnabled()) {
+      
       m_candle.clearAnimation(0);
+
       if (ArmSub.gamePiece==0) 
-        m_candle.setLEDs(255, 45, 0, 0, ledOffset, numLed);
+        m_candle.setLEDs(255, 45, 0, 0, ledOffset, numLed); ///m_candle.animate(new TwinkleAnimation(255, 45, 0, 0, 0.4, numLed, TwinklePercent.Percent76, 8));//
       else  
         m_candle.setLEDs(111, 3, 252, 0, ledOffset, numLed);
-      if (override)
-        m_candle.setLEDs(0,255,0,0,ledOffset, numLed);
+
+      if (override) {
+        m_candle.setLEDs(0,0,255,0,ledOffset, numLed);
+      }
       
     } else if (DriverStation.isAutonomousEnabled()) {
       enabledLed();

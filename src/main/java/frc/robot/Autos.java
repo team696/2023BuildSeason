@@ -203,6 +203,7 @@ public class Autos {
 
     public void setTraj() {
         container.s_Swerve.m_fieldSim.getObject("traj").setTrajectory(getFullTraj());
+        container.s_Swerve.resetOdometry(getFullTraj().getInitialPose());
     }
 
     public void clearTraj() {

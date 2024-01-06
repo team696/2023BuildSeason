@@ -7,6 +7,8 @@ import frc.lib.util.SwerveModuleConstants;
 
 public final class Constants {
 
+    public static final boolean useShuffleboard = true;
+
     public static final class Swerve {
         /* Drive Motor Characterization Values */
         public static final double driveKS = (0.667 / 12); //divide by 12 to convert from volts to percent output for CTRE
@@ -15,7 +17,7 @@ public final class Constants {
 
         /* Swerve Profiling Values */
         public static final double maxSpeed = 5.16; //meters per second
-        public static final double maxAngularVelocity = 9.5;
+        public static final double maxAngularVelocity = 8;
 
         public static final double driveGearRatio = (6.12 / 1.0);
         public static final double angleGearRatio = (12.8 / 1.0); 
@@ -42,40 +44,40 @@ public final class Constants {
         /* Module Specific Constants */
         /* Front Left Module - Module 0 */
         public static final class Mod0 {
-            public static final int driveMotorID = 5;
-            public static final int angleMotorID = 4;
+            public static final int driveMotorID = 13;
+            public static final int angleMotorID = 50;
             public static final int canCoderID = 6;
-            public static final double angleOffset = 16.5;
+            public static final double angleOffset = 16.1;
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
 
         /* Front Right Module - Module 1 */
         public static final class Mod1 {
-            public static final int driveMotorID = 11;
-            public static final int angleMotorID = 10;
+            public static final int driveMotorID = 2;
+            public static final int angleMotorID = 1;
             public static final int canCoderID = 12;
-            public static final double angleOffset = 218.32;
+            public static final double angleOffset = 218.5;
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
         
         /* Back Left Module - Module 2 */
         public static final class Mod2 {
-            public static final int driveMotorID = 2;
-            public static final int angleMotorID = 1;
+            public static final int driveMotorID = 10;
+            public static final int angleMotorID = 11;
             public static final int canCoderID = 3;
-            public static final double angleOffset = 312.1;
+            public static final double angleOffset = 311.1;
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
 
         /* Back Right Module - Module 3 */
         public static final class Mod3 {
-            public static final int driveMotorID = 8;
-            public static final int angleMotorID = 7;
+            public static final int driveMotorID = 5;
+            public static final int angleMotorID = 4;
             public static final int canCoderID = 9;
-            public static final double angleOffset = 287.92;
+            public static final double angleOffset = 288.6;
             public static final SwerveModuleConstants constants = 
                 new SwerveModuleConstants(driveMotorID, angleMotorID, canCoderID, angleOffset);
         }
@@ -102,7 +104,7 @@ public final class Constants {
 
     public static final class ArmRotationValues {
 
-    public static final double armRotStow = 2;
+    public static final double armRotStow = 10;
 
     public static final double armRotForHighCone = 70;
     public static final double armRotForHighCube = 50;
@@ -160,7 +162,7 @@ public final class Constants {
         public static final double armExtendForShelfCube = 41000;
 
 
-        public static final double armExtendRevHighCone = 50500;
+        public static final double armExtendRevHighCone = 43000;
         public static final double armExtendRevHighCube = 42000;
 
         public static final double armExtendRevMidCone = 22000;
@@ -200,7 +202,7 @@ public final class Constants {
         public static final double JointRotForShelfCube = 9000;
 
 
-        public static final double JointRotRevHighCone = 12000;
+        public static final double JointRotRevHighCone = 15000;
         public static final double JointRotRevHighCube = 2000;
 
         public static final double JointRotRevMidCone = 6000;
@@ -231,7 +233,8 @@ public final class Constants {
         FRAME_PERIMETER,
         SINGLE_INTAKE,
         UPRIGHT_CONE,
-        SHOOT
+        SHOOT,
+        FLAT_HIGH
     }
 
     public static class CANdle {
